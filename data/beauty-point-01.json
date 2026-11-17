@@ -1,14 +1,19 @@
 {
   "key_color": "#1E4ED8",
   "cover": {
-    "layout": "full_bleed",
+    "layout": "block",
+    "block_h": 660,
+    "series_name": "BEAUTY POINT",
+    "num": "01",
+    "num_color": "#111111",
     "image": "assets/aesturamd_1002_7.webp",
-    "focus": 0.15,
-    "focus_y": 0.5,
-    "zoom": 1.0,
-    "kicker": "BEAUTY POINT 01",
-    "kicker_pos": "top_right",
-    "kicker_top": 74,
+    "focus": 0.38,
+    "focus_y": 0.55,
+    "zoom": 1.1,
+    "tone": false,
+    "white_pct": 98,
+    "contrast": 1.05,
+    "saturation": 1.05,
     "headline": [
       [
         "같은 장벽 크림,"
@@ -18,15 +23,7 @@
       ]
     ],
     "sub": "올리브영 화장품 vs 피부과 2등급 의료기기",
-    "badge": "",
-    "logo_tone": "auto",
-    "scrim_top": 0.44,
-    "head_size": 78,
-    "head_last": 1214,
-    "sub_baseline": 1266,
-    "white_pct": 97,
-    "scrim_max": 240,
-    "scrim_ease": "smooth"
+    "head_size": 94
   },
   "slides": [
     {

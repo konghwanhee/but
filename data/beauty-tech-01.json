@@ -1,10 +1,8 @@
 {
   "key_color": "#4F46E5",
   "cover": {
-    "image": "assets/cover_iope_retinol.jpg",
-    "zoom": 1.0,
-    "focus": 0.62,
-    "focus_y": 0.5,
+    "layout": "solid",
+    "bg_color": "#4F46E5",
     "kicker": "BEAUTY TECH 01",
     "headline": [
       [
@@ -15,40 +13,14 @@
       ]
     ],
     "sub": "레티놀을 처음 쓰는 사람에게",
-    "head_size": 80,
-    "head_last": 1204,
-    "sub_baseline": 1268,
-    "sub_size": 27,
-    "scrim_top": 0.38,
-    "scrim_max": 252,
-    "scrim_ease": "smooth",
-    "logo_tone": "auto",
-    "logo_height": 44,
-    "white_pct": 99.0,
-    "contrast": 1.03,
-    "saturation": 1.02,
-    "scrim_stops": [
-      [
-        0,
-        0
-      ],
-      [
-        0.24,
-        0.08
-      ],
-      [
-        0.48,
-        0.6
-      ],
-      [
-        0.7,
-        0.91
-      ],
-      [
-        1,
-        1.0
-      ]
-    ]
+    "head_size": 94,
+    "visual": "assets/beauty-tech-cover-visual.png",
+    "visual_mode": "float",
+    "visual_fit": "contain",
+    "visual_x": -24,
+    "visual_w": 1128,
+    "visual_y": 468,
+    "visual_h": 706
   },
   "slides": [
     {

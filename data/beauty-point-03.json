@@ -1,15 +1,18 @@
 {
   "key_color": "#D91E36",
   "cover": {
-    "layout": "full_bleed",
+    "layout": "block",
+    "block_h": 660,
+    "series_name": "BEAUTY POINT",
+    "num": "03",
+    "num_color": "#111111",
+    "num_size": 200,
+    "num_top": 150,
     "image": "assets/cover_zoom_lineup.jpg",
     "focus": 0.5,
-    "focus_y": 0.5,
+    "focus_y": 0.42,
     "zoom": 1.0,
     "tone": false,
-    "kicker": "BEAUTY POINT 03",
-    "kicker_pos": "top_right",
-    "kicker_top": 74,
     "headline": [
       [
         "5,000원 앞에서"
@@ -22,36 +25,8 @@
       ]
     ],
     "sub": "다이소 전용 세컨드 브랜드 8개, 직접 찾아봤습니다",
-    "badge": "",
-    "logo_tone": "auto",
-    "scrim_top": 0.34,
-    "head_size": 84,
-    "head_last": 1150,
-    "sub_baseline": 1218,
-    "scrim_max": 252,
-    "scrim_ease": "smooth",
-    "scrim_stops": [
-      [
-        0.0,
-        0.0
-      ],
-      [
-        0.18,
-        0.26
-      ],
-      [
-        0.4,
-        0.74
-      ],
-      [
-        0.65,
-        0.93
-      ],
-      [
-        1.0,
-        1.0
-      ]
-    ]
+    "head_size": 74,
+    "head_first": 372
   },
   "slides": [
     {

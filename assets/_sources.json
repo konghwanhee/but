@@ -13,6 +13,13 @@
     "h": 1080,
     "bytes": 28582
   },
+  "assets/beauty-tech-cover-visual.png": {
+    "sha1": "e6568d37d0903240567d52794c433c2a30a5e22c",
+    "source": "downloads/beauty-tech-cover-visual.png",
+    "w": 1269,
+    "h": 785,
+    "bytes": 875317
+  },
   "assets/boj_logo.png": {
     "sha1": "0c086be2b7ebe6786f5f879711cf8959da22ed37",
     "source": "downloads/brand-src/boj_logo.png",

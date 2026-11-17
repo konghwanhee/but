@@ -1,15 +1,16 @@
 {
   "key_color": "#0F766E",
   "cover": {
-    "layout": "full_bleed",
+    "layout": "block",
+    "block_h": 660,
+    "series_name": "BEAUTY POINT",
+    "num": "02",
+    "num_color": "#111111",
     "image": "assets/pharma_rejuderma.jpg",
     "focus": 0.5,
     "focus_y": 0.5,
     "zoom": 1.0,
     "tone": false,
-    "kicker": "BEAUTY POINT 02",
-    "kicker_pos": "top_right",
-    "kicker_top": 74,
     "headline": [
       [
         "연어 DNA 크림,"
@@ -19,14 +20,7 @@
       ]
     ],
     "sub": "올리브영 화장품 · 병원 의료기기 · 약국 일반의약품",
-    "badge": "",
-    "logo_tone": "auto",
-    "scrim_top": 0.44,
-    "head_size": 80,
-    "head_last": 1210,
-    "sub_baseline": 1262,
-    "scrim_max": 240,
-    "scrim_ease": "smooth"
+    "head_size": 94
   },
   "slides": [
     {
