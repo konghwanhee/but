@@ -1794,6 +1794,12 @@ function loadDeck(id, opts) {
     .then(function (data) {
       if (!data || !Array.isArray(data.slides)) throw new Error('slides 배열이 없는 JSON입니다');
       D = clone(data);
+      // 목록(manifest)에 아직 없는 결재 기록이 카드뉴스 JSON 에 있으면 같이 맞춰 둔다.
+      if (DECK[id] && typeof data.approved === 'boolean') {
+        DECK[id].approved = data.approved;
+        if (data.approved && data.approvedAt) DECK[id].approvedAt = data.approvedAt;
+        else delete DECK[id].approvedAt;
+      }
       state.family = familyOf(D);
       state.presetId = id;
       state.savedKey = 'butEditor:' + id;
@@ -1814,6 +1820,7 @@ function loadDeck(id, opts) {
       requestRender();
       updateStageHead();
       markDirty(state.dirty);
+      updateApproveBtn();
       if (restored) toast('이전에 수정하던 내용을 불러왔습니다 · 원본은 [원본으로 되돌리기]');
       return true;
     })
@@ -1918,6 +1925,121 @@ function touchManifest(id, token) {
     return ghWrite('data/manifest.json', JSON.stringify(json, null, 2) + '\n',
       '카드뉴스 목록 갱신: ' + id, token, cur.sha);
   });
+}
+
+/* ---------------------------------------------------------------- 10d. 결재(승인) */
+/* 결재 상태는 data/{id}.json 과 data/manifest.json 양쪽에 같이 기록된다.
+   manifest 값이 갤러리 뱃지의 기준이고, 카드뉴스 JSON 값이 원본 기록이다. */
+function approvalOf(id) {
+  var m = DECK[id];
+  if (m && typeof m.approved === 'boolean') return m.approved;
+  if (id === state.presetId && D && typeof D.approved === 'boolean') return D.approved;
+  return false;
+}
+function approveLabel(on) { return on ? '결재됨 ✓' : '결재'; }
+
+function updateApproveBtn() {
+  var b = document.getElementById('btnApprove');
+  if (!b) return;
+  var on = state.presetId ? approvalOf(state.presetId) : false;
+  b.textContent = approveLabel(on);
+  b.classList.toggle('approved', on);
+  b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  b.setAttribute('title', on
+    ? '결재를 취소하면 이 호가 미결재 상태로 돌아가고 GitHub에 기록됩니다'
+    : '이 호를 결재하고 GitHub에 기록합니다');
+}
+
+function applyApprovalLocal(id, approved, at) {
+  var stamp = at || null;
+  var m = DECK[id];
+  if (m) {
+    m.approved = !!approved;
+    if (approved) { if (stamp) m.approvedAt = stamp; }
+    else { delete m.approvedAt; }
+  }
+  (MANIFEST.decks || []).forEach(function (d) {
+    if (d.id !== id) return;
+    d.approved = !!approved;
+    if (approved) { if (stamp) d.approvedAt = stamp; }
+    else { delete d.approvedAt; }
+  });
+}
+
+function setManifestApproval(id, approved, at, token) {
+  return ghRead('data/manifest.json', token).then(function (cur) {
+    if (!cur) return null;
+    var json;
+    try {
+      var raw = cur.content ? atob(cur.content.replace(/\s/g, '')) : '';
+      json = JSON.parse(decodeURIComponent(escape(raw)));
+    } catch (e) { return null; }
+    var stamp = new Date().toISOString();
+    (json.decks || []).forEach(function (d) {
+      if (d.id !== id) return;
+      d.approved = !!approved;
+      if (approved) d.approvedAt = at; else delete d.approvedAt;
+      d.updatedAt = stamp;
+    });
+    json.generatedAt = stamp;
+    return ghWrite('data/manifest.json', JSON.stringify(json, null, 2) + '\n',
+      (approved ? '결재: ' : '결재 취소: ') + id, token, cur.sha);
+  });
+}
+
+function approveToggle() {
+  var token = lsGet(LS_PAT);
+  if (!token) {
+    toast('GitHub 연결 후 결재 상태를 저장할 수 있습니다');
+    openPat('결재 상태는 GitHub에 기록됩니다 · 토큰을 연결해 주세요.');
+    return;
+  }
+  if (!D || !state.presetId) return;
+  var id = state.presetId;
+  var before = approvalOf(id);
+  var next = !before;
+  if (before && !confirm('이 호의 결재를 취소할까요?\n취소하면 갤러리의 [결재됨] 뱃지가 사라집니다.')) return;
+
+  var btn = document.getElementById('btnApprove');
+  var beforeAt = (DECK[id] && DECK[id].approvedAt) || D.approvedAt || null;
+  var stamp = next ? new Date().toISOString() : null;
+  btn.disabled = true;
+  toast(next ? '결재를 기록하는 중…' : '결재를 취소하는 중…');
+
+  D.approved = next;
+  if (next) D.approvedAt = stamp; else delete D.approvedAt;
+
+  var path = 'data/' + id + '.json';
+  var title = (DECK[id] && DECK[id].title) || id;
+  var text = JSON.stringify(D, null, 2) + '\n';
+  var msg = (next ? '결재: ' : '결재 취소: ') + title + ' (' + id + ')';
+
+  ghRead(path, token)
+    .then(function (cur) { return ghWrite(path, text, msg, token, cur && cur.sha); })
+    .then(function () {
+      return setManifestApproval(id, next, stamp, token)
+        .catch(function () { return setManifestApproval(id, next, stamp, token); });
+    })
+    .then(function () {
+      applyApprovalLocal(id, next, stamp);
+      clearTimeout(_saveT);
+      lsDel(state.savedKey);
+      state.dirty = false;
+      markDirty(false);
+      updateApproveBtn();
+      renderGallery();
+      toast(next
+        ? '결재했습니다\n' + path + ' · ' + (stamp ? stamp.replace('T', ' ').slice(0, 16) + ' UTC' : '')
+        : '결재를 취소했습니다 · ' + path);
+    })
+    .catch(function (err) {
+      D.approved = before;
+      if (before) { if (beforeAt) D.approvedAt = beforeAt; }
+      else { delete D.approvedAt; }
+      updateApproveBtn();
+      toast('결재 상태를 저장하지 못했습니다 · ' + err.message + '\n잠시 뒤 [결재]를 다시 눌러 주세요');
+    })
+    .then(function () { btn.disabled = false; });
 }
 
 /* 토큰 모달 */
@@ -2580,6 +2702,14 @@ function cardEl(d, i) {
 
   var body = document.createElement('div');
   body.className = 'cardBody';
+  if (d.approved) {
+    var badge = document.createElement('span');
+    badge.className = 'approvedBadge';
+    badge.textContent = '결재됨';
+    badge.title = d.approvedAt ? '결재됨 · ' + String(d.approvedAt).replace('T', ' ').slice(0, 16) + ' UTC' : '결재됨';
+    cover.appendChild(badge);
+  }
+
   var kick = document.createElement('div');
   kick.className = 'cardKicker';
   kick.innerHTML = '<span class="dot"></span>' + esc(d.seriesLabel || ch.label) +
@@ -2667,6 +2797,7 @@ function showEditor(id) {
   document.title = (meta.title || meta.id) + ' · 카드뉴스 허브';
   window.scrollTo(0, 0);
   updateGhChip();
+  updateApproveBtn();
   loadDeck(id);
 }
 
@@ -2685,6 +2816,7 @@ function wireChrome() {
   document.getElementById('btnZip').addEventListener('click', exportAllZip);
   document.getElementById('btnJson').addEventListener('click', exportJson);
   document.getElementById('btnGhSave').addEventListener('click', ghSave);
+  document.getElementById('btnApprove').addEventListener('click', approveToggle);
   document.getElementById('btnPat').addEventListener('click', function () { openPat(); });
   document.getElementById('btnPatHome').addEventListener('click', function () { openPat(); });
   ['btnPatFoot', 'btnPatLink'].forEach(function (id) {

@@ -12,6 +12,9 @@
    1080×1350 실시간 캔버스, 문구 입력칸(Enter 줄바꿈, 마침표·쉼표 기준 자동 줄바꿈).
    - `현재 장표 PNG` · `전체 장표 PNG` · `JSON 내보내기`
    - `GitHub에 저장`: 저장용 토큰(PAT)을 한 번 연결하면 `data/{id}.json`을 GitHub API로 바로 커밋
+   - `결재`: 이 호를 결재(승인)로 표시 — `data/{id}.json`·`data/manifest.json`에 `approved: true`·`approvedAt`(ISO 시각)을 기록하고 커밋,
+     버튼은 `결재됨 ✓`(딥 버건디)로 바뀌고 홈 갤러리 카드에 `결재됨` 뱃지가 붙습니다. 다시 누르면 결재 취소(확인 후).
+     토큰이 없으면 안내와 함께 연결 창이 열립니다. `scripts/sync_to_github.py` 재동기화도 이 값을 보존합니다.
 
 ## 구조
 
