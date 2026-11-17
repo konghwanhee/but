@@ -405,11 +405,156 @@ function detectLogoTone() {
 }
 
 /* ---------------------------------------------------------------- 4. 표지 */
+function coverLayout(cov, family) {
+  if (cov && cov.layout) return cov.layout;
+  if (family === 'tech') return cov && cov.visual ? 'solid' : 'photo';
+  if (family === 'point') return 'block';
+  return 'photo';
+}
+function fitHeadSize(lines, start, min, maxW) {
+  var size = Number(start);
+  while (size > min && headlineWidth(lines, size, 'extrabold') > maxW) size -= 2;
+  return size;
+}
+function drawLinesLeft(lines, x0, firstY, gap, size, colorOf) {
+  for (var i = 0; i < lines.length; i++) {
+    var x = x0;
+    for (var j = 0; j < lines[i].length; j++) {
+      var seg = lines[i][j];
+      drawText(seg.text, x, firstY + i * gap, size, 'extrabold', colorOf(seg.tone), 'ls');
+      x += measure(seg.text, size, 'extrabold');
+    }
+  }
+}
+function drawLinesCenter(lines, firstY, gap, size, colorOf) {
+  for (var i = 0; i < lines.length; i++) {
+    var tot = 0, j;
+    for (j = 0; j < lines[i].length; j++) tot += measure(lines[i][j].text, size, 'extrabold');
+    var x = W / 2 - tot / 2;
+    for (j = 0; j < lines[i].length; j++) {
+      var seg = lines[i][j];
+      drawText(seg.text, x, firstY + i * gap, size, 'extrabold', colorOf(seg.tone), 'ls');
+      x += measure(seg.text, size, 'extrabold');
+    }
+  }
+}
+
+/* 뷰티 포인트 기본 표지 — 상단 솔리드 컬러 블록 + 하단 공식 연출컷 풀블리드(2분할) */
+function coverPointBlock(cov) {
+  var blockH = Number(cov.block_h || 660);
+  var ok = false;
+  if (cov.image) ok = drawCoverCrop(cov.image, 0, blockH, W, H - blockH, cov.focus, cov.focus_y, cov.zoom || 1);
+  if (!ok) { _ctx.fillStyle = INK; _ctx.fillRect(0, blockH, W, H - blockH); }
+  _ctx.fillStyle = cov.block_color || KEY; _ctx.fillRect(0, 0, W, blockH);
+  drawLogo('white', MX, Number(cov.logo_top === undefined ? 74 : cov.logo_top),
+    Number(cov.logo_height || 42));
+
+  var series = cov.series_name === undefined ? 'BEAUTY POINT' : String(cov.series_name);
+  if (series) {
+    var fs = Number(cov.series_size || 22);
+    var sw = trackedW(series, fs, 'bold', 4);
+    tracked(series, CR - sw, Number(cov.series_baseline === undefined ? 132 : cov.series_baseline),
+      fs, 'bold', WHITE, 4);
+  }
+  var num = cov.num === undefined ? '' : String(cov.num).trim();
+  if (num) {
+    drawText(num, CR, Number(cov.num_top === undefined ? 150 : cov.num_top),
+      Number(cov.num_size || 232), 'extrabold', cov.num_color || INK, 'rt');
+  }
+
+  var lines = headlineLines({ headline: cov.headline || [] });
+  var size = fitHeadSize(lines, cov.head_size || 94, 52, CR - MX);
+  var gap = Math.round(size * 1.16);
+  var subBase = Number(cov.sub_baseline === undefined ? blockH - 44 : cov.sub_baseline);
+  var lastMax = subBase - Number(cov.sub_gap === undefined ? 74 : cov.sub_gap);
+  var first = cov.head_first === undefined
+    ? Math.min(420, lastMax - gap * (lines.length - 1)) : Number(cov.head_first);
+  drawLinesLeft(lines, MX, first, gap, size, function (t) { return t === 'key' ? INK : WHITE; });
+
+  if (cov.sub) {
+    var ss = Number(cov.sub_size || 27);
+    while (ss > 20 && measure(cov.sub, ss, 'medium') > CR - MX) ss -= 1;
+    drawText(cov.sub, MX, subBase, ss, 'medium', WHITE, 'ls');
+  }
+}
+
+/* 네모박스 없이 배경 위에 떠 있는 비주얼 — 투명 PNG(입자·누끼컷) 또는 사진(제형) */
+function drawCoverVisual(cov, headLast) {
+  var im = getImage(cov.visual);
+  if (!imgOk(im)) return;
+  var bx = Number(cov.visual_x || 0);
+  var by = Number(cov.visual_y === undefined ? headLast + 46 : cov.visual_y);
+  var bw = Number(cov.visual_w || (W - 2 * bx));
+  var bh = Number(cov.visual_h === undefined ? H - by - 158 : cov.visual_h);
+  var iw = im.naturalWidth, ih = im.naturalHeight;
+  var cover = (cov.visual_fit || 'contain') === 'cover';
+  var r = cover ? Math.max(bw / iw, bh / ih) : Math.min(bw / iw, bh / ih);
+  var nw = iw * r, nh = ih * r;
+  var x = bx + (bw - nw) / 2 + Number(cov.visual_dx || 0);
+  var y = by + (bh - nh) / 2 + Number(cov.visual_dy || 0);
+  if (cover) {
+    var sx = (nw - bw) * clamp01(cov.visual_focus_x === undefined ? 0.5 : cov.visual_focus_x);
+    var sy = (nh - bh) * clamp01(cov.visual_focus_y === undefined ? 0.5 : cov.visual_focus_y);
+    _ctx.drawImage(im, sx / r, sy / r, bw / r, bh / r, x, y, bw, bh);
+    return;
+  }
+  var op = cov.visual_opacity === undefined ? 1 : clampNum(cov.visual_opacity, 0, 1);
+  if (op < 1) { _ctx.save(); _ctx.globalAlpha = op; }
+  if ((cov.visual_mode || 'float') === 'feather' && nw > 4 && nh > 4) {
+    var oc = document.createElement('canvas');
+    oc.width = Math.round(nw); oc.height = Math.round(nh);
+    var o = oc.getContext('2d');
+    o.drawImage(im, 0, 0, oc.width, oc.height);
+    o.globalCompositeOperation = 'destination-in';
+    var f = Math.max(1, Number(cov.feather || 90));
+    var ax = Math.min(0.49, f / oc.width), ay = Math.min(0.49, f / oc.height);
+    var gx = o.createLinearGradient(0, 0, oc.width, 0);
+    gx.addColorStop(0, 'rgba(0,0,0,0)'); gx.addColorStop(ax, 'rgba(0,0,0,1)');
+    gx.addColorStop(1 - ax, 'rgba(0,0,0,1)'); gx.addColorStop(1, 'rgba(0,0,0,0)');
+    o.fillStyle = gx; o.fillRect(0, 0, oc.width, oc.height);
+    var gy = o.createLinearGradient(0, 0, 0, oc.height);
+    gy.addColorStop(0, 'rgba(0,0,0,0)'); gy.addColorStop(ay, 'rgba(0,0,0,1)');
+    gy.addColorStop(1 - ay, 'rgba(0,0,0,1)'); gy.addColorStop(1, 'rgba(0,0,0,0)');
+    o.fillStyle = gy; o.fillRect(0, 0, oc.width, oc.height);
+    _ctx.drawImage(oc, x, y);
+  } else {
+    _ctx.drawImage(im, x, y, nw, nh);
+  }
+  if (op < 1) _ctx.restore();
+}
+
+/* 뷰티 테크 기본 표지 — 솔리드 키 컬러 바탕 + 중앙 정렬 타이포 + 테두리 없는 비주얼 */
+function coverTechSolid(cov) {
+  _ctx.fillStyle = cov.bg_color || KEY; _ctx.fillRect(0, 0, W, H);
+  drawLogo('white', MX, Number(cov.logo_top === undefined ? 78 : cov.logo_top),
+    Number(cov.logo_height || 44));
+  var kick = cov.kicker || '';
+  if (kick) {
+    var kf = Number(cov.kicker_size || 22);
+    var kw = trackedW(kick, kf, 'bold', 5);
+    tracked(kick, (W - kw) / 2, Number(cov.kicker_baseline === undefined ? 236 : cov.kicker_baseline),
+      kf, 'bold', WHITE, 5);
+  }
+  var lines = headlineLines({ headline: cov.headline || [] });
+  var size = fitHeadSize(lines, cov.head_size || 92, 54, Number(cov.head_max_w || 940));
+  var gap = Math.round(size * 1.16);
+  var first = Number(cov.head_first === undefined ? 336 : cov.head_first);
+  drawLinesCenter(lines, first, gap, size, function (t) { return t === 'key' ? INK : WHITE; });
+  if (cov.visual) drawCoverVisual(cov, first + gap * (lines.length - 1));
+  if (cov.sub) {
+    drawText(cov.sub, W / 2, Number(cov.sub_baseline === undefined ? 1256 : cov.sub_baseline),
+      Number(cov.sub_size || 31), 'medium', WHITE, 'ms');
+  }
+}
+
 function renderCover(c, family) {
   var cov = c.cover || {};
   _ctx.fillStyle = INK; _ctx.fillRect(0, 0, W, H);
   if (family === 'brief') return coverBrief(cov);
   var tech = family === 'tech';
+  var layout = coverLayout(cov, family);
+  if (layout === 'solid') return coverTechSolid(cov);
+  if (layout === 'block') return coverPointBlock(cov);
   var hasPhoto = false;
   if (cov.image) {
     hasPhoto = drawCoverCrop(cov.image, 0, 0, W, H, cov.focus, cov.focus_y, cov.zoom || 1);
@@ -2090,10 +2235,19 @@ function group(title, nodes, cnt) {
 
 function coverSpec() {
   var g = [];
+  var cov = D.cover || {};
+  var layout = coverLayout(cov, state.family);
   var nodes = [{ t: 'lines', path: ['headline'], label: '표지 헤드라인' }];
+  if (layout === 'block') {
+    if (cov.series_name !== undefined) nodes.push({ t: 'text', path: ['series_name'], label: '시리즈명 (우상단)', rows: 1 });
+    if (cov.num !== undefined) nodes.push({ t: 'text', path: ['num'], label: '이슈 번호', rows: 1 });
+    nodes.push({ t: 'text', path: ['sub'], label: '서브 문구', rows: 2 });
+    g.push(group('표지 문구 (2분할 블록)', nodes));
+    return g;
+  }
   nodes.push({ t: 'text', path: ['kicker'], label: '킥커 (작은 라벨)', rows: 1 });
   nodes.push({ t: 'text', path: ['sub'], label: '서브 문구', rows: 2 });
-  if (D.cover && D.cover.badge !== undefined) nodes.push({ t: 'text', path: ['badge'], label: '배지', rows: 1 });
+  if (cov.badge !== undefined) nodes.push({ t: 'text', path: ['badge'], label: '배지', rows: 1 });
   g.push(group('표지 문구', nodes));
   return g;
 }
