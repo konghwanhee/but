@@ -12,9 +12,13 @@
    1080×1350 실시간 캔버스, 문구 입력칸(Enter 줄바꿈, 마침표·쉼표 기준 자동 줄바꿈).
    - `현재 장표 PNG` · `전체 장표 PNG` · `JSON 내보내기`
    - `GitHub에 저장`: 저장용 토큰(PAT)을 한 번 연결하면 `data/{id}.json`을 GitHub API로 바로 커밋
-   - `결재`: 이 호를 결재(승인)로 표시 — `data/{id}.json`·`data/manifest.json`에 `approved: true`·`approvedAt`(ISO 시각)을 기록하고 커밋,
-     버튼은 `결재됨 ✓`(딥 버건디)로 바뀌고 홈 갤러리 카드에 `결재됨` 뱃지가 붙습니다. 다시 누르면 결재 취소(확인 후).
-     토큰이 없으면 안내와 함께 연결 창이 열립니다. `scripts/sync_to_github.py` 재동기화도 이 값을 보존합니다.
+   - `결재` (**데일리 브리핑 호에서만** 노출 · 뷰티 포인트·뷰티 테크는 버튼·뱃지 모두 숨김):
+     2차 확인창(취소 / 결재 확정)에서 확정해야 커밋됩니다. `data/{id}.json`·`data/manifest.json`에
+     `approved`(결재 여부) · `approvedAt`(결재 시각) · `scheduledUploadAt`(업로드 예정 — 결재 시점 기준
+     오늘 18:00 전이면 오늘, 지났으면 다음 날 `YYYY-MM-DDTHH:MM:SS+09:00`) · `publishedAt`(업로드 완료, 없으면 `null`)를 기록합니다.
+     버튼은 `결재됨 ✓`(딥 버건디)로 바뀌고, 편집 화면 상단·홈 카드에는 `결재됨 · 예정 MM.DD 18:00`,
+     `publishedAt`이 있으면 `업로드 완료 · YYYY.MM.DD`로 표시됩니다. 다시 누르면 확인 후 결재 취소.
+     토큰이 없으면 안내와 함께 연결 창이 열립니다. `scripts/sync_to_github.py` 재동기화도 이 네 값을 보존합니다.
 
 ## 구조
 

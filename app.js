@@ -1795,7 +1795,7 @@ function loadDeck(id, opts) {
       if (!data || !Array.isArray(data.slides)) throw new Error('slides 배열이 없는 JSON입니다');
       D = clone(data);
       // 목록(manifest)에 아직 없는 결재 기록이 카드뉴스 JSON 에 있으면 같이 맞춰 둔다.
-      if (DECK[id] && typeof data.approved === 'boolean') {
+      if (DECK[id] && DECK[id].series === 'briefing' && typeof data.approved === 'boolean') {
         DECK[id].approved = data.approved;
         if (data.approved && data.approvedAt) DECK[id].approvedAt = data.approvedAt;
         else delete DECK[id].approvedAt;
@@ -1929,7 +1929,9 @@ function touchManifest(id, token) {
 
 /* ---------------------------------------------------------------- 10d. 결재(승인) */
 /* 결재 상태는 data/{id}.json 과 data/manifest.json 양쪽에 같이 기록된다.
-   manifest 값이 갤러리 뱃지의 기준이고, 카드뉴스 JSON 값이 원본 기록이다. */
+   approved(결재 여부) · approvedAt(결재 시각) · scheduledUploadAt(업로드 예정) · publishedAt(업로드 완료) */
+var APPROVAL_KEYS = ['approved', 'approvedAt', 'scheduledUploadAt', 'publishedAt'];
+
 function approvalOf(id) {
   var m = DECK[id];
   if (m && typeof m.approved === 'boolean') return m.approved;
@@ -1938,35 +1940,89 @@ function approvalOf(id) {
 }
 function approveLabel(on) { return on ? '결재됨 ✓' : '결재'; }
 
-function updateApproveBtn() {
-  var b = document.getElementById('btnApprove');
-  if (!b) return;
-  var on = state.presetId ? approvalOf(state.presetId) : false;
-  b.textContent = approveLabel(on);
-  b.classList.toggle('approved', on);
-  b.setAttribute('aria-pressed', on ? 'true' : 'false');
-  b.setAttribute('title', on
-    ? '결재를 취소하면 이 호가 미결재 상태로 돌아가고 GitHub에 기록됩니다'
-    : '이 호를 결재하고 GitHub에 기록합니다');
+function p2n(n) { return (n < 10 ? '0' : '') + n; }
+/* 한국 시간 벽시계 값(UTC 필드에 KST 값을 담아 돌려준다) */
+function kstWall(now) {
+  var t = new Date(now.getTime() + 9 * 3600 * 1000);
+  return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), h: t.getUTCHours() };
+}
+/* 결재 시점 기준 업로드 예정: 오늘 18:00 전이면 오늘 18:00, 지났으면 다음 날 18:00 (KST) */
+function nextUploadSlot(now) {
+  var k = kstWall(now || new Date());
+  var y = k.y, m = k.m, d = k.d;
+  if (k.h >= 18) {
+    var nx = new Date(Date.UTC(y, m - 1, d + 1));
+    y = nx.getUTCFullYear(); m = nx.getUTCMonth() + 1; d = nx.getUTCDate();
+  }
+  return y + '-' + p2n(m) + '-' + p2n(d) + 'T18:00:00+09:00';
+}
+/* '2026-11-19T18:00:00+09:00' · '2026-11-19 18:00' 모두 표시용으로 바꾼다 */
+function fmtUploadAt(v, full) {
+  var m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
+  if (!m) return String(v || '');
+  var date = full ? m[1] + '.' + m[2] + '.' + m[3] : m[2] + '.' + m[3];
+  return (m[4] && m[5]) ? date + ' ' + m[4] + ':' + m[5] : date;
+}
+/* 카드·편집 화면에 보일 결재 상태 문구 */
+/* 결재는 데일리 브리핑(briefing) 호에서만 쓴다. 뷰티 포인트·뷰티 테크는 표시도 허용도 하지 않는다. */
+function approveAllowed(id) {
+  var m = id ? DECK[id] : null;
+  return !!(m && m.series === 'briefing');
+}
+function deckStatus(d) {
+  if (!d || d.series !== 'briefing') return null;
+  if (d.publishedAt) return { kind: 'done', text: '업로드 완료 · ' + fmtUploadAt(d.publishedAt, true) };
+  if (d.approved) {
+    return {
+      kind: 'scheduled',
+      text: '결재됨' + (d.scheduledUploadAt ? ' · 예정 ' + fmtUploadAt(d.scheduledUploadAt) : ' · 업로드 예정')
+    };
+  }
+  return null;
+}
+function statusTip(d) {
+  if (!d) return '';
+  var bits = [];
+  if (d.approvedAt) bits.push('결재 ' + fmtUploadAt(d.approvedAt, true));
+  if (d.scheduledUploadAt) bits.push('업로드 예정 ' + fmtUploadAt(d.scheduledUploadAt, true));
+  if (d.publishedAt) bits.push('업로드 완료 ' + fmtUploadAt(d.publishedAt, true));
+  return bits.join(' · ');
 }
 
-function applyApprovalLocal(id, approved, at) {
-  var stamp = at || null;
-  var m = DECK[id];
-  if (m) {
-    m.approved = !!approved;
-    if (approved) { if (stamp) m.approvedAt = stamp; }
-    else { delete m.approvedAt; }
+function updateApproveBtn() {
+  var id = state.presetId;
+  var allowed = approveAllowed(id);
+  var on = (allowed && id) ? approvalOf(id) : false;
+  var b = document.getElementById('btnApprove');
+  if (b) {
+    b.hidden = !allowed;
+    b.textContent = approveLabel(on);
+    b.classList.toggle('approved', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    b.setAttribute('title', on
+      ? '결재를 취소하면 이 호가 미결재 상태로 돌아가고 GitHub에 기록됩니다'
+      : '이 호를 결재하고 GitHub에 기록합니다');
   }
-  (MANIFEST.decks || []).forEach(function (d) {
-    if (d.id !== id) return;
-    d.approved = !!approved;
-    if (approved) { if (stamp) d.approvedAt = stamp; }
-    else { delete d.approvedAt; }
+  var st = document.getElementById('deckStatus');
+  if (st) {
+    var s = allowed ? deckStatus(id ? DECK[id] : null) : null;
+    st.hidden = !s;
+    st.className = 'apStatus' + (s ? ' ' + s.kind : '');
+    st.textContent = s ? s.text : '';
+    st.setAttribute('title', id ? statusTip(DECK[id]) : '');
+  }
+}
+
+function applyApprovalLocal(id, fields) {
+  var list = [];
+  if (DECK[id]) list.push(DECK[id]);
+  (MANIFEST.decks || []).forEach(function (d) { if (d.id === id) list.push(d); });
+  list.forEach(function (d) {
+    Object.keys(fields).forEach(function (k) { d[k] = fields[k]; });
   });
 }
 
-function setManifestApproval(id, approved, at, token) {
+function setManifestFields(id, fields, token, message) {
   return ghRead('data/manifest.json', token).then(function (cur) {
     if (!cur) return null;
     var json;
@@ -1977,14 +2033,99 @@ function setManifestApproval(id, approved, at, token) {
     var stamp = new Date().toISOString();
     (json.decks || []).forEach(function (d) {
       if (d.id !== id) return;
-      d.approved = !!approved;
-      if (approved) d.approvedAt = at; else delete d.approvedAt;
+      Object.keys(fields).forEach(function (k) { d[k] = fields[k]; });
       d.updatedAt = stamp;
     });
     json.generatedAt = stamp;
-    return ghWrite('data/manifest.json', JSON.stringify(json, null, 2) + '\n',
-      (approved ? '결재: ' : '결재 취소: ') + id, token, cur.sha);
+    return ghWrite('data/manifest.json', JSON.stringify(json, null, 2) + '\n', message, token, cur.sha);
   });
+}
+
+/* 결재 상태를 GitHub(data/{id}.json + manifest.json)에 커밋 */
+function commitApproval(next, token) {
+  var id = state.presetId;
+  if (!id || !D || !approveAllowed(id)) return;
+  var m = DECK[id] || {};
+  var prev = {
+    approved: (typeof m.approved === 'boolean') ? m.approved : (typeof D.approved === 'boolean' ? D.approved : false),
+    approvedAt: m.approvedAt || D.approvedAt || null,
+    scheduledUploadAt: m.scheduledUploadAt || D.scheduledUploadAt || null,
+    publishedAt: m.publishedAt || D.publishedAt || null
+  };
+  var fields;
+  if (next) {
+    fields = {
+      approved: true,
+      approvedAt: new Date().toISOString(),
+      scheduledUploadAt: nextUploadSlot(new Date()),
+      publishedAt: prev.publishedAt || null
+    };
+  } else {
+    fields = { approved: false, approvedAt: null, scheduledUploadAt: null, publishedAt: prev.publishedAt || null };
+  }
+
+  var btn = document.getElementById('btnApprove');
+  btn.disabled = true;
+  toast(next ? '결재를 기록하는 중…' : '결재를 취소하는 중…');
+
+  Object.keys(fields).forEach(function (k) { D[k] = fields[k]; });
+
+  var path = 'data/' + id + '.json';
+  var title = m.title || id;
+  var text = JSON.stringify(D, null, 2) + '\n';
+  var msg = (next ? '결재: ' : '결재 취소: ') + title + ' (' + id + ')';
+
+  ghRead(path, token)
+    .then(function (cur) { return ghWrite(path, text, msg, token, cur && cur.sha); })
+    .then(function () {
+      return setManifestFields(id, fields, token, msg)
+        .catch(function () { return setManifestFields(id, fields, token, msg); });
+    })
+    .then(function () {
+      applyApprovalLocal(id, fields);
+      clearTimeout(_saveT);
+      lsDel(state.savedKey);
+      state.dirty = false;
+      markDirty(false);
+      updateApproveBtn();
+      renderGallery();
+      if (next) {
+        toast('결재했습니다\n업로드 예정 ' + fmtUploadAt(fields.scheduledUploadAt, true) + ' · ' + path);
+      } else {
+        toast('결재를 취소했습니다 · ' + path);
+      }
+    })
+    .catch(function (err) {
+      Object.keys(prev).forEach(function (k) { D[k] = prev[k]; });
+      updateApproveBtn();
+      toast('결재 상태를 저장하지 못했습니다 · ' + err.message + '\n잠시 뒤 [결재]를 다시 눌러 주세요');
+    })
+    .then(function () { btn.disabled = false; });
+}
+
+/* 2차 확인 모달 */
+var cfm = { open: false, resolve: null };
+function askConfirm(opts) {
+  return new Promise(function (resolve) {
+    var modal = document.getElementById('cfmModal');
+    document.getElementById('cfmTitle').textContent = opts.title || '확인';
+    document.getElementById('cfmBody').textContent = opts.body || '';
+    var ok = document.getElementById('cfmOk');
+    ok.textContent = opts.ok || '확인';
+    ok.className = 'solid' + (opts.danger ? ' danger' : '');
+    cfm.resolve = resolve;
+    cfm.open = true;
+    modal.hidden = false;
+    setTimeout(function () { try { ok.focus(); } catch (e) { } }, 30);
+  });
+}
+function closeConfirm(answer) {
+  if (!cfm.open) return;
+  cfm.open = false;
+  document.getElementById('cfmModal').hidden = true;
+  var r = cfm.resolve;
+  cfm.resolve = null;
+  if (r) r(!!answer);
 }
 
 function approveToggle() {
@@ -1995,51 +2136,22 @@ function approveToggle() {
     return;
   }
   if (!D || !state.presetId) return;
-  var id = state.presetId;
-  var before = approvalOf(id);
+  if (!approveAllowed(state.presetId)) {
+    toast('결재는 데일리 브리핑 호에서만 사용할 수 있습니다');
+    return;
+  }
+  var before = approvalOf(state.presetId);
   var next = !before;
-  if (before && !confirm('이 호의 결재를 취소할까요?\n취소하면 갤러리의 [결재됨] 뱃지가 사라집니다.')) return;
-
-  var btn = document.getElementById('btnApprove');
-  var beforeAt = (DECK[id] && DECK[id].approvedAt) || D.approvedAt || null;
-  var stamp = next ? new Date().toISOString() : null;
-  btn.disabled = true;
-  toast(next ? '결재를 기록하는 중…' : '결재를 취소하는 중…');
-
-  D.approved = next;
-  if (next) D.approvedAt = stamp; else delete D.approvedAt;
-
-  var path = 'data/' + id + '.json';
-  var title = (DECK[id] && DECK[id].title) || id;
-  var text = JSON.stringify(D, null, 2) + '\n';
-  var msg = (next ? '결재: ' : '결재 취소: ') + title + ' (' + id + ')';
-
-  ghRead(path, token)
-    .then(function (cur) { return ghWrite(path, text, msg, token, cur && cur.sha); })
-    .then(function () {
-      return setManifestApproval(id, next, stamp, token)
-        .catch(function () { return setManifestApproval(id, next, stamp, token); });
-    })
-    .then(function () {
-      applyApprovalLocal(id, next, stamp);
-      clearTimeout(_saveT);
-      lsDel(state.savedKey);
-      state.dirty = false;
-      markDirty(false);
-      updateApproveBtn();
-      renderGallery();
-      toast(next
-        ? '결재했습니다\n' + path + ' · ' + (stamp ? stamp.replace('T', ' ').slice(0, 16) + ' UTC' : '')
-        : '결재를 취소했습니다 · ' + path);
-    })
-    .catch(function (err) {
-      D.approved = before;
-      if (before) { if (beforeAt) D.approvedAt = beforeAt; }
-      else { delete D.approvedAt; }
-      updateApproveBtn();
-      toast('결재 상태를 저장하지 못했습니다 · ' + err.message + '\n잠시 뒤 [결재]를 다시 눌러 주세요');
-    })
-    .then(function () { btn.disabled = false; });
+  askConfirm(next ? {
+    title: '결재',
+    body: '이 카드뉴스를 결재할까요? 결재 시 GitHub에 저장되며 업로드 예정 상태가 됩니다.',
+    ok: '결재 확정'
+  } : {
+    title: '결재 취소',
+    body: '이 호의 결재를 취소할까요? 취소하면 갤러리의 결재됨·업로드 예정 표시가 사라집니다.',
+    ok: '결재 취소',
+    danger: true
+  }).then(function (yes) { if (yes) commitApproval(next, token); });
 }
 
 /* 토큰 모달 */
@@ -2702,12 +2814,13 @@ function cardEl(d, i) {
 
   var body = document.createElement('div');
   body.className = 'cardBody';
-  if (d.approved) {
-    var badge = document.createElement('span');
-    badge.className = 'approvedBadge';
-    badge.textContent = '결재됨';
-    badge.title = d.approvedAt ? '결재됨 · ' + String(d.approvedAt).replace('T', ' ').slice(0, 16) + ' UTC' : '결재됨';
-    cover.appendChild(badge);
+  var st = deckStatus(d);
+  if (st) {
+    var pill = document.createElement('span');
+    pill.className = 'statusTag ' + st.kind;
+    pill.textContent = st.text;
+    pill.title = statusTip(d);
+    body.appendChild(pill);
   }
 
   var kick = document.createElement('div');
@@ -2787,6 +2900,7 @@ function showEditor(id) {
   var meta = DECK[id];
   if (!meta) { location.hash = '#/'; return; }
   currentDeck = meta;
+  state.presetId = id;
   document.getElementById('viewGallery').hidden = true;
   document.getElementById('viewEditor').hidden = false;
   document.getElementById('deckTitle').textContent = meta.title || meta.id;
@@ -2840,6 +2954,13 @@ function wireChrome() {
     loadDeck(state.presetId, { fresh: true }).then(function () { toast('원본으로 되돌렸습니다'); });
   });
 
+  // 결재 2차 확인 모달
+  document.getElementById('cfmOk').addEventListener('click', function () { closeConfirm(true); });
+  document.getElementById('cfmCancel').addEventListener('click', function () { closeConfirm(false); });
+  document.getElementById('cfmModal').addEventListener('click', function (e) {
+    if (e.target === this) closeConfirm(false);
+  });
+
   // 토큰 모달
   document.getElementById('btnPatCancel').addEventListener('click', closePat);
   document.getElementById('btnPatSave').addEventListener('click', function () {
@@ -2879,6 +3000,7 @@ function wireChrome() {
     var tag = (e.target && e.target.tagName || '').toLowerCase();
     var typing = tag === 'input' || tag === 'textarea' || tag === 'select';
     if (e.key === 'Escape') {
+      closeConfirm(false);
       closePat();
       if (stageEl.classList.contains('big')) { stageEl.classList.remove('big'); zoomBtn.textContent = '크게 보기'; }
     }

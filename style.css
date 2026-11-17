@@ -54,6 +54,8 @@ button{border-radius:10px; border:1px solid transparent; padding:8px 12px; font-
 button:active{transform:translateY(1px)}
 button.solid{background:var(--accent);border-color:var(--accent);color:#fff}
 button.solid:hover{background:var(--accent-strong);border-color:var(--accent-strong)}
+button.solid.danger{background:#7a2019;border-color:#7a2019}
+button.solid.danger:hover{background:#641811;border-color:#641811}
 button.ghost{background:var(--card);border-color:var(--line);color:var(--ink)}
 button.ghost:hover{border-color:#d3bcbe}
 button:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -119,12 +121,13 @@ button[disabled]{opacity:.5;cursor:default}
 .card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .cardCover{position:relative;aspect-ratio:4/5;background:#ece6e4;overflow:hidden}
 .cardCover img{width:100%;height:100%;object-fit:cover;display:block}
-.cardCover .approvedBadge{
-  position:absolute; right:10px; top:10px; z-index:2;
+.statusTag{
+  align-self:flex-start; display:inline-flex; align-items:center; gap:4px;
   background:var(--accent); color:#fff; font-size:10.5px; font-weight:800;
-  letter-spacing:.04em; padding:4px 8px; border-radius:6px;
-  box-shadow:0 2px 8px rgba(100,33,40,.3);
+  letter-spacing:.02em; padding:4px 8px; border-radius:6px; max-width:100%;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
 }
+.statusTag.done{background:#111}
 .cardCover .issue{
   position:absolute; left:10px; top:10px; z-index:2;
   background:rgba(17,17,17,.82); color:#fff; font-size:10.5px; font-weight:800;
@@ -157,6 +160,14 @@ button.back{flex:0 0 auto}
 .deckMeta{display:flex;flex-direction:column;min-width:0}
 .deckMeta strong{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46ch}
 .deckMeta span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.apStatus{
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:5px;
+  background:var(--tint); border:1px solid var(--accent-line); color:var(--accent);
+  font-size:11px; font-weight:800; letter-spacing:.01em;
+  padding:4px 9px; border-radius:999px; white-space:nowrap;
+}
+.apStatus[hidden]{display:none}
+.apStatus.done{background:#111;border-color:#111;color:#fff}
 
 .wrap{display:grid; gap:14px; padding:14px; align-items:start;
   grid-template-columns:1fr; max-width:1680px; margin:0 auto}
@@ -280,6 +291,11 @@ table.grid tr.headRow input{font-weight:700;background:#fbf7f5}
 .modalCard h2 .tag{font-size:10px;font-weight:800;color:var(--accent);background:var(--tint);border:1px solid var(--accent-line);border-radius:6px;padding:3px 7px;letter-spacing:.04em}
 .modalCard p{margin:0 0 9px; color:#5d5250; font-size:12px; line-height:1.6}
 .modalCard p.fine{color:var(--muted);font-size:11.5px}
+.modalCard.cfm{width:min(380px,100%);gap:2px}
+.modalCard.cfm h2{font-size:16px;letter-spacing:-.2px}
+.modalCard.cfm p{margin:2px 0 14px;font-size:12.5px;line-height:1.65;color:#4a4140;white-space:pre-line}
+.modalCard.cfm .modalFoot{display:flex;align-items:center;gap:8px}
+.modalCard.cfm .spacer{flex:1}
 #patInput{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 #patInput:focus{outline:none;border-color:#b8878e;box-shadow:0 0 0 3px rgba(100,33,40,.12)}

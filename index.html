@@ -8,7 +8,7 @@
 <meta name="description" content="뷰티 포인트 · 뷰티 테크 · 데일리 브리핑 카드뉴스를 한곳에서 보고, 문구를 고치고, PNG로 내려받고, GitHub에 저장하는 허브.">
 <link rel="icon" href="assets/logo-black.png">
 <meta name="theme-color" content="#642128">
-<link rel="stylesheet" href="style.css?v=20261117e">
+<link rel="stylesheet" href="style.css?v=20261117f">
 </head>
 <body>
 
@@ -61,6 +61,7 @@
         <strong id="deckTitle">카드뉴스</strong>
         <span id="deckSub"></span>
       </div>
+      <span class="apStatus" id="deckStatus" hidden></span>
     </div>
     <div class="tools">
       <button class="ghost" id="btnPat" type="button">GitHub 연결</button>
@@ -107,6 +108,19 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- ============================================================ 결재 2차 확인 -->
+<div class="modal" id="cfmModal" hidden>
+  <div class="modalCard cfm" role="dialog" aria-modal="true" aria-labelledby="cfmTitle">
+    <h2 id="cfmTitle">결재</h2>
+    <p id="cfmBody"></p>
+    <div class="modalFoot">
+      <span class="spacer"></span>
+      <button id="cfmCancel" class="ghost" type="button">취소</button>
+      <button id="cfmOk" class="solid" type="button">결재 확정</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============================================================ GitHub 토큰 모달 -->
 <div class="modal" id="patModal" hidden>
   <div class="modalCard">
@@ -124,6 +138,6 @@
   </div>
 </div>
 
-<script src="app.js?v=20261117c"></script>
+<script src="app.js?v=20261117d"></script>
 </body>
 </html>
