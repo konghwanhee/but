@@ -459,7 +459,7 @@ function coverPointBlock(cov) {
   var num = cov.num === undefined ? '' : String(cov.num).trim();
   if (num) {
     drawText(num, CR, Number(cov.num_top === undefined ? 150 : cov.num_top),
-      Number(cov.num_size || 232), 'extrabold', cov.num_color || INK, 'rt');
+      Number(cov.num_size || 232), 'extrabold', cov.num_color || INK, 'ra');
   }
 
   var lines = headlineLines({ headline: cov.headline || [] });
@@ -1950,15 +1950,19 @@ function verifyToken(token) {
     });
 }
 function updateGhChip() {
-  var token = lsGet(LS_PAT);
-  var chips = [document.getElementById('ghChipHome')];
-  var labels = [document.getElementById('btnPat'), document.getElementById('btnPatHome')];
-  chips.forEach(function (chip) {
-    if (!chip) return;
-    if (token) { chip.hidden = false; chip.className = 'ghChip'; chip.textContent = 'GitHub 연결됨'; }
-    else { chip.hidden = true; }
+  // 토큰이 연결된 뒤에는 헤더의 'GitHub 연결' 버튼·안내문을 감춘다.
+  // 재설정이 필요할 때만 하단 푸터(갤러리)와 편집 화면 하단의 작은 텍스트 링크로 연다.
+  var connected = !!lsGet(LS_PAT);
+  var chip = document.getElementById('ghChipHome');
+  if (chip) chip.hidden = true;
+  ['btnPat', 'btnPatHome'].forEach(function (id) {
+    var b = document.getElementById(id);
+    if (b) b.hidden = connected;
   });
-  labels.forEach(function (b) { if (b) b.textContent = token ? 'GitHub 연결' : 'GitHub 연결'; });
+  ['btnPatFoot', 'btnPatLink'].forEach(function (id) {
+    var b = document.getElementById(id);
+    if (b) b.hidden = !connected;
+  });
 }
 
 /* ---------------------------------------------------------------- 11. 탭 */
@@ -2629,7 +2633,7 @@ function renderGallery() {
     var head = document.createElement('div');
     head.className = 'chapterHead';
     head.innerHTML = '<h3>' + esc(c.label) + '</h3><span class="desc">' + esc(c.desc) + '</span>' +
-      '<span class="rule"></span><span class="n">' + list.length + ' · ' + esc(dateRange(list)) + '</span>';
+      '<span class="rule"></span><span class="n">' + list.length + '</span>';
     sec.appendChild(head);
     var grid = document.createElement('div');
     grid.className = 'grid';
@@ -2683,6 +2687,10 @@ function wireChrome() {
   document.getElementById('btnGhSave').addEventListener('click', ghSave);
   document.getElementById('btnPat').addEventListener('click', function () { openPat(); });
   document.getElementById('btnPatHome').addEventListener('click', function () { openPat(); });
+  ['btnPatFoot', 'btnPatLink'].forEach(function (id) {
+    var b = document.getElementById(id);
+    if (b) b.addEventListener('click', function () { openPat(); });
+  });
 
   var stageEl = document.getElementById('stage');
   var zoomBtn = document.getElementById('btnZoom');
