@@ -1530,6 +1530,7 @@ function renderSlidePage(s, idx, total, family) {
 }
 
 function renderPage(page) {
+  if (!D) return;   // 카드뉴스를 아직 불러오지 않은 상태(갤러리 화면)에서의 호출 방지
   _ctx.setTransform(1, 0, 0, 1, 0, 0);
   _ctx.clearRect(0, 0, W, H);
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
@@ -1696,13 +1697,20 @@ function b64utf8(str) {
 function ghFileUrl(path) {
   return 'https://api.github.com/repos/' + REPO + '/contents/' + encodeURI(path);
 }
+function ghErrText(status, msg) {
+  if (status === 401) return '토큰이 올바르지 않습니다 (401) · GitHub 연결을 다시 해주세요';
+  if (status === 403) return '이 저장소에 쓸 권한이 없습니다 (403) · Contents: Read and write 권한이 필요합니다';
+  if (status === 404) return '저장소나 파일을 찾지 못했습니다 (404) · 토큰의 저장소 접근 범위를 확인해 주세요';
+  if (status === 409) return '다른 곳에서 먼저 저장했습니다 (409) · 다시 시도해 주세요';
+  return msg || ('HTTP ' + status);
+}
 function ghRead(path, token) {
   return fetch(ghFileUrl(path) + '?ref=' + encodeURIComponent(BRANCH), {
     headers: apiHeaders(token), cache: 'no-store'
   }).then(function (r) {
     if (r.status === 404) return null;
     return r.json().then(function (j) {
-      if (!r.ok) throw new Error((j && j.message) || ('HTTP ' + r.status));
+      if (!r.ok) throw new Error(ghErrText(r.status, j && j.message));
       return j;
     });
   });
@@ -1716,14 +1724,7 @@ function ghWrite(path, text, message, token, sha) {
     body: JSON.stringify(body)
   }).then(function (r) {
     return r.json().then(function (j) {
-      if (!r.ok) {
-        var msg = (j && j.message) || ('HTTP ' + r.status);
-        if (r.status === 401) msg = '토큰이 올바르지 않습니다 (401) · GitHub 연결을 다시 해주세요';
-        else if (r.status === 403) msg = '이 저장소에 쓸 권한이 없습니다 (403) · Contents: Read and write 권한이 필요합니다';
-        else if (r.status === 404) msg = '저장소나 파일을 찾지 못했습니다 (404) · 토큰의 저장소 접근 범위를 확인해 주세요';
-        else if (r.status === 409) msg = '다른 곳에서 먼저 저장했습니다 (409) · 다시 시도해 주세요';
-        throw new Error(msg);
-      }
+      if (!r.ok) throw new Error(ghErrText(r.status, j && j.message));
       return j;
     });
   });
@@ -1744,6 +1745,7 @@ function ghSave() {
       return ghWrite(path, text, '카드뉴스 수정: ' + title + ' (' + id + ')', token, cur && cur.sha);
     })
     .then(function (res) {
+      clearTimeout(_saveT);
       lsDel(state.savedKey);
       state.dirty = false;
       markDirty(false);
@@ -2291,6 +2293,108 @@ function exportAllPng() {
   step();
 }
 
+/* ---------------------------------------------------------------- 13c. 전체 장표 ZIP(외부 라이브러리 없이) */
+var _crcTable = null;
+function crc32(u8) {
+  if (!_crcTable) {
+    _crcTable = new Uint32Array(256);
+    for (var n = 0; n < 256; n++) {
+      var c = n;
+      for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      _crcTable[n] = c >>> 0;
+    }
+  }
+  var crc = 0xFFFFFFFF;
+  for (var i = 0; i < u8.length; i++) crc = _crcTable[(crc ^ u8[i]) & 0xFF] ^ (crc >>> 8);
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+function zipStore(files) {
+  var enc = new TextEncoder();
+  var chunks = [], central = [], offset = 0, centralSize = 0;
+  files.forEach(function (f) {
+    var nameBytes = enc.encode(f.name);
+    var crc = crc32(f.data), size = f.data.length;
+    var lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true);
+    lh.setUint16(4, 20, true);
+    lh.setUint16(6, 0x0800, true);
+    lh.setUint16(8, 0, true);
+    lh.setUint16(10, 0, true);
+    lh.setUint16(12, 0x2100, true);
+    lh.setUint32(14, crc, true);
+    lh.setUint32(18, size, true);
+    lh.setUint32(22, size, true);
+    lh.setUint16(26, nameBytes.length, true);
+    lh.setUint16(28, 0, true);
+    chunks.push(new Uint8Array(lh.buffer), nameBytes, f.data);
+
+    var ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true);
+    ch.setUint16(4, 20, true);
+    ch.setUint16(6, 20, true);
+    ch.setUint16(8, 0x0800, true);
+    ch.setUint16(10, 0, true);
+    ch.setUint16(12, 0, true);
+    ch.setUint16(14, 0x2100, true);
+    ch.setUint32(16, crc, true);
+    ch.setUint32(20, size, true);
+    ch.setUint32(24, size, true);
+    ch.setUint16(28, nameBytes.length, true);
+    ch.setUint16(30, 0, true);
+    ch.setUint16(32, 0, true);
+    ch.setUint16(34, 0, true);
+    ch.setUint16(36, 0, true);
+    ch.setUint32(38, 0, true);
+    ch.setUint32(42, offset, true);
+    central.push(new Uint8Array(ch.buffer), nameBytes);
+    centralSize += 46 + nameBytes.length;
+    offset += 30 + nameBytes.length + size;
+  });
+  var end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true);
+  end.setUint16(8, files.length, true);
+  end.setUint16(10, files.length, true);
+  end.setUint32(12, centralSize, true);
+  end.setUint32(16, offset, true);
+  return new Blob(chunks.concat(central, [new Uint8Array(end.buffer)]), { type: 'application/zip' });
+}
+function exportAllZip() {
+  if (!D) return;
+  var btn = document.getElementById('btnZip');
+  if (btn.disabled) return;
+  var name = state.presetId || 'cardnews';
+  var pages = state.pages.slice();
+  var i = 0, files = [];
+  btn.disabled = true;
+  toast('전체 ' + pages.length + '장을 ZIP으로 묶는 중…');
+  function step() {
+    if (i >= pages.length) {
+      try {
+        download(zipStore(files), name + '-png.zip');
+        toast('ZIP 저장 · ' + name + '-png.zip (' + pages.length + '장)');
+      } catch (e) {
+        toast('ZIP을 만들지 못했습니다 · ' + (e && e.message));
+      }
+      btn.disabled = false;
+      requestRender();
+      return;
+    }
+    var page = pages[i];
+    try { renderPage(page); } catch (e) { if (window.console) console.error(e); }
+    var tag = page.type === 'cover' ? 'cover' : page.type === 'index' ? 'index' : 'p' + pad2(page.i + 1);
+    cv.toBlob(function (blob) {
+      if (blob) {
+        blob.arrayBuffer().then(function (buf) {
+          files.push({ name: name + '-' + tag + '.png', data: new Uint8Array(buf) });
+          i++;
+          setTimeout(step, 30);
+        });
+      } else { i++; setTimeout(step, 30); }
+    }, 'image/png');
+  }
+  step();
+}
+
 /* ---------------------------------------------------------------- 14. 홈 갤러리 · 라우팅 · 시작 */
 function esc2(s) { return esc(s); }
 
@@ -2420,6 +2524,7 @@ function wireChrome() {
   document.getElementById('btnNext').addEventListener('click', function () { goPage(state.page + 1); });
   document.getElementById('btnPng').addEventListener('click', exportPng);
   document.getElementById('btnPngAll').addEventListener('click', exportAllPng);
+  document.getElementById('btnZip').addEventListener('click', exportAllZip);
   document.getElementById('btnJson').addEventListener('click', exportJson);
   document.getElementById('btnGhSave').addEventListener('click', ghSave);
   document.getElementById('btnPat').addEventListener('click', function () { openPat(); });
