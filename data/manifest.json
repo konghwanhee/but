@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-17T20:25:22+09:00",
+  "generatedAt": "2026-11-17T21:18:04+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -49,18 +49,6 @@
       "subtitle": "레티놀을 처음 쓰는 사람에게",
       "coverThumb": "covers/beauty-tech-01-cover.png",
       "jsonPath": "data/beauty-tech-01.json",
-      "updatedAt": "2026-11-17T20:25:18+09:00"
-    },
-    {
-      "id": "beauty-2026-11-17",
-      "series": "briefing",
-      "seriesLabel": "데일리 브리핑",
-      "issueNo": 2,
-      "date": "2026-11-17",
-      "title": "색조로 넓히는 K뷰티의 다음 판",
-      "subtitle": "올리브영 색조 전문관 · 무신사 5일 5억 · 신규 11건",
-      "coverThumb": "covers/beauty-2026-11-17-cover.png",
-      "jsonPath": "data/beauty-2026-11-17.json",
       "updatedAt": "2026-11-17T20:25:18+09:00"
     }
   ]
