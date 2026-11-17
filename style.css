@@ -204,11 +204,13 @@ button[disabled]{opacity:.5;cursor:default}
 .cardTitle{
   font-size:14.5px;font-weight:800;line-height:1.34;letter-spacing:-.2px;
   min-height:calc(1.34em * 2);
+  word-break:keep-all;overflow-wrap:break-word;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 .cardSub{
   font-size:11.5px;color:var(--muted);line-height:1.45;
   min-height:calc(1.45em * 2);
+  word-break:keep-all;overflow-wrap:break-word;
   display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
 }
 .empty{color:var(--muted);font-size:13px;padding:26px 4px}
