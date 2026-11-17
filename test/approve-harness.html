@@ -39,7 +39,12 @@
     '  if (url.indexOf("api.github.com/repos/konghwanhee/but") >= 0 && url.indexOf(".json") < 0) return jsonRes({permissions:{push:true}});',
     '  if (url.indexOf(".json") >= 0) {',
     '    var isMan = url.indexOf("manifest.json") >= 0;',
+    '    var auth = !!(opts.headers && (opts.headers.Authorization || opts.headers.authorization));',
     '    if (method === "GET") {',
+    '      if (!auth) {',   // 앱이 목록/본문을 그대로 읽을 때
+    '        if (isMan) return jsonRes(MAN);',
+    '        return getDeck().then(function(d){ return jsonRes(d); });',
+    '      }',
     '      if (isMan) return getDeck().then(function(){ return jsonRes({content:b64(JSON.stringify(MAN)),sha:"sha_manifest"}); });',
     '      return getDeck().then(function(d){ return jsonRes({content:b64(JSON.stringify(d)),sha:"sha_deck"}); });',
     '    }',
