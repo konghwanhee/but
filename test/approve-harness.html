@@ -13,21 +13,24 @@
 </head>
 <body>
 <div id="bar">
-  <b>개발용 점검 화면</b> · 배포된 index.html / app.js / style.css 를 그대로 불러오고, 카드뉴스 목록·본문과 GitHub API 응답만 모의로 바꿔 결재 흐름을 확인합니다. 실제 저장소에는 아무것도 쓰지 않습니다.
+  <b>개발용 점검 화면</b> · 배포된 index.html / app.js / style.css 를 그대로 불러오고, 카드뉴스 목록·본문과 GitHub API 응답만 모의로 바꿔 결재 흐름을 확인합니다. 실제 저장소에는 아무것도 쓰지 않습니다. (?published=1 이면 업로드 완료 상태를 흉내 냅니다.)
   <pre id="log">아직 요청 없음</pre>
 </div>
 <iframe id="h" title="결재 흐름 점검"></iframe>
 <script>
 (function () {
   var base = location.origin + location.pathname.replace(/test\/[^/]*$/, '');
+  var published = /(?:^|[?&])published=1(?:&|$)/.test(location.search);
+  var decks = [
+    '{id:"beauty-point-01",series:"point",seriesLabel:"뷰티 포인트",issueNo:1,date:"2026-11-16",title:"포인트 호 (결재 숨김 확인)",subtitle:"scope check",coverThumb:"covers/beauty-point-01-cover.png",jsonPath:"data/beauty-point-01.json",updatedAt:"2026-11-17T20:25:18+09:00"}',
+    '{id:"test-briefing-01",series:"briefing",seriesLabel:"데일리 브리핑",issueNo:1,date:"2026-11-17",title:"테스트 브리핑 호",subtitle:"결재 흐름 확인용 모의 데이터",coverThumb:"covers/beauty-point-01-cover.png",jsonPath:"data/test-briefing-01.json",updatedAt:"2026-11-17T21:00:00+09:00",approved:' + (published ? 'true' : 'false') + ',approvedAt:"2026-11-16T01:00:00.000Z",scheduledUploadAt:"2026-11-16T18:00:00+09:00",publishedAt:' + (published ? '"2026-11-16T09:02:00.000Z"' : 'null') + '}'
+  ].join(',');
+
   var stub = [
     '<script>(function(){',
     'var realFetch = window.fetch.bind(window);',
     'window.__calls = [];',
-    'var MAN = {site:"harness",repo:"konghwanhee/but",generatedAt:"2026-11-17T21:00:00+09:00",decks:[',
-    '{id:"beauty-point-01",series:"point",seriesLabel:"뷰티 포인트",issueNo:1,date:"2026-11-16",title:"포인트 호 (결재 숨김 확인)",subtitle:"scope check",coverThumb:"covers/beauty-point-01-cover.png",jsonPath:"data/beauty-point-01.json",updatedAt:"2026-11-17T20:25:18+09:00"},',
-    '{id:"test-briefing-01",series:"briefing",seriesLabel:"데일리 브리핑",issueNo:1,date:"2026-11-17",title:"테스트 브리핑 호",subtitle:"결재 흐름 확인용 모의 데이터",coverThumb:"covers/beauty-point-01-cover.png",jsonPath:"data/test-briefing-01.json",updatedAt:"2026-11-17T21:00:00+09:00"}',
-    ']};',
+    'var MAN = {site:"harness",repo:"konghwanhee/but",generatedAt:"2026-11-17T21:00:00+09:00",decks:[' + decks + ']};',
     'var deckP = null;',
     'function getDeck(){ if(!deckP) deckP = realFetch("data/beauty-point-01.json",{cache:"no-store"}).then(function(r){return r.json();}); return deckP; }',
     'function b64(s){ return btoa(unescape(encodeURIComponent(s))); }',
@@ -41,10 +44,7 @@
     '    var isMan = url.indexOf("manifest.json") >= 0;',
     '    var auth = !!(opts.headers && (opts.headers.Authorization || opts.headers.authorization));',
     '    if (method === "GET") {',
-    '      if (!auth) {',   // 앱이 목록/본문을 그대로 읽을 때
-    '        if (isMan) return jsonRes(MAN);',
-    '        return getDeck().then(function(d){ return jsonRes(d); });',
-    '      }',
+    '      if (!auth) { if (isMan) return jsonRes(MAN); return getDeck().then(function(d){ return jsonRes(d); }); }',
     '      if (isMan) return getDeck().then(function(){ return jsonRes({content:b64(JSON.stringify(MAN)),sha:"sha_manifest"}); });',
     '      return getDeck().then(function(d){ return jsonRes({content:b64(JSON.stringify(d)),sha:"sha_deck"}); });',
     '    }',
@@ -76,15 +76,12 @@
     if (!calls.length) return;
     log.textContent = calls.map(function (c) {
       var b = c.body || {};
-      var fields = '';
-      if (c.target === 'deck') {
-        fields = 'approved=' + b.approved + ' · approvedAt=' + b.approvedAt + ' · scheduledUploadAt=' + b.scheduledUploadAt + ' · publishedAt=' + b.publishedAt;
-      } else {
-        var d = (b.content ? JSON.parse(decodeURIComponent(escape(atob(b.content)))) : {}).decks || [];
-        var t = d.filter(function (x) { return x.id === 'test-briefing-01'; })[0] || {};
-        fields = 'manifest → approved=' + t.approved + ' · scheduledUploadAt=' + t.scheduledUploadAt + ' · publishedAt=' + t.publishedAt;
-      }
-      return c.method + ' ' + c.target + ' · ' + fields + ' · msg="' + b.message + '"';
+      var obj = b.content ? JSON.parse(decodeURIComponent(escape(atob(b.content)))) : {};
+      var t = c.target === 'deck' ? obj : ((obj.decks || []).filter(function (x) { return x.id === 'test-briefing-01'; })[0] || {});
+      return c.method + ' ' + c.target +
+        ' → approved=' + t.approved + ' · approvedAt=' + t.approvedAt +
+        ' · scheduledUploadAt=' + t.scheduledUploadAt + ' · publishedAt=' + t.publishedAt +
+        ' · msg="' + b.message + '"';
     }).join('\n');
   }, 400);
 })();

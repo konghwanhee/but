@@ -1956,12 +1956,23 @@ function nextUploadSlot(now) {
   }
   return y + '-' + p2n(m) + '-' + p2n(d) + 'T18:00:00+09:00';
 }
-/* '2026-11-19T18:00:00+09:00' · '2026-11-19 18:00' 모두 표시용으로 바꾼다 */
+/* ISO 시각(UTC 'Z' 포함)은 KST 로 바꾸고, 'YYYY-MM-DD 18:00' 같은 표기는 그대로 읽는다. */
 function fmtUploadAt(v, full) {
-  var m = String(v || '').match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
-  if (!m) return String(v || '');
-  var date = full ? m[1] + '.' + m[2] + '.' + m[3] : m[2] + '.' + m[3];
-  return (m[4] && m[5]) ? date + ' ' + m[4] + ':' + m[5] : date;
+  var s = String(v || '').trim();
+  var m = s.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T ](\d{2}):(\d{2}))?/);
+  if (!m) return s;
+  var y = +m[1], mo = +m[2], d = +m[3];
+  var hh = m[4] ? +m[4] : null, mi = m[5] ? +m[5] : null;
+  if (hh !== null && /(?:Z|[+-]\d{2}:?\d{2})$/.test(s)) {
+    var t = new Date(s);
+    if (!isNaN(t.getTime())) {
+      var k = new Date(t.getTime() + 9 * 3600 * 1000);
+      y = k.getUTCFullYear(); mo = k.getUTCMonth() + 1; d = k.getUTCDate();
+      hh = k.getUTCHours(); mi = k.getUTCMinutes();
+    }
+  }
+  var date = full ? y + '.' + p2n(mo) + '.' + p2n(d) : p2n(mo) + '.' + p2n(d);
+  return (hh !== null) ? date + ' ' + p2n(hh) + ':' + p2n(mi) : date;
 }
 /* 카드·편집 화면에 보일 결재 상태 문구 */
 /* 결재는 데일리 브리핑(briefing) 호에서만 쓴다. 뷰티 포인트·뷰티 테크는 표시도 허용도 하지 않는다. */
