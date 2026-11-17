@@ -1982,7 +1982,7 @@ function approveAllowed(id) {
 }
 function deckStatus(d) {
   if (!d || d.series !== 'briefing') return null;
-  if (d.publishedAt) return { kind: 'done', text: '업로드 완료 · ' + fmtUploadAt(d.publishedAt, true) };
+  if (d.publishedAt) return { kind: 'done', text: '업로드 완료 · ' + fmtUploadAt(d.publishedAt, true).split(' ')[0] };
   if (d.approved) {
     return {
       kind: 'scheduled',
