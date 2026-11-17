@@ -103,19 +103,82 @@ button[disabled]{opacity:.5;cursor:default}
 .chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .chip .cnt{font-size:10.5px;font-weight:800;opacity:.75}
 
-/* ---------- 홈 : 챕터 섹션 + 카드 그리드 ---------- */
+/* ---------- 홈 : 챕터 섹션 + 카드 갤러리 ----------
+   데스크톱(≥721px) 6열 가로스크롤 · 모바일(≤720px) 2열 × 2행 + 페이지네이션 */
 .sections{padding-top:18px}
 .chapter{margin:0 0 34px}
-.chapterHead{display:flex;align-items:baseline;gap:10px;margin:0 2px 12px;flex-wrap:wrap}
+.chapterHead{display:flex;align-items:center;gap:10px;margin:0 2px 12px;flex-wrap:wrap}
 .chapterHead h3{margin:0;font-size:17px;font-weight:800;letter-spacing:-.3px}
 .chapterHead .desc{font-size:12px;color:var(--muted)}
 .chapterHead .rule{flex:1 1 40px;height:1px;background:var(--line);min-width:20px}
 .chapterHead .n{font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:.06em}
 .grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+
+/* 가로스크롤 화살표 (챕터 헤더 우측) */
+.railNav{display:flex;gap:5px;margin-left:4px;flex:0 0 auto;align-items:center}
+.railBtn{
+  width:28px;height:28px;padding:0;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--line);border-radius:8px;
+  color:#5d5250;font-size:16px;font-weight:700;line-height:1;
+}
+.railBtn:hover{background:var(--tint);border-color:var(--accent-line);color:var(--accent)}
+.railBtn[disabled]{opacity:.34;cursor:default;background:var(--card);border-color:var(--line);color:#8d7e7c}
+
+/* 데스크톱 : 6열 가로스크롤 레일 */
+.rail{position:relative;min-width:0}
+.railTrack{
+  display:grid;grid-auto-flow:column;
+  grid-auto-columns:calc((100% - 14px * 5) / 6);
+  gap:14px;
+  overflow-x:auto;overflow-y:hidden;
+  scroll-snap-type:x proximity;
+  scroll-behavior:smooth;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent-line) transparent;
+  padding:8px 0 10px;
+}
+.railTrack>.card{scroll-snap-align:start}
+.railTrack:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:8px}
+.railTrack::-webkit-scrollbar{height:6px}
+.railTrack::-webkit-scrollbar-thumb{background:var(--accent-line);border-radius:99px}
+.railTrack::-webkit-scrollbar-track{background:transparent}
+
+/* 모바일 : 2열 그리드 + 페이지네이션 */
+.mGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pager{display:flex;align-items:center;justify-content:center;gap:6px;margin:14px 0 0;flex-wrap:wrap}
+.pg{
+  min-width:34px;height:34px;padding:0 9px;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--card);border:1px solid var(--line);border-radius:9px;
+  color:#5d5250;font-size:12.5px;font-weight:800;letter-spacing:.02em;
+}
+.pg:hover{background:var(--soft);border-color:var(--accent-line);color:var(--accent)}
+.pg.on,.pg.on:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+.pg.step,.pg.edge{font-size:14px;font-weight:700;min-width:32px;color:var(--accent);letter-spacing:0}
+.pg.step:hover,.pg.edge:hover{background:var(--tint)}
+
+@media (min-width:721px){
+  .mGrid,.pager{display:none}
+}
+@media (max-width:720px){
+  .rail{display:none}
+  .railNav{display:none}
+}
+/* 6열이 좁아지는 태블릿 폭(721~1099px)은 글자를 줄여 비율을 지킨다 */
+@media (min-width:721px) and (max-width:1099px){
+  .railTrack{grid-auto-columns:calc((100% - 10px * 5) / 6);gap:10px}
+  .railTrack .cardBody{padding:9px 10px 11px}
+  .railTrack .cardKicker{font-size:9.5px;gap:5px}
+  .railTrack .cardKicker .k{display:none}   /* 좁은 6열에서는 날짜만 */
+  .railTrack .cardCover .issue{font-size:9px;padding:3px 6px;left:7px;top:7px}
+  .railTrack .cardTitle{font-size:12.5px}
+  .railTrack .cardSub{display:none}
+}
 .card{
   display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;
   background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-  cursor:pointer; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+  cursor:pointer; white-space:normal; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 .card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(100,33,40,.13);border-color:#d8c3c5}
 .card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -134,7 +197,8 @@ button[disabled]{opacity:.5;cursor:default}
   letter-spacing:.06em; padding:4px 8px; border-radius:6px; backdrop-filter:blur(4px);
 }
 .cardBody{padding:11px 13px 14px;display:flex;flex-direction:column;gap:5px;min-width:0}
-.cardKicker{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.05em;color:var(--accent)}
+.cardKicker{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.05em;color:var(--accent);white-space:nowrap;min-width:0}
+.cardKicker .k{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cardKicker .dot{width:5px;height:5px;background:var(--accent);border-radius:50%}
 .cardKicker .date{margin-left:auto;color:var(--muted);font-weight:700;letter-spacing:.02em}
 .cardTitle{
@@ -331,6 +395,7 @@ table.grid tr.headRow input{font-weight:700;background:#fbf7f5}
   .heroStat{flex-direction:row; align-items:baseline; gap:6px}
   .heroStat strong{font-size:24px}
   .grid{gap:10px; grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .mGrid{gap:10px}
   .cardBody{padding:9px 10px 12px}
   .cardTitle{font-size:13px}
   .cardSub{font-size:11px}

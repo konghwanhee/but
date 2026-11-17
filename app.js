@@ -1745,9 +1745,9 @@ var MANIFEST = { decks: [] };
 var DECK = {};
 var LS_PAT = 'but:pat';
 var CHAPTERS = [
-  { series: 'point', label: '뷰티 포인트', short: 'POINT', desc: '주기 정보 카드뉴스 · 성분 · 제품 · 트렌드' },
-  { series: 'tech', label: '뷰티 테크', short: 'TECH', desc: '작용기전과 제품 비교' },
-  { series: 'briefing', label: '데일리 브리핑', short: 'BRIEF', desc: '매일 18:00 뉴스 캐러셀' }
+  { series: 'point', label: '뷰티 포인트', short: 'POINT', desc: '뷰티 업계의 주목할 만한 트렌드와 핵심 이슈를 선별해 소개합니다. · MON · WED · FRI' },
+  { series: 'tech', label: '뷰티 테크', short: 'TECH', desc: '성분부터 작용기전, 신기술까지 뷰티 과학의 전문 지식을 깊이 있게 다룹니다. · DEEP DIVE · ONE TOPIC' },
+  { series: 'briefing', label: '데일리 브리핑', short: 'BRIEF', desc: '뷰티 업계의 최신 뉴스와 이슈, 보도자료 및 공시 정보를 매일 전합니다. · MON – FRI · EVENING' }
 ];
 var filterSeries = 'all';
 var currentDeck = null;
@@ -2836,7 +2836,7 @@ function cardEl(d, i) {
 
   var kick = document.createElement('div');
   kick.className = 'cardKicker';
-  kick.innerHTML = '<span class="dot"></span>' + esc(d.seriesLabel || ch.label) +
+  kick.innerHTML = '<span class="dot"></span><span class="k">' + esc(d.seriesLabel || ch.label) + '</span>' +
     '<span class="date">' + esc(fmtDate(d.date)) + '</span>';
   body.appendChild(kick);
   var t = document.createElement('div');
@@ -2853,6 +2853,164 @@ function cardEl(d, i) {
 
   b.addEventListener('click', function () { location.hash = '#/edit/' + encodeURIComponent(d.id); });
   return b;
+}
+
+/* -------------------- 홈 갤러리 레이아웃
+   · 최신순: 날짜 내림차순, 같은 날짜면 호수(issueNo) 내림차순
+   · 모바일(≤720px): 챕터당 4개(2열 × 2행) + 1 2 3 … 페이지네이션
+   · 데스크톱(≥721px): 챕터당 6열 가로스크롤 + ‹ › 화살표
+   -------------------- */
+var GAL_MQ = '(max-width: 720px)';
+var GAL_PER_PAGE = 4;   /* 모바일 한 페이지에 보이는 표지 수 */
+var GAL_COLS = 6;       /* 데스크톱 한 줄에 나열하는 표지 수 */
+var GAL = { mode: '', page: {} };
+
+function galMode() {
+  try {
+    if (window.matchMedia && window.matchMedia(GAL_MQ).matches) return 'mobile';
+  } catch (e) { /* 옛 브라우저 */ }
+  var w = window.innerWidth || document.documentElement.clientWidth || 1024;
+  return w <= 720 ? 'mobile' : 'desktop';
+}
+
+function sortDecks(list) {
+  return (list || []).slice().sort(function (a, b) {
+    var da = String(a.date || ''), db = String(b.date || '');
+    if (da !== db) return da < db ? 1 : -1;                 /* 최신 날짜 먼저 */
+    var na = Number(a.issueNo || 0), nb = Number(b.issueNo || 0);
+    if (na !== nb) return nb - na;                          /* 같은 날이면 최근 호 먼저 */
+    return String(b.updatedAt || '').localeCompare(String(a.updatedAt || ''));
+  });
+}
+
+function galPager(series, total, page) {
+  var pages = Math.ceil(total / GAL_PER_PAGE);
+  var nav = document.createElement('nav');
+  nav.className = 'pager';
+  nav.setAttribute('aria-label', chapterOf(series).label + ' 페이지');
+  if (pages <= 1) { nav.hidden = true; return nav; }
+
+  var win = 5;                                              /* 숫자는 최대 5개 */
+  var start = Math.min(Math.max(page - 2, 1), Math.max(1, pages - win + 1));
+  var end = Math.min(pages, start + win - 1);
+
+  function add(label, target, cls, aria) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pg' + (cls ? ' ' + cls : '');
+    b.textContent = label;
+    b.setAttribute('aria-label', aria || (target + '페이지'));
+    if (target === page) { b.classList.add('on'); b.setAttribute('aria-current', 'page'); }
+    b.addEventListener('click', function () {
+      if (GAL.page[series] === target) return;
+      GAL.page[series] = target;
+      renderGallery();
+    });
+    nav.appendChild(b);
+  }
+
+  /* 5페이지까지는 숫자만, 5를 넘으면 ‹ › « » 로 창을 넘긴다 */
+  var wide = pages > win;
+  if (wide && start > 1) add('«', 1, 'edge', '첫 페이지');
+  if (wide && page > 1) add('‹', page - 1, 'step', '이전 페이지');
+  for (var p = start; p <= end; p++) add(String(p), p, 'num', p + '페이지');
+  if (wide && page < pages) add('›', page + 1, 'step', '다음 페이지');
+  if (wide && end < pages) add('»', pages, 'edge', '마지막 페이지');
+  return nav;
+}
+
+function galHead(c, count) {
+  var head = document.createElement('div');
+  head.className = 'chapterHead';
+  head.innerHTML = '<h3>' + esc(c.label) + '</h3><span class="desc">' + esc(c.desc) + '</span>' +
+    '<span class="rule"></span><span class="n">' + count + '</span>';
+  return head;
+}
+
+function galRailNav(c) {
+  var nav = document.createElement('div');
+  nav.className = 'railNav';
+  var prev = document.createElement('button');
+  prev.type = 'button';
+  prev.className = 'railBtn prev';
+  prev.textContent = '‹';
+  prev.setAttribute('aria-label', c.label + ' 이전 카드');
+  var next = document.createElement('button');
+  next.type = 'button';
+  next.className = 'railBtn next';
+  next.textContent = '›';
+  next.setAttribute('aria-label', c.label + ' 다음 카드');
+  nav.appendChild(prev);
+  nav.appendChild(next);
+  return nav;
+}
+
+function galWireRail(rail) {
+  var track = rail.querySelector('.railTrack');
+  var sec = rail.parentElement;
+  var nav = sec ? sec.querySelector('.railNav') : null;   /* 화살표는 챕터 헤더에 있다 */
+  if (!track || !nav) return;
+  var prev = nav.querySelector('.prev'), next = nav.querySelector('.next');
+  function gapPx() {
+    var cs = window.getComputedStyle(track);
+    var g = parseFloat(cs.columnGap || cs.gap || '');
+    return isNaN(g) ? 14 : g;
+  }
+  function step(dir) {
+    var amount = (track.clientWidth + gapPx()) * dir;
+    if (track.scrollBy) track.scrollBy({ left: amount, behavior: 'smooth' });
+    else track.scrollLeft += amount;
+  }
+  prev.addEventListener('click', function () { step(-1); });
+  next.addEventListener('click', function () { step(1); });
+  rail.__sync = function () {
+    var max = track.scrollWidth - track.clientWidth;
+    prev.disabled = track.scrollLeft <= 2;
+    next.disabled = track.scrollLeft >= max - 2;
+  };
+  track.addEventListener('scroll', function () { rail.__sync(); }, { passive: true });
+  rail.__sync();
+}
+
+function galSyncRails() {
+  var rails = document.querySelectorAll('#sections .rail');
+  for (var i = 0; i < rails.length; i++) if (rails[i].__sync) rails[i].__sync();
+}
+
+function galChapter(c, list) {
+  var sec = document.createElement('section');
+  sec.className = 'chapter';
+  sec.setAttribute('data-series', c.series);
+  var head = galHead(c, list.length);
+
+  if (GAL.mode === 'mobile') {
+    var pages = Math.ceil(list.length / GAL_PER_PAGE);
+    var page = Math.min(Math.max(Number(GAL.page[c.series]) || 1, 1), pages);
+    GAL.page[c.series] = page;
+    var grid = document.createElement('div');
+    grid.className = 'mGrid';
+    list.slice((page - 1) * GAL_PER_PAGE, page * GAL_PER_PAGE)
+      .forEach(function (d, i) { grid.appendChild(cardEl(d, i)); });
+    sec.appendChild(head);
+    sec.appendChild(grid);
+    var pager = galPager(c.series, list.length, page);
+    if (!pager.hidden) sec.appendChild(pager);
+  } else {
+    /* 6개를 넘을 때만 화살표를 달고, 넘지 않으면 숨긴다 */
+    if (list.length > GAL_COLS) head.appendChild(galRailNav(c));
+    var rail = document.createElement('div');
+    rail.className = 'rail';
+    var track = document.createElement('div');
+    track.className = 'railTrack';
+    track.tabIndex = 0;
+    track.setAttribute('role', 'group');
+    track.setAttribute('aria-label', c.label + ' 카드뉴스 ' + list.length + '건 · 좌우로 넘겨 보기');
+    list.forEach(function (d, i) { track.appendChild(cardEl(d, i)); });
+    rail.appendChild(track);
+    sec.appendChild(head);
+    sec.appendChild(rail);
+  }
+  return sec;
 }
 
 function renderGallery() {
@@ -2874,30 +3032,37 @@ function renderGallery() {
   var stat = document.getElementById('statDecks');
   if (stat) stat.textContent = String(all.length);
 
+  GAL.mode = galMode();
   var sections = document.getElementById('sections');
   sections.innerHTML = '';
   var shown = 0;
   CHAPTERS.forEach(function (c) {
     if (filterSeries !== 'all' && filterSeries !== c.series) return;
-    var list = decksOf(c.series);
+    var list = sortDecks(decksOf(c.series));
     if (!list.length) return;
     shown += list.length;
-    var sec = document.createElement('section');
-    sec.className = 'chapter';
-    var head = document.createElement('div');
-    head.className = 'chapterHead';
-    head.innerHTML = '<h3>' + esc(c.label) + '</h3><span class="desc">' + esc(c.desc) + '</span>' +
-      '<span class="rule"></span><span class="n">' + list.length + '</span>';
-    sec.appendChild(head);
-    var grid = document.createElement('div');
-    grid.className = 'grid';
-    list.forEach(function (d, i) { grid.appendChild(cardEl(d, i)); });
-    sec.appendChild(grid);
-    sections.appendChild(sec);
+    sections.appendChild(galChapter(c, list));
   });
+  if (GAL.mode !== 'mobile') {
+    var rails = sections.querySelectorAll('.rail');
+    for (var i = 0; i < rails.length; i++) galWireRail(rails[i]);
+  }
   if (!shown) {
     sections.innerHTML = '<p class="empty">아직 올라온 카드뉴스가 없습니다 · <code>scripts/sync_to_github.py</code>로 올려 주세요.</p>';
   }
+  galSyncRails();
+}
+
+/* 모바일 ↔ 데스크톱 전환(창 크기·회전)에서 레이아웃이 깨지지 않게 다시 그린다 */
+function galWatch() {
+  var onChange = function () { if (galMode() !== GAL.mode) renderGallery(); else galSyncRails(); };
+  if (window.matchMedia) {
+    var mq = window.matchMedia(GAL_MQ);
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
+  window.addEventListener('resize', onChange);
+  window.addEventListener('orientationchange', onChange);
 }
 
 function showGallery() {
@@ -3031,6 +3196,7 @@ function boot() {
   IMGS['__logo_black__'] = 'assets/logo-black.png';
   IMGS['__logo_white__'] = 'assets/logo-white.png';
   wireChrome();
+  galWatch();
   updateGhChip();
   showGallery();
   fetch('data/manifest.json', { cache: 'no-store' })
