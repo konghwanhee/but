@@ -1,0 +1,163 @@
+{
+  "assets/aestura365_tube.png": {
+    "sha1": "1b596a2d14923a34b402d794b75e80347385913d",
+    "source": "downloads/beauty-point-src/aestura365_tube.png",
+    "w": 560,
+    "h": 750,
+    "bytes": 125933
+  },
+  "assets/aesturamd_1002_7.webp": {
+    "sha1": "1203657fd4948062af1fdca67efc13f13cafe53a",
+    "source": "downloads/beauty-point-src/aesturamd_1002_7.webp",
+    "w": 2000,
+    "h": 1080,
+    "bytes": 28582
+  },
+  "assets/boj_logo.png": {
+    "sha1": "0c086be2b7ebe6786f5f879711cf8959da22ed37",
+    "source": "downloads/brand-src/boj_logo.png",
+    "w": 2501,
+    "h": 236,
+    "bytes": 40707
+  },
+  "assets/cg_hongdae_store.jpg": {
+    "sha1": "610a6ac04822b25982cdf7744b626ea6fd64002b",
+    "source": "downloads/carousel-src/cg_hongdae_store.jpg",
+    "w": 1536,
+    "h": 1152,
+    "bytes": 264043
+  },
+  "assets/cover_iope_retinol.jpg": {
+    "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
+    "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
+    "w": 1125,
+    "h": 753,
+    "bytes": 117882
+  },
+  "assets/cover_zoom_lineup.jpg": {
+    "sha1": "ae3c2a9bae51cbb1c4adc03975e9dfe8625156e5",
+    "source": "downloads/beauty-point-03-src/cover_zoom_lineup.jpg",
+    "w": 1350,
+    "h": 1687,
+    "bytes": 423425
+  },
+  "assets/ill_capsule.jpg": {
+    "sha1": "7718071e7f69cb6bc44c73bb18c7fb92f02db3a0",
+    "source": "downloads/beauty-tech-src/ill_capsule.png",
+    "w": 1329,
+    "h": 1183,
+    "bytes": 164853
+  },
+  "assets/ill_skin.jpg": {
+    "sha1": "d1eb379de1d125d49ab627be5e391387f3c93f78",
+    "source": "downloads/beauty-tech-src/ill_skin.png",
+    "w": 1122,
+    "h": 1402,
+    "bytes": 184628
+  },
+  "assets/illiyoon_logo_white.png": {
+    "sha1": "74309fba51602d66e9c7cba13578933535ece7ab",
+    "source": "downloads/beauty-point-src/illiyoon_logo_white.png",
+    "w": 715,
+    "h": 116,
+    "bytes": 8682
+  },
+  "assets/innisfree_logo.png": {
+    "sha1": "4b9a8e768787469cf2f2f70e1060ce26182e763f",
+    "source": "downloads/brand-src/innisfree_logo.png",
+    "w": 600,
+    "h": 78,
+    "bytes": 10260
+  },
+  "assets/logo-black.png": {
+    "sha1": "46f670933aac45a4abb3d095c6e5b3ffedafcb92",
+    "source": "scripts/fonts/logo-black.png",
+    "w": 316,
+    "h": 109,
+    "bytes": 4908
+  },
+  "assets/logo-white.png": {
+    "sha1": "a3433e1422672823f31b0e82317fbbc7d47a483e",
+    "source": "scripts/fonts/logo-white.png",
+    "w": 316,
+    "h": 109,
+    "bytes": 4951
+  },
+  "assets/md_pair.jpg": {
+    "sha1": "aa7d830f1d84be3677922198ddc04df70d9d547a",
+    "source": "downloads/beauty-point-02-src/md_pair.png",
+    "w": 890,
+    "h": 614,
+    "bytes": 42571
+  },
+  "assets/md_tube_final.png": {
+    "sha1": "e94cfda2055ab5a589f0435533942560bc3b1ae1",
+    "source": "downloads/beauty-point-src/md_tube_final.png",
+    "w": 380,
+    "h": 805,
+    "bytes": 104290
+  },
+  "assets/monclos_logo.png": {
+    "sha1": "c0022c2f9dce7d411d47fc3a5163a501391e7fc7",
+    "source": "downloads/brand-src/monclos_logo.png",
+    "w": 1169,
+    "h": 169,
+    "bytes": 7692
+  },
+  "assets/oliveyoung_logo.png": {
+    "sha1": "8bd21375926c25e4613a24355a88325a0a86a96b",
+    "source": "downloads/brand-src/oliveyoung_logo.png",
+    "w": 1428,
+    "h": 160,
+    "bytes": 16656
+  },
+  "assets/pharma_rejuderma.jpg": {
+    "sha1": "980d0a370e826858916c6f02ca851f7589f97ad9",
+    "source": "downloads/beauty-point-02-src/pharma_rejuderma.jpg",
+    "w": 1080,
+    "h": 720,
+    "bytes": 54906
+  },
+  "assets/prod_innisfree.png": {
+    "sha1": "cfe604c43dd8f182cdabc84a50d313b5593ae282",
+    "source": "downloads/beauty-tech-src/prod_innisfree.png",
+    "w": 394,
+    "h": 556,
+    "bytes": 130087
+  },
+  "assets/prod_iope.png": {
+    "sha1": "139b39da9228b528a7469ed5f07849d7b5e4bcfd",
+    "source": "downloads/beauty-tech-src/prod_iope.png",
+    "w": 182,
+    "h": 516,
+    "bytes": 81338
+  },
+  "assets/rej_vis_rejuvenex.png": {
+    "sha1": "361e074de79e10f5a70211e10e795964efdb60ee",
+    "source": "downloads/beauty-point-02-src/rej_vis_rejuvenex.png",
+    "w": 784,
+    "h": 358,
+    "bytes": 262954
+  },
+  "assets/rejudex_tall.jpg": {
+    "sha1": "3e0ec4164b53a0b69e47250210f94c5e8717a084",
+    "source": "downloads/beauty-point-02-src/rejudex_tall.png",
+    "w": 600,
+    "h": 680,
+    "bytes": 60214
+  },
+  "assets/twoedit_sticks.jpg": {
+    "sha1": "10d5f5f944daa4f9b4f6ec7beaa55e692afc935a",
+    "source": "downloads/beauty-point-03-src/twoedit_sticks.jpg",
+    "w": 1200,
+    "h": 1496,
+    "bytes": 240570
+  },
+  "assets/zeroid_wordmark_ink.png": {
+    "sha1": "e88eba94aad4e85db080d93c20314d6d4f55b07e",
+    "source": "downloads/beauty-point-src/zeroid_wordmark_ink.png",
+    "w": 300,
+    "h": 52,
+    "bytes": 3170
+  }
+}

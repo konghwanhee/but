@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>뷰티 카드뉴스 허브 · but</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="description" content="뷰티 포인트 · 뷰티 테크 · 데일리 브리핑 카드뉴스를 한곳에서 보고, 문구를 고치고, PNG로 내려받고, GitHub에 저장하는 허브.">
+<link rel="icon" href="assets/logo-black.png">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============================================================ 홈 · 챕터별 표지 갤러리 -->
+<div class="view" id="viewGallery">
+  <header class="top">
+    <div class="brand">
+      <img class="brandLogo" src="assets/logo-black.png" alt="but">
+      <div class="brandText">
+        <h1>뷰티 카드뉴스 허브</h1>
+        <p>표지를 누르면 문구를 고치고 PNG로 저장할 수 있습니다</p>
+      </div>
+    </div>
+    <div class="tools">
+      <span class="ghChip" id="ghChipHome" hidden></span>
+      <button class="ghost" id="btnPatHome" type="button">GitHub 연결</button>
+    </div>
+  </header>
+
+  <main class="gallery">
+    <section class="hero">
+      <div class="heroHead">
+        <p class="eyebrow">BUT CARD NEWS</p>
+        <h2>세 개의 챕터, 한 곳에서.</h2>
+        <p class="heroSub">표지로 훑고, 마음에 걸리는 장표의 문구만 고칩니다. 마음에 들면 PNG로 내려받거나 GitHub에 바로 저장하세요.</p>
+      </div>
+      <div class="heroStat">
+        <strong id="statDecks">–</strong>
+        <span>카드뉴스</span>
+      </div>
+    </section>
+
+    <nav class="chapters" id="chapters" aria-label="챕터 필터"></nav>
+
+    <div id="sections" class="sections">
+      <p class="empty">카드뉴스 목록을 불러오는 중입니다…</p>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <span>konghwanhee/but · 새 카드뉴스는 <code>scripts/sync_to_github.py</code>로 올라옵니다</span>
+  </footer>
+</div>
+
+<!-- ============================================================ 상세 · 텍스트 수정 -->
+<div class="view" id="viewEditor" hidden>
+  <header class="top editor">
+    <div class="edTop">
+      <button class="ghost back" id="btnBack" type="button">← 갤러리</button>
+      <div class="deckMeta">
+        <strong id="deckTitle">카드뉴스</strong>
+        <span id="deckSub"></span>
+      </div>
+    </div>
+    <div class="tools">
+      <button class="ghost" id="btnPat" type="button">GitHub 연결</button>
+      <button class="ghost" id="btnGhSave" type="button">GitHub에 저장</button>
+      <button class="ghost" id="btnPngAll" type="button">전체 장표 PNG</button>
+      <button class="solid" id="btnPng" type="button">현재 장표 PNG</button>
+      <button class="ghost" id="btnJson" type="button">JSON 내보내기</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav class="tabs" id="tabs" aria-label="장표 선택"></nav>
+
+    <section class="stage" id="stage">
+      <div class="stageHead">
+        <span id="stageTitle">표지</span>
+        <span class="hint" id="stageHint">Enter로 직접 줄바꿈 · 자동 줄바꿈은 마침표·쉼표 기준</span>
+        <button id="btnZoom" class="mini zoomBtn" type="button">크게 보기</button>
+      </div>
+      <div class="canvasBox" id="canvasBox">
+        <canvas id="cv" width="1080" height="1350"></canvas>
+      </div>
+      <div class="stageFoot">
+        <button id="btnPrev" class="ghost small" type="button">← 이전</button>
+        <span id="pageInfo">1 / 1</span>
+        <button id="btnNext" class="ghost small" type="button">다음 →</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel">
+      <div class="panelHead">
+        <span>고칠 곳</span>
+        <button id="btnReset" class="link" type="button">원본으로 되돌리기</button>
+      </div>
+      <div class="panelBody" id="panelBody"></div>
+    </section>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ============================================================ GitHub 토큰 모달 -->
+<div class="modal" id="patModal" hidden>
+  <div class="modalCard">
+    <h2>GitHub 연결 <span class="tag">저장용</span></h2>
+    <p>이 저장소(<code>konghwanhee/but</code>)의 <b>Contents: Read and write</b> 권한만 가진 Fine-grained token을 넣으면, <b>GitHub에 저장</b> 버튼 한 번으로 <code>data/{id}.json</code>이 바로 커밋됩니다.</p>
+    <p class="fine">토큰은 이 브라우저(localStorage)에만 저장되고 다른 곳으로 보내지 않습니다. 넣지 않아도 편집·PNG 저장·JSON 내보내기는 모두 동작합니다.</p>
+    <input id="patInput" type="password" spellcheck="false" autocomplete="off" placeholder="github_pat_…">
+    <div class="patState" id="patState"></div>
+    <div class="modalFoot">
+      <button id="btnPatForget" class="link" type="button">토큰 지우기</button>
+      <span class="spacer"></span>
+      <button id="btnPatCancel" class="ghost" type="button">닫기</button>
+      <button id="btnPatSave" class="solid" type="button">연결하기</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

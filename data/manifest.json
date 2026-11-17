@@ -1,0 +1,67 @@
+{
+  "site": "뷰티 카드뉴스 허브",
+  "repo": "konghwanhee/but",
+  "generatedAt": "2026-11-17T19:17:48+09:00",
+  "decks": [
+    {
+      "id": "beauty-point-01",
+      "series": "point",
+      "seriesLabel": "뷰티 포인트",
+      "issueNo": 1,
+      "date": "2026-11-16",
+      "title": "같은 장벽 크림, 왜 처방이 필요할까?",
+      "subtitle": "올리브영 화장품 vs 피부과 2등급 의료기기",
+      "coverThumb": "covers/beauty-point-01-cover.png",
+      "jsonPath": "data/beauty-point-01.json",
+      "updatedAt": "2026-11-17T19:17:41+09:00"
+    },
+    {
+      "id": "beauty-point-02",
+      "series": "point",
+      "seriesLabel": "뷰티 포인트",
+      "issueNo": 2,
+      "date": "2026-11-16",
+      "title": "연어 DNA 크림, 세 갈래로 팔린다",
+      "subtitle": "올리브영 화장품 · 병원 의료기기 · 약국 일반의약품",
+      "coverThumb": "covers/beauty-point-02-cover.png",
+      "jsonPath": "data/beauty-point-02.json",
+      "updatedAt": "2026-11-17T19:17:41+09:00"
+    },
+    {
+      "id": "beauty-point-03",
+      "series": "point",
+      "seriesLabel": "뷰티 포인트",
+      "issueNo": 3,
+      "date": "2026-11-16",
+      "title": "5,000원 앞에서 브랜드는 이름을 하나 더 낸다",
+      "subtitle": "다이소 전용 세컨드 브랜드 8개, 직접 찾아봤습니다",
+      "coverThumb": "covers/beauty-point-03-cover.png",
+      "jsonPath": "data/beauty-point-03.json",
+      "updatedAt": "2026-11-17T19:17:41+09:00"
+    },
+    {
+      "id": "beauty-tech-01",
+      "series": "tech",
+      "seriesLabel": "뷰티 테크",
+      "issueNo": 1,
+      "date": "2026-11-16",
+      "title": "주름·모공·여드름, 왜 다 레티놀일까?",
+      "subtitle": "레티놀을 처음 쓰는 사람에게",
+      "coverThumb": "covers/beauty-tech-01-cover.png",
+      "jsonPath": "data/beauty-tech-01.json",
+      "updatedAt": "2026-11-17T19:17:41+09:00"
+    },
+    {
+      "id": "beauty-2026-11-17",
+      "series": "briefing",
+      "seriesLabel": "데일리 브리핑",
+      "issueNo": 2,
+      "date": "2026-11-17",
+      "title": "색조로 넓히는 K뷰티의 다음 판",
+      "subtitle": "올리브영 색조 전문관 · 무신사 5일 5억 · 신규 11건",
+      "coverThumb": "covers/beauty-2026-11-17-cover.png",
+      "jsonPath": "data/beauty-2026-11-17.json",
+      "updatedAt": "2026-11-17T19:17:41+09:00"
+    }
+  ]
+}

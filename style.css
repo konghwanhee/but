@@ -1,0 +1,288 @@
+/* =============================================================================
+   뷰티 카드뉴스 허브 · konghwanhee/but
+   홈(챕터별 표지 갤러리) + 상세(텍스트 수정 · PNG · GitHub 저장)
+   ============================================================================= */
+@font-face{font-family:Pretendard;src:url("assets/fonts/Pretendard-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:Pretendard;src:url("assets/fonts/Pretendard-Medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:Pretendard;src:url("assets/fonts/Pretendard-Bold.woff2") format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:Pretendard;src:url("assets/fonts/Pretendard-ExtraBold.woff2") format("woff2");font-weight:800;font-style:normal;font-display:swap}
+
+:root{
+  --ink:#111111; --muted:#77776f; --line:#e3e2dd; --bg:#f4f3ef; --card:#ffffff;
+  --accent:#1E4ED8; --soft:#faf9f6; --radius:14px;
+  --font:Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--font); color:var(--ink); background:var(--bg);
+  -webkit-font-smoothing:antialiased; font-size:14px; line-height:1.45;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+button,select,textarea,input{font-family:inherit;font-size:inherit;color:inherit}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em;background:#eeece6;padding:1px 5px;border-radius:5px}
+img{max-width:100%}
+.view[hidden]{display:none}
+
+/* ---------- top bar ---------- */
+.top{
+  position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; gap:12px;
+  align-items:center; justify-content:space-between;
+  padding:12px 16px; background:rgba(255,255,255,.94);
+  backdrop-filter:blur(10px); border-bottom:1px solid var(--line);
+}
+.brand{display:flex; align-items:center; gap:10px; min-width:0}
+.brandLogo{height:30px;width:auto;display:block;flex:0 0 auto}
+.brandText h1{font-size:15px;margin:0;font-weight:800;letter-spacing:-.2px;white-space:nowrap}
+.brandText p{margin:1px 0 0;font-size:11.5px;color:var(--muted)}
+.tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+button{border-radius:10px; border:1px solid transparent; padding:8px 12px; font-size:12.5px;
+  font-weight:700; cursor:pointer; transition:background .15s, border-color .15s, transform .05s; white-space:nowrap}
+button:active{transform:translateY(1px)}
+button.solid{background:var(--ink);color:#fff}
+button.solid:hover{background:#000}
+button.ghost{background:var(--card);border-color:var(--line);color:var(--ink)}
+button.ghost:hover{border-color:#c9c8c2}
+button.small{padding:6px 10px;font-size:12px}
+button.link{background:none;border:none;color:var(--muted);text-decoration:underline;text-underline-offset:2px;padding:2px 0;font-weight:600}
+button[disabled]{opacity:.5;cursor:default}
+.ghChip{
+  display:inline-flex; align-items:center; gap:6px; font-size:11.5px; font-weight:700; color:#1c7a4a;
+  background:#eaf6ef; border:1px solid #cfe9da; border-radius:999px; padding:5px 10px;
+}
+.ghChip.off{color:#8a6a1c;background:#fdf5e3;border-color:#f0e2bd}
+
+/* ---------- 홈 : 히어로 ---------- */
+.gallery{max-width:1240px;margin:0 auto;padding:22px 18px 40px}
+.hero{
+  display:flex; align-items:flex-end; justify-content:space-between; gap:20px;
+  padding:6px 2px 20px; border-bottom:1px solid var(--line);
+}
+.eyebrow{margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:.14em;color:var(--accent)}
+.heroHead h2{margin:0;font-size:30px;line-height:1.2;font-weight:800;letter-spacing:-.6px}
+.heroSub{margin:8px歌手 0 0;max-width:56ch;color:#55554e;font-size:13px;line-height:1.6}
+.heroStat{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:0 0 auto}
+.heroStat strong{font-size:34px;font-weight:800;letter-spacing:-1px;line-height:1}
+.heroStat span{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em}
+
+/* ---------- 홈 : 챕터 필터 ---------- */
+.chapters{display:flex;gap:8px;overflow-x:auto;padding:16px 2px 4px;scrollbar-width:thin}
+.chip{
+  flex:0 0 auto; display:inline-flex; align-items:center; gap:7px;
+  background:var(--card); border:1px solid var(--line); border-radius:999px;
+  padding:8px 14px; font-size:12.5px; font-weight:700; color:#55554e;
+}
+.chip:hover{border-color:#c9c8c2}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip .cnt{font-size:10.5px;font-weight:800;opacity:.6}
+
+/* ---------- 홈 : 챕터 섹션 + 카드 그리드 ---------- */
+.sections{padding-top:18px}
+.chapter{margin:0 0 34px}
+.chapterHead{display:flex;align-items:baseline;gap:10px;margin:0 2px 12px;flex-wrap:wrap}
+.chapterHead h3{margin:0;font-size:17px;font-weight:800;letter-spacing:-.3px}
+.chapterHead .desc{font-size:12px;color:var(--muted)}
+.chapterHead .rule{flex:1 1 40px;height:1px;background:var(--line);min-width:20px}
+.chapterHead .n{font-size:11.5px;font-weight:800;color:var(--accent);letter-spacing:.06em}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.card{
+  display:flex; flex-direction:column; text-align:left; padding:0; overflow:hidden;
+  background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+  cursor:pointer; transition:transform .16s ease, box-shadow .16s ease, border-color .16s ease;
+}
+.card:hover{transform:translateY(-3px);box-shadow:0 12px 26px rgba(17,17,17,.10);border-color:#cfcec8}
+.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.cardCover{position:relative;aspect-ratio:4/5;background:#e9e8e3;overflow:hidden}
+.cardCover img{width:100%;height:100%;object-fit:cover;display:block}
+.cardCover .issue{
+  position:absolute; left:10px; top:10px; z-index:2;
+  background:rgba(17,17,17,.82); color:#fff; font-size:10.5px; font-weight:800;
+  letter-spacing:.06em; padding:4px 8px; border-radius:6px; backdrop-filter:blur(4px);
+}
+.cardBody{padding:11px 13px 14px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.cardKicker{display:flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.05em;color:var(--accent)}
+.cardKicker .dot{width:5px;height:5px;background:var(--accent);border-radius:50%}
+.cardKicker .date{margin-left:auto;color:var(--muted);font-weight:700;letter-spacing:.02em}
+.cardTitle{
+  font-size:14.5px;font-weight:800;line-height:1.34;letter-spacing:-.2px;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.cardSub{
+  font-size:11.5px;color:var(--muted);line-height:1.45;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+}
+.empty{color:var(--muted);font-size:13px;padding:26px 4px}
+.foot{max-width:1240px;margin:0 auto;padding:8px 18px 34px;color:#9a998f;font-size:11.5px}
+
+/* ---------- 상세 : 레이아웃 ---------- */
+.top.editor{gap:10px}
+.edTop{display:flex;align-items:center;gap:10px;min-width:0}
+button.back{flex:0 0 auto}
+.deckMeta{display:flex;flex-direction:column;min-width:0}
+.deckMeta strong{font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46ch}
+.deckMeta span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.wrap{display:grid; gap:14px; padding:14px; align-items:start;
+  grid-template-columns:1fr; max-width:1680px; margin:0 auto}
+@media (min-width:1000px){
+  .wrap{grid-template-columns:206px minmax(0,1fr) 400px; padding:16px 20px 40px; gap:18px}
+}
+
+/* ---------- 탭 ---------- */
+.tabs{display:flex; gap:6px; overflow-x:auto; padding-bottom:4px; scrollbar-width:thin}
+@media (min-width:1000px){
+  .tabs{flex-direction:column; overflow:visible; position:sticky; top:96px; max-height:calc(100vh - 116px); overflow-y:auto}
+}
+.tab{
+  flex:0 0 auto; display:flex; align-items:center; gap:8px; text-align:left;
+  background:var(--card); border:1px solid var(--line); border-radius:11px; padding:8px 11px;
+  font-weight:600; color:#55554e; min-width:0;
+}
+.tab:hover{border-color:#cfcec8}
+.tab.on{background:var(--ink); border-color:var(--ink); color:#fff}
+.tab .num{font-size:10.5px;font-weight:800;letter-spacing:.04em;opacity:.65;flex:0 0 auto}
+.tab .nm{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+@media (max-width:999px){ .tab .nm{max-width:120px} }
+
+/* ---------- 캔버스 ---------- */
+.stage{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:12px; position:sticky; top:70px; z-index:10}
+@media (min-width:1000px){ .stage{position:sticky; top:96px} }
+.stageHead{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin:0 2px 8px}
+.stageHead .hint{margin-left:auto}
+.zoomBtn{flex:0 0 auto; padding:4px 8px; font-size:11px}
+.stage.big{position:fixed; inset:0; z-index:70; border:none; border-radius:0; background:#111;
+  display:flex; flex-direction:column; justify-content:center; padding:10px 10px 14px; overflow:auto}
+.stage.big .stageHead{color:#fff}
+.stage.big .stageHead span{color:#fff}
+.stage.big .canvasBox{background:#111; padding:0}
+.stage.big #cv{width:min(100%, calc(92vh * 0.8)); box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.stage.big .stageFoot{color:#ddd}
+.stage.big .stageFoot #pageInfo{color:#bbb}
+.stage.big .stageFoot .ghost{background:#222;border-color:#333;color:#eee}
+#stageTitle{font-weight:800;font-size:13px}
+.hint{font-size:11px;color:var(--muted);text-align:right}
+.canvasBox{background:#ecebe6;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  padding:10px; min-height:0}
+#cv{display:block; width:min(100%, calc(min(74vh, 860px) * 0.8)); height:auto;
+  aspect-ratio:4/5; background:#fff; box-shadow:0 6px 26px rgba(0,0,0,.12); border-radius:3px}
+.stageFoot{display:flex;align-items:center;justify-content:space-between;margin-top:9px}
+#pageInfo{font-size:11.5px;color:var(--muted);font-weight:700;letter-spacing:.03em}
+
+/* ---------- 필드 패널 ---------- */
+.panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+.panelHead{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  padding:11px 14px;border-bottom:1px solid var(--line);background:var(--soft);position:sticky;top:0;z-index:2}
+.panelHead span{font-weight:800;font-size:13px}
+.panelBody{padding:6px 14px 22px;max-height:none}
+@media (min-width:1000px){ .panelBody{max-height:calc(100vh - 150px); overflow-y:auto} }
+
+details.grp{border-bottom:1px solid var(--line)}
+details.grp:last-child{border-bottom:none}
+details.grp>summary{
+  list-style:none; cursor:pointer; padding:11px 0 9px; font-weight:800; font-size:12.5px;
+  display:flex; align-items:center; gap:6px; color:#2a2a26;
+}
+details.grp>summary::-webkit-details-marker{display:none}
+details.grp>summary::before{content:"+"; display:inline-block; width:13px; color:var(--muted); font-weight:700}
+details.grp[open]>summary::before{content:"–"}
+details.grp>summary .cnt{font-weight:600;color:var(--muted);font-size:11px;margin-left:auto}
+
+.fld{margin:0 0 11px}
+.fld>label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;
+  letter-spacing:.02em; display:flex; justify-content:space-between; gap:6px}
+.fld>label .n{color:#b0afa8;font-weight:600}
+textarea,input[type=text]{
+  width:100%; border:1px solid var(--line); border-radius:9px; background:#fff;
+  padding:8px 10px; font-size:13px; line-height:1.5; resize:none; overflow:hidden;
+  transition:border-color .15s, box-shadow .15s; min-height:36px;
+}
+textarea:focus,input[type=text]:focus{outline:none;border-color:#9fb2f5;box-shadow:0 0 0 3px rgba(30,78,216,.10)}
+textarea.tall{min-height:64px}
+textarea.mid{min-height:48px}
+
+.hlRow{display:flex; gap:6px; align-items:flex-start; margin-bottom:6px}
+.hlRow textarea{flex:1 1 auto}
+.hlRow select{
+  appearance:none; border:1px solid var(--line); border-radius:8px; padding:8px 6px; font-size:11.5px;
+  font-weight:700; background:#fff; flex:0 0 74px; color:#55554e
+}
+.mini{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:11.5px;font-weight:700;color:#55554e}
+.mini:hover{border-color:#c9c8c2}
+.rowBtns{display:flex;gap:6px;margin-top:2px}
+.rowBtns .mini{flex:1}
+
+.item{border:1px solid var(--line); border-radius:11px; padding:9px 10px 3px; margin:0 0 9px; background:var(--soft)}
+.item>h4{margin:0 0 7px; font-size:11.5px; font-weight:800; color:#2a2a26; display:flex; gap:6px; align-items:baseline}
+.item>h4 .k{font-size:10px;font-weight:800;color:var(--accent);letter-spacing:.05em}
+.subnote{font-size:10.5px;color:var(--muted);margin:-4px 0 8px}
+
+.tblWrap{overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid var(--line); border-radius:10px; margin:0 0 10px; background:#fff}
+table.grid{border-collapse:collapse; width:100%; min-width:280px}
+table.grid td{padding:0; border-bottom:1px solid #efeee9; border-right:1px solid #efeee9; vertical-align:middle; min-width:146px}
+table.grid td:last-child{border-right:none}
+table.grid tr:last-child td{border-bottom:none}
+table.grid input{border:none!important;border-radius:0!important;box-shadow:none!important;padding:6px 7px!important;
+  font-size:12px;background:transparent;min-width:140px;width:100%}
+table.grid input:focus{background:#f6f8ff}
+table.grid th{font-size:10px;font-weight:700;color:#a3a299;text-align:left;padding:5px 7px;background:var(--soft);
+  border-bottom:1px solid var(--line); border-right:1px solid #efeee9; white-space:nowrap}
+table.grid tr.headRow input{font-weight:700;background:#fbfaf7}
+
+/* ---------- 토스트 · 모달 ---------- */
+.toast{position:fixed; left:50%; bottom:26px; transform:translate(-50%,14px); background:#111; color:#fff;
+  padding:9px 15px; border-radius:99px; font-size:12.5px; font-weight:700; opacity:0; pointer-events:none;
+  transition:opacity .22s, transform .22s; z-index:90; max-width:86vw; text-align:center; white-space:pre-line}
+.toast.on{opacity:1; transform:translate(-50%,0)}
+.modal{position:fixed; inset:0; background:rgba(17,17,17,.42); display:flex; align-items:center; justify-content:center;
+  padding:18px; z-index:80}
+.modal[hidden]{display:none}
+.modalCard{background:#fff; border-radius:16px; padding:18px; width:min(560px,100%); max-height:86vh; display:flex; flex-direction:column}
+.modalCard h2{margin:0 0 6px; font-size:16px; display:flex; align-items:center; gap:8px}
+.modalCard h2 .tag{font-size:10px;font-weight:800;color:var(--accent);background:#eef2fe;border-radius:6px;padding:3px 7px;letter-spacing:.04em}
+.modalCard p{margin:0 0 9px; color:#55554e; font-size:12px; line-height:1.6}
+.modalCard p.fine{color:var(--muted);font-size:11.5px}
+#patInput{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:13px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+#patInput:focus{outline:none;border-color:#9fb2f5;box-shadow:0 0 0 3px rgba(30,78,216,.10)}
+.patState{font-size:11.5px;font-weight:700;color:var(--muted);margin-top:8px;min-height:17px}
+.patState.ok{color:#1c7a4a}
+.patState.err{color:#b03a2e}
+.modalFoot{display:flex;align-items:center;gap:8px;margin-top:12px}
+.modalFoot .spacer{flex:1}
+
+/* ---------- 반응형 ---------- */
+@media (max-width:999px){
+  .top{position:static; padding:10px 12px 8px; gap:8px}
+  .brandText p{display:none}
+  .brandText h1{font-size:14px}
+  .tools{width:100%; display:flex; flex-wrap:wrap; gap:6px}
+  .tools button{flex:1 1 auto; padding:8px 8px; font-size:11.5px}
+  .wrap{padding:10px 10px 0; gap:10px}
+  .tabs{position:static; padding-bottom:2px}
+  .stage{position:sticky; top:0; z-index:20; padding:8px 10px;
+    border-radius:0 0 var(--radius) var(--radius); border-top-color:transparent;
+    box-shadow:0 8px 18px rgba(0,0,0,.05)}
+  .stageHead{margin-bottom:6px}
+  .canvasBox{padding:6px}
+  .stageFoot{margin-top:6px}
+  #cv{width:min(100%, calc(31vh * 0.8))}
+  .hint{display:none}
+  .panelHead{position:static}
+  .panel{border-radius:var(--radius) var(--radius) 0 0}
+  .panelBody{padding:4px 12px 40px}
+  .gallery{padding:14px 12px 30px}
+  .hero{flex-direction:column; align-items:flex-start; gap:10px; padding-bottom:14px}
+  .heroHead h2{font-size:23px}
+  .heroStat{flex-direction:row; align-items:baseline; gap:6px}
+  .heroStat strong{font-size:24px}
+  .grid{gap:10px; grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+  .cardBody{padding:9px 10px 12px}
+  .cardTitle{font-size:13px}
+  .cardSub{font-size:11px}
+  .chapter{margin-bottom:26px}
+  .chapterHead h3{font-size:15.5px}
+  .chapterHead .desc{display:none}
+  .edTop{width:100%}
+  .deckMeta strong{max-width:60vw}
+}
