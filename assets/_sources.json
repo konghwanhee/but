@@ -132,6 +132,13 @@
     "h": 516,
     "bytes": 81338
   },
+  "assets/prod_kiehls.jpg": {
+    "sha1": "8b488bcc78bcdf9827a335eb5aa0e224795cf329",
+    "source": "downloads/beauty-tech-src/prod_kiehls.png",
+    "w": 239,
+    "h": 914,
+    "bytes": 35854
+  },
   "assets/rej_vis_rejuvenex.png": {
     "sha1": "361e074de79e10f5a70211e10e795964efdb60ee",
     "source": "downloads/beauty-point-02-src/rej_vis_rejuvenex.png",
