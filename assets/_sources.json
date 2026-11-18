@@ -20,6 +20,20 @@
     "h": 785,
     "bytes": 875317
   },
+  "assets/boj_reliefsun.jpg": {
+    "sha1": "45bd2fdd8ed8a64152c9a1b0ab88e9ac9e3f79d6",
+    "source": "downloads/beauty-point-04-06-src/boj_reliefsun.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 67323
+  },
+  "assets/boj_reliefsun_2.jpg": {
+    "sha1": "e0b13aa8e2e9cdf68c7c32ab1cdd2c9f05590f09",
+    "source": "downloads/beauty-point-04-06-src/boj_reliefsun_2.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 104413
+  },
   "assets/cover_iope_retinol.jpg": {
     "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
     "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
@@ -33,6 +47,13 @@
     "w": 1350,
     "h": 1687,
     "bytes": 423425
+  },
+  "assets/ctc0.jpg": {
+    "sha1": "f8846e798f269f3629f06fbc9fed761107ddbfb8",
+    "source": "downloads/beauty-point-04-06-src/ctc0.jpg",
+    "w": 1000,
+    "h": 1000,
+    "bytes": 34599
   },
   "assets/ill_capsule.jpg": {
     "sha1": "7718071e7f69cb6bc44c73bb18c7fb92f02db3a0",
@@ -68,6 +89,13 @@
     "w": 316,
     "h": 109,
     "bytes": 4951
+  },
+  "assets/mc_3h.jpg": {
+    "sha1": "5c893c7805ff6d1f7ff0ead4ef121d88ff8a0156",
+    "source": "downloads/beauty-point-04-06-src/mc_3h.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 137196
   },
   "assets/md_pair.jpg": {
     "sha1": "aa7d830f1d84be3677922198ddc04df70d9d547a",
