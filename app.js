@@ -1374,6 +1374,38 @@ function tSteps(s, headLast) {
   return CTM;
 }
 
+function tClosing(s, headLast) {
+  var top = headLast + Number(s.gap_after_head === undefined ? 48 : s.gap_after_head);
+  var cards = s.cards || [], rows = Math.ceil(cards.length / 2), gap = 20;
+  var band = s.takeaway ? 124 : 0;
+  var noteH = s.note_band ? Number(s.note_height || 88) : 0;
+  var noteGap = noteH ? 22 : 0;
+  var avail = CTM - band - noteH - noteGap - top;
+  var cw = (CR - MX - gap) / 2;
+  var ch = Math.round((avail - gap * (rows - 1)) / Math.max(1, rows));
+  var pad = 34, size = Number(s.card_size || 24), lh = Math.round(size * 1.42);
+  cards.forEach(function (card, i) {
+    var x = MX + (i % 2) * (cw + gap);
+    var y = top + Math.floor(i / 2) * (ch + gap);
+    var bg = (card.tone || 'ink') === 'ink' ? INK : KEY;
+    _ctx.fillStyle = bg; _ctx.fillRect(x, y, cw, ch);
+    var lines = wrapText(card.text || '', size, 'bold', cw - pad * 2);
+    var block = 64 + lh * (lines.length - 1);
+    var start = y + (ch - block) / 2;
+    tracked(card.num || '', x + pad, start, 17, 'bold', WHITE, 3);
+    lines.forEach(function (ln, k) { drawText(ln, x + pad, start + 46 + k * lh, size, 'bold', WHITE, 'ls'); });
+  });
+  if (s.note_band) {
+    var ny = CTM - band - noteH;
+    _ctx.fillStyle = KEY; _ctx.fillRect(MX, ny, CR - MX, noteH);
+    var l2 = wrapText(s.note_band, 23, 'bold', CR - MX - 68);
+    var ty = ny + noteH / 2 - (l2.length - 1) * 16 + 8;
+    l2.forEach(function (ln, k) { drawText(ln, MX + 34, ty + k * 32, 23, 'bold', WHITE, 'ls'); });
+  }
+  if (s.takeaway) { takeaway(s.takeaway, 104, s.takeaway_label || 'POINT'); return CTM; }
+  return CTM;
+}
+
 function tLineage(s, headLast) {
   var top = headLast + Number(s.gap_after_head === undefined ? 46 : s.gap_after_head);
   if (s.body) top = bodyTextTech(s.body, top + 16, s.body_size || 23) + 46;
@@ -1655,7 +1687,7 @@ function roundRect(ctx2, x, y, w, h, r) {
 
 /* ---------------------------------------------------------------- 9. 장표 렌더 */
 var POINT_KINDS = { table: pTable, cards: pCards, brand_pair: pBrandPair, brand_wide: pBrandWide, list: pList, reasons: pReasons, bars: pBars };
-var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, compare: tCompare, products: tProducts, quad: tQuad, steps: tSteps, lineage: tLineage };
+var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, compare: tCompare, products: tProducts, quad: tQuad, steps: tSteps, lineage: tLineage, closing: tClosing };
 
 function renderSlidePage(s, idx, total, family) {
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
@@ -1704,7 +1736,7 @@ var _raf = 0, _saveT = 0;
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function familyOf(d) {
   if (d && d.index) return 'brief';
-  var tech = ['points', 'band', 'split', 'compare', 'quad', 'products', 'steps', 'lineage'];
+  var tech = ['points', 'band', 'split', 'compare', 'quad', 'products', 'steps', 'lineage', 'closing'];
   var kinds = ((d && d.slides) || []).map(function (s) { return s.kind; });
   for (var i = 0; i < kinds.length; i++) if (tech.indexOf(kinds[i]) >= 0) return 'tech';
   return 'point';
@@ -2575,6 +2607,9 @@ function slideSpec(s, i) {
     } else if (kind === 'steps') {
       push({ t: 'arr', path: ['items'], kicker: '단계', titleFn: function (it) { return (it.num ? it.num + ' ' : '') + (it.title || ''); }, nodes: [{ t: 'text', path: ['num'], label: '번호', rows: 1 }, { t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'text', path: ['sub'], label: '오른쪽 배지', rows: 1 }, { t: 'text', path: ['text'], label: '설명', rows: 2 }] });
       if (s.note_band) push({ t: 'text', path: ['note_band'], label: '하단 키컬러 띠', rows: 1 });
+    } else if (kind === 'closing') {
+      push({ t: 'arr', path: ['cards'], kicker: '카드', titleFn: function (it) { return (it.num ? it.num + ' ' : '') + (it.text || ''); }, nodes: [{ t: 'text', path: ['num'], label: '번호', rows: 1 }, { t: 'text', path: ['text'], label: '문구', rows: 2 }, { t: 'text', path: ['tone'], label: '톤 (ink 또는 key)', rows: 1 }] });
+      if (s.note_band) push({ t: 'text', path: ['note_band'], label: '하단 안내 띠', rows: 2 });
     } else if (kind === 'lineage') {
       push({ t: 'arr', path: ['rows'], kicker: '단계', titleFn: function (it) { return it.name || ''; }, nodes: [{ t: 'text', path: ['num'], label: '번호', rows: 1 }, { t: 'text', path: ['name'], label: '이름', rows: 1 }, { t: 'text', path: ['sub'], label: '부제', rows: 1 }, { t: 'text', path: ['tag'], label: '태그', rows: 1 }] });
       if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '노트', rows: 2 });
@@ -2615,7 +2650,7 @@ function kindName(kind, fam) {
   var names = {
     table: '표', cards: '카드', brand_pair: '이미지 + 표', brand_wide: '이미지 + 블록', list: '번호 목록',
     reasons: '이유 목록', bars: '막대 도표', points: '포인트', band: '사진 띠', split: '사진 + 블록',
-    compare: '비교 패널', products: '제품', quad: '4칸 카드', steps: '단계', lineage: '계보', brief: '도표'
+    compare: '비교 패널', products: '제품', quad: '4칸 카드', steps: '단계', lineage: '계보', closing: '마무리', brief: '도표'
   };
   return names[kind] || '내용';
 }
