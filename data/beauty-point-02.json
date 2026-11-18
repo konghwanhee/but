@@ -8,7 +8,7 @@
     "num_color": "#111111",
     "image": "assets/pharma_rejuderma.jpg",
     "focus": 0.5,
-    "focus_y": 0.5,
+    "focus_y": 1.0,
     "zoom": 1.0,
     "tone": false,
     "headline": [
@@ -20,7 +20,8 @@
       ]
     ],
     "sub": "올리브영 화장품 · 병원 의료기기 · 약국 일반의약품",
-    "head_size": 94
+    "head_size": 94,
+    "fit": "cover"
   },
   "slides": [
     {

@@ -8,9 +8,9 @@
     "num_color": "#111111",
     "num_size": 200,
     "num_top": 150,
-    "image": "assets/cover_zoom_lineup.jpg",
+    "image": "assets/cover_lineup_2400.jpg",
     "focus": 0.5,
-    "focus_y": 0.42,
+    "focus_y": 0.5,
     "zoom": 1.0,
     "tone": false,
     "headline": [
@@ -26,7 +26,8 @@
     ],
     "sub": "다이소 전용 세컨드 브랜드 8개, 직접 찾아봤습니다",
     "head_size": 74,
-    "head_first": 372
+    "head_first": 372,
+    "fit": "cover"
   },
   "slides": [
     {

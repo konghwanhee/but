@@ -8,10 +8,10 @@
     "num_color": "#111111",
     "num_size": 200,
     "num_top": 150,
-    "image": "assets/boj_reliefsun.jpg",
+    "image": "assets/boj_reliefsun_2.jpg",
     "focus": 0.5,
     "focus_y": 0.42,
-    "zoom": 1.25,
+    "zoom": 1.0,
     "tone": false,
     "headline": [
       [
@@ -23,7 +23,15 @@
     ],
     "sub": "ODM · 개발부터 생산까지 맡기는 방식",
     "head_size": 84,
-    "head_first": 372
+    "head_first": 372,
+    "fit": "contain",
+    "fit_crop": [
+      0.22,
+      0.2,
+      0.78,
+      0.93
+    ],
+    "fit_pad_y": 24
   },
   "slides": [
     {

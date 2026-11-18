@@ -7,9 +7,9 @@
     "num": "01",
     "num_color": "#111111",
     "image": "assets/aesturamd_1002_7.webp",
-    "focus": 0.38,
-    "focus_y": 0.55,
-    "zoom": 1.1,
+    "focus": 0.25,
+    "focus_y": 0.5,
+    "zoom": 1.0,
     "tone": false,
     "white_pct": 98,
     "contrast": 1.05,
@@ -23,7 +23,8 @@
       ]
     ],
     "sub": "올리브영 화장품 vs 피부과 2등급 의료기기",
-    "head_size": 94
+    "head_size": 94,
+    "fit": "cover"
   },
   "slides": [
     {

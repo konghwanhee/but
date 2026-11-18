@@ -26,7 +26,15 @@
     ],
     "sub": "OEM · 설계는 브랜드가, 생산은 공장이",
     "head_size": 74,
-    "head_first": 372
+    "head_first": 372,
+    "fit": "contain",
+    "fit_crop": [
+      0.34,
+      0.11,
+      0.66,
+      0.9
+    ],
+    "fit_pad_y": 24
   },
   "slides": [
     {

@@ -41,6 +41,13 @@
     "h": 753,
     "bytes": 117882
   },
+  "assets/cover_lineup_2400.jpg": {
+    "sha1": "2a51b51df473f5be4f79b3b0b49681ca77eddddb",
+    "source": "downloads/beauty-point-03-src/cover_lineup_2400.jpg",
+    "w": 2160,
+    "h": 1380,
+    "bytes": 295861
+  },
   "assets/cover_zoom_lineup.jpg": {
     "sha1": "ae3c2a9bae51cbb1c4adc03975e9dfe8625156e5",
     "source": "downloads/beauty-point-03-src/cover_zoom_lineup.jpg",
