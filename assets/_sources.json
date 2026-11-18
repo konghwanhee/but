@@ -20,6 +20,13 @@
     "h": 785,
     "bytes": 875317
   },
+  "assets/boj-rice-still.webp": {
+    "sha1": "c35f44ef6e2f7a77024aae7781153d1485e24f9d",
+    "source": "downloads/beauty-point-covers-src/boj-rice-still.webp",
+    "w": 1024,
+    "h": 1536,
+    "bytes": 97706
+  },
   "assets/boj_reliefsun.jpg": {
     "sha1": "45bd2fdd8ed8a64152c9a1b0ab88e9ac9e3f79d6",
     "source": "downloads/beauty-point-04-06-src/boj_reliefsun.jpg",
@@ -124,6 +131,20 @@
     "w": 380,
     "h": 805,
     "bytes": 104290
+  },
+  "assets/medicube-pink-serum.jpg": {
+    "sha1": "e67eb99313bde66c6a59fd020cd3f69645fa53b7",
+    "source": "downloads/beauty-point-covers-src/medicube-pink-serum.jpg",
+    "w": 1500,
+    "h": 400,
+    "bytes": 64513
+  },
+  "assets/ordinary-lab-tray.jpg": {
+    "sha1": "614040a0a47344ee334ec5c2c2e0be716b40b9ec",
+    "source": "downloads/beauty-point-covers-src/ordinary-lab-tray.jpg",
+    "w": 2284,
+    "h": 2320,
+    "bytes": 305271
   },
   "assets/ordinary_azelaic_white.jpg": {
     "sha1": "3b7f4c9c8ef010c4d8e5f16bfc631e48cf9ed2a9",

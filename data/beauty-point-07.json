@@ -5,15 +5,17 @@
   "cover": {
     "layout": "block",
     "block_h": 660,
-    "series_name": "BEAUTY POINT",
+    "series_name": "제조 모델 4부작",
+    "display_no": "04",
     "num": "07",
     "num_color": "#FFFFFF",
     "num_size": 200,
     "num_top": 150,
-    "image": "assets/ordinary_azelaic_white.jpg",
+    "image": "assets/ordinary-lab-tray.jpg",
     "focus": 0.5,
+    "focus_y": 0.28,
     "fit_focus_y": 0.5,
-    "zoom": 1.0,
+    "zoom": 1.15,
     "tone": false,
     "headline": [
       [
@@ -26,14 +28,7 @@
     "sub": "번외편 · 위탁 용어와 글로벌 브랜드 모델",
     "head_size": 84,
     "head_first": 372,
-    "fit": "contain",
-    "fit_pad_y": 18,
-    "fit_crop": [
-      0.24,
-      0.12,
-      0.76,
-      0.95
-    ]
+    "fit": "cover"
   },
   "slides": [
     {
