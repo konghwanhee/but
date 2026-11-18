@@ -34,6 +34,13 @@
     "h": 2000,
     "bytes": 104413
   },
+  "assets/cosmax_sh.jpg": {
+    "sha1": "0eefc88f1fd53b2c1d98675be6da38ffbc31a72a",
+    "source": "downloads/beauty-point-07-src/cosmax_sh.jpg",
+    "w": 4896,
+    "h": 2360,
+    "bytes": 1190371
+  },
   "assets/cover_iope_retinol.jpg": {
     "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
     "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
@@ -117,6 +124,13 @@
     "w": 380,
     "h": 805,
     "bytes": 104290
+  },
+  "assets/ordinary_azelaic_white.jpg": {
+    "sha1": "3b7f4c9c8ef010c4d8e5f16bfc631e48cf9ed2a9",
+    "source": "downloads/beauty-point-07-src/ordinary_azelaic_white.jpg",
+    "w": 1600,
+    "h": 1600,
+    "bytes": 122651
   },
   "assets/pharma_rejuderma.jpg": {
     "sha1": "980d0a370e826858916c6f02ca851f7589f97ad9",
