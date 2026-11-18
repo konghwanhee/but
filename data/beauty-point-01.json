@@ -6,6 +6,8 @@
     "series_name": "BEAUTY POINT",
     "num": "01",
     "num_color": "#111111",
+    "num_size": 200,
+    "num_top": 150,
     "image": "assets/aesturamd_1002_7.webp",
     "focus": 0.25,
     "focus_y": 0.5,
@@ -23,7 +25,8 @@
       ]
     ],
     "sub": "올리브영 화장품 vs 피부과 2등급 의료기기",
-    "head_size": 94,
+    "head_size": 84,
+    "head_first": 372,
     "fit": "cover"
   },
   "slides": [
