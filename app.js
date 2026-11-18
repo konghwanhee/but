@@ -1097,8 +1097,11 @@ function tPoints(s, headLast) {
 function tBand(s, headLast) {
   var top;
   if (s.lead) {
-    drawText(s.lead, MX, headLast + 44, Number(s.lead_size || 21), 'medium', INK, 'ls');
-    top = headLast + 44 + 26;
+    var ls = Number(s.lead_size || 21);
+    var leadLines = wrapText(s.lead, ls, 'medium', CR - MX);
+    var lhg = Math.round(ls * 1.55);
+    for (var li = 0; li < leadLines.length; li++) drawText(leadLines[li], MX, headLast + 44 + li * lhg, ls, 'medium', INK, 'ls');
+    top = headLast + 44 + lhg * (leadLines.length - 1) + 26;
   } else top = headLast + Number(s.gap_after_head === undefined ? 34 : s.gap_after_head);
   var bandH = Number(s.band_height || 470);
   var geo = bandPhoto(s.image || {}, 0, top, W, bandH, Number((s.image || {}).zoom || s.zoom || 1), Number(s.focus_y === undefined ? 0.5 : s.focus_y));
@@ -1125,7 +1128,11 @@ function tBand(s, headLast) {
 }
 
 function tSplit(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 40 : s.gap_after_head);
+  var top;
+  if (s.lead) {
+    drawText(s.lead, MX, headLast + 44, Number(s.lead_size || 21), 'medium', INK, 'ls');
+    top = headLast + 44 + 26;
+  } else top = headLast + Number(s.gap_after_head === undefined ? 40 : s.gap_after_head);
   var spec = s.image || {};
   var iw = Number(s.image_width || 430), ih = Number(s.image_height || 470);
   var ix = s.bleed_left ? 0 : MX;
@@ -1136,13 +1143,22 @@ function tSplit(s, headLast) {
   }
   var colX = MX + iw + 48, colW = CR - colX, y = top;
   var limit = CTM - (s.takeaway ? 120 : 0);
-  (s.blocks || []).forEach(function (block) {
-    tracked(block.label || '', colX, y + 14, 17, 'bold', KEY, 3);
-    var size = Number(block.size || 21);
-    var lines = wrapText(block.text || '', size, 'medium', colW);
-    var gap = Math.round(size * 1.52);
-    for (var k = 0; k < lines.length; k++) drawText(lines[k], colX, y + 52 + k * gap, size, 'medium', INK, 'ls');
-    y = y + 52 + gap * lines.length + Number(s.block_gap === undefined ? 34 : s.block_gap);
+  var blocks = s.blocks || [];
+  var measured = blocks.map(function (block) {
+    var sz = Number(block.size || 21);
+    var ln = wrapText(block.text || '', sz, 'medium', colW);
+    var gp = Math.round(sz * 1.52);
+    return { block: block, size: sz, lines: ln, gap: gp, h: 52 + gp * ln.length };
+  });
+  var baseGap = Number(s.block_gap === undefined ? 34 : s.block_gap);
+  var n = measured.length;
+  var sumH = measured.reduce(function (a, m) { return a + m.h; }, 0);
+  var spare = limit - y - sumH - baseGap * Math.max(0, n - 1);
+  var add = n > 1 ? Math.max(0, Math.min(36, spare / (n - 1))) : 0;
+  measured.forEach(function (m) {
+    tracked(m.block.label || '', colX, y + 14, 17, 'bold', KEY, 3);
+    for (var k = 0; k < m.lines.length; k++) drawText(m.lines[k], colX, y + 52 + k * m.gap, m.size, 'medium', INK, 'ls');
+    y = y + m.h + baseGap + add;
   });
   if (s.takeaway) { takeaway(s.takeaway, 104, s.takeaway_label || 'POINT'); return CTM; }
   return CTM;
