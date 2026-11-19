@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-19T21:44:13+09:00",
+  "generatedAt": "2026-11-19T21:46:40+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -73,7 +73,7 @@
       "subtitle": "OBM · 기획부터 판매까지 한 회사가",
       "coverThumb": "covers/beauty-point-06-cover.png",
       "jsonPath": "data/beauty-point-06.json",
-      "updatedAt": "2026-11-19T21:44:12+09:00"
+      "updatedAt": "2026-11-19T21:46:39+09:00"
     },
     {
       "id": "beauty-point-07",
