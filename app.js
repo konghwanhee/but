@@ -766,7 +766,9 @@ function drawTintLogo(path, x, y, w, h, color, maxW, maxH) {
 function drawBandPoint(s, top) {
   var v = s.visual, h = Number(v.h || 230), w = CR - MX;
   if ((v.fit || 'cover') === 'cover') {
-    drawCoverCrop(v.image, MX, top, w, h, v.focus === undefined ? 0.5 : v.focus, 0.5, 1);
+    var bfx = v.focus === undefined ? 0.5 : v.focus;
+    var bfy = v.focus_y === undefined ? bfx : v.focus_y;
+    drawCoverCrop(v.image, MX, top, w, h, bfx, bfy, 1);
   } else {
     if (v.tint) { _ctx.fillStyle = tintOf(KEY, 0.06); _ctx.fillRect(MX, top, w, h); }
     drawContain(v.image, MX + w * 0.03, top + h * 0.03, w * 0.94, h * 0.94, false);
