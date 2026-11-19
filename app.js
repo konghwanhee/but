@@ -17,6 +17,7 @@ var GRAY_EMPH = '#8A8A8A', GRAY_SOFT = '#9A9A9A', GRAY_BODY = '#3F3F3F', HAIRLIN
 var FS = '"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif';
 var WG = { regular: 400, medium: 500, bold: 700, extrabold: 800 };
 var KEY = '#1E4ED8';
+var VIS_W = 212, VIS_TOP = 146, VIS_BOTTOM = VIS_TOP + VIS_W, VIS_TEXT_GAP = 24;
 
 var IMGS = {};   // 경로 → URL. 저장소 상대경로(assets/…)는 경로를 그대로 쓴다. 로고만 미리 등록.
 var META = {};   // 원본 픽셀 크기(마커 좌표 보정용). 저장소 이미지는 원본 크기 그대로라 비어 있음.
@@ -667,12 +668,12 @@ function labelPoint(label) {
   tracked(label, MX, 196, 21, 'bold', KEY, 3);
   _ctx.fillStyle = KEY; _ctx.fillRect(MX, 210, 44, 2);
 }
-function headBlock(slide, firstY) {
+function headBlock(slide, firstY, maxW) {
   labelPoint(slide.label || '');
-  var maxW = CR - MX;
+  var mw = maxW || (CR - MX);
   var size = Number(slide.head_size || 62);
   var lines = headlineLines(slide);
-  while (size > 34 && headlineWidth(lines, size, 'extrabold') > maxW) size -= 2;
+  while (size > 34 && headlineWidth(lines, size, 'extrabold') > mw) size -= 2;
   var gap = Math.round(size * 1.22);
   var first = firstY === undefined ? 272 : firstY;
   drawHeadlines(lines, MX, first, gap, size, { ink: INK, gray: GRAY_EMPH });
@@ -710,6 +711,64 @@ function takeaway(text, height, label) {
   for (var i = 0; i < n; i++) drawText(lines[i], MX + 34, first + i * gap, fsize, 'bold', WHITE, 'ls');
 }
 
+/* ---------------------------------------------------------------- 5b. 본문 시각 카드 */
+function visTextRight(s) { return (s && s.visual) ? CR - VIS_W - VIS_TEXT_GAP : CR; }
+function contentTopPoint(s, headLast, gap) {
+  var g = Number(s.gap_after_head === undefined ? gap : s.gap_after_head);
+  var floor = s.visual ? VIS_BOTTOM + 30 : 0;
+  return Math.max(headLast + g, floor);
+}
+function whiteLogoCanvas(im, w, h) {
+  var off = document.createElement('canvas');
+  off.width = Math.max(1, Math.round(w)); off.height = Math.max(1, Math.round(h));
+  var oc = off.getContext('2d');
+  oc.drawImage(im, 0, 0, off.width, off.height);
+  oc.globalCompositeOperation = 'source-in';
+  oc.fillStyle = WHITE;
+  oc.fillRect(0, 0, off.width, off.height);
+  return off;
+}
+function drawVisLogo(path, x, y, w, h, maxW, maxH) {
+  var im = getImage(path);
+  if (!imgOk(im)) { placeholder(path, x, y, w, h); return; }
+  var r = Math.min(w * (maxW || 0.86) / im.naturalWidth, h * (maxH || 0.52) / im.naturalHeight);
+  var nw = im.naturalWidth * r, nh = im.naturalHeight * r;
+  _ctx.drawImage(whiteLogoCanvas(im, nw, nh), x + (w - nw) / 2, y + (h - nh) / 2);
+}
+function drawVisualPoint(s) {
+  var v = s.visual;
+  if (!v) return;
+  var x0 = CR - VIS_W, y0 = VIS_TOP, mode = v.mode || 'logo';
+  if (mode === 'logo' || mode === 'logos') {
+    _ctx.fillStyle = KEY; _ctx.fillRect(x0, y0, VIS_W, VIS_W);
+    var paths = (mode === 'logos' ? (v.images || []) : [v.image]).filter(Boolean);
+    if (paths.length === 1) {
+      drawVisLogo(paths[0], x0 + 12, y0 + 12, VIS_W - 24, VIS_W - 24);
+    } else if (paths.length === 2) {
+      var ch = (VIS_W - 24) / 2;
+      for (var i = 0; i < 2; i++) {
+        drawVisLogo(paths[i], x0 + 12, y0 + 6 + i * ch, VIS_W - 24, ch - 10, 0.90, 0.78);
+        if (i === 0) { _ctx.fillStyle = WHITE; _ctx.fillRect(x0 + 26, y0 + 6 + ch, VIS_W - 52, 1); }
+      }
+    } else {
+      var list = paths.slice(0, 4), rh = (VIS_W - 20) / list.length;
+      for (var j = 0; j < list.length; j++) {
+        var ry = y0 + 10 + j * rh;
+        drawVisLogo(list[j], x0 + 12, ry, VIS_W - 24, rh, 0.94, 0.62);
+        if (j) { _ctx.fillStyle = WHITE; _ctx.fillRect(x0 + 24, ry, VIS_W - 48, 1); }
+      }
+    }
+  } else {
+    if ((v.fit || 'contain') === 'cover') {
+      drawCoverCrop(v.image, x0, y0, VIS_W, VIS_W, v.focus === undefined ? 0.5 : v.focus, 0.5, 1);
+    } else {
+      drawContain(v.image, x0, y0, VIS_W, VIS_W, false);
+    }
+    _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
+    _ctx.strokeRect(x0 + 0.5, y0 + 0.5, VIS_W - 1, VIS_W - 1);
+  }
+}
+
 /* ---------------------------------------------------------------- 6. 뷰티 포인트 장표 */
 function pTable(s, headLast) {
   var spec = s.table || {}, cols = spec.columns || [], rows = spec.rows || [];
@@ -719,7 +778,7 @@ function pTable(s, headLast) {
   var widths = raw.map(function (w) { return Number(w) / tot * (CR - MX); });
   var keyCells = {};
   (spec.key_cells || []).forEach(function (cc) { keyCells[cc[0] + ',' + cc[1]] = true; });
-  var top = headLast + Number(s.gap_after_head === undefined ? 58 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 58);
   drawRule(top);
   var headTop = top + 22, headH = Number(spec.head_height || 54);
   _ctx.fillStyle = INK; _ctx.fillRect(MX, headTop, CR - MX, headH);
@@ -766,7 +825,7 @@ function pTable(s, headLast) {
 }
 
 function pCards(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 56 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 56);
   var cards = s.cards || [];
   var gap = 24, cw = (CR - MX - gap * (cards.length - 1)) / Math.max(1, cards.length);
   var pad = 34, bandH = s.takeaway ? 112 : 0;
@@ -812,7 +871,7 @@ function pCards(s, headLast) {
 }
 
 function pBrandPair(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 48 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 48);
   var images = s.images || [], n = images.length || 1, gap = 24;
   var cell = (CR - MX - gap * (n - 1)) / n;
   var ih = Number(s.image_height || 300);
@@ -885,7 +944,7 @@ function pBrandPair(s, headLast) {
 }
 
 function pBrandWide(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 46 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 46);
   var spec = s.image || {};
   var iw = Number(s.image_width || 340), ih = Number(s.image_height || 430);
   if (spec.logo) {
@@ -945,7 +1004,7 @@ function noteBlock(s, noteH, note, withKeyBar) {
 }
 
 function pList(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 56 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 56);
   var items = s.items || [], note = s.note || '', noteH = 0;
   if (note) noteH = 34 + 30 * wrapText(note, 21, 'bold', CR - MX - 64).length + 28;
   var avail = CTM - noteH - 20 - top;
@@ -963,7 +1022,7 @@ function pList(s, headLast) {
 }
 
 function pReasons(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 52 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 52);
   var items = s.items || [], note = s.note || '', noteH = 0;
   if (note) noteH = 34 + 30 * wrapText(note, 21, 'bold', CR - MX - 64).length + 28;
   var avail = CTM - noteH - 18 - top;
@@ -985,7 +1044,7 @@ function pReasons(s, headLast) {
 
 function pBars(s, headLast) {
   var spec = s.chart || {}, items = spec.items || [];
-  var top = headLast + Number(s.gap_after_head === undefined ? 44 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 44);
   if (s.body) top = bodyBlock(s, top + 8, s.body_size || 22) + 30;
   var lx = MX, ly = top;
   var inkFirst = !!spec.legend_ink_first;
@@ -1066,7 +1125,7 @@ function numBadge(x, y, size, text) {
 }
 
 function tPoints(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 40 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 40);
   if (s.body) top = bodyTextTech(s.body, top + 4, s.body_size || 22) + 34;
   var pts = s.points || [], numW = 56, colW = CR - MX - numW;
   var limit = CTM - (s.takeaway ? 120 : 0);
@@ -1166,7 +1225,7 @@ function tSplit(s, headLast) {
 
 function tTable(s, headLast) {
   var spec = s.table || {}, cols = spec.columns || [], rows = spec.rows || [];
-  var top = headLast + Number(s.gap_after_head === undefined ? 44 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 44);
   if (s.body) top = bodyTextTech(s.body, top + 10, s.body_size || 22) + 34;
   var ncol = cols.length || 1;
   var raw = (spec.widths && spec.widths.length) ? spec.widths : new Array(ncol).fill(1);
@@ -1226,7 +1285,7 @@ function tTable(s, headLast) {
 }
 
 function tCompare(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 46 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 46);
   if (s.body) top = bodyTextTech(s.body, top + 6, s.body_size || 22) + 32;
   var panels = s.panels || [], rows = s.rows || [], note = s.note || '';
   var takeH = s.takeaway ? 120 : 0;
@@ -1262,7 +1321,7 @@ function tCompare(s, headLast) {
 }
 
 function tProducts(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 30 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 30);
   var strip = s.strip;
   if (strip) {
     var sh = 72;
@@ -1323,7 +1382,7 @@ function tProducts(s, headLast) {
 }
 
 function tQuad(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 44 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 44);
   if (s.body) top = bodyTextTech(s.body, top + 8, s.body_size || 22) + 40;
   var cards = s.cards || [], gap = 22;
   var cw = (CR - MX - gap) / 2;
@@ -1355,7 +1414,7 @@ function tQuad(s, headLast) {
 }
 
 function tSteps(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 52 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 52);
   if (s.body) top = bodyTextTech(s.body, top + 8, s.body_size || 22) + 44;
   var items = s.items || [];
   var band = s.takeaway ? 138 : 0;
@@ -1391,7 +1450,7 @@ function tSteps(s, headLast) {
 }
 
 function tClosing(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 48 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 48);
   var cards = s.cards || [], rows = Math.ceil(cards.length / 2), gap = 20;
   var band = s.takeaway ? 124 : 0;
   var noteH = s.note_band ? Number(s.note_height || 88) : 0;
@@ -1423,7 +1482,7 @@ function tClosing(s, headLast) {
 }
 
 function tLineage(s, headLast) {
-  var top = headLast + Number(s.gap_after_head === undefined ? 46 : s.gap_after_head);
+  var top = contentTopPoint(s, headLast, 46);
   if (s.body) top = bodyTextTech(s.body, top + 16, s.body_size || 23) + 46;
   var rows = s.rows || [], note = s.note || '';
   var noteH = note ? 96 : 0;
@@ -1708,13 +1767,16 @@ var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, c
 function renderSlidePage(s, idx, total, family) {
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
   if (family === 'brief') return briefSlide(s, idx, total);
-  var head = family === 'tech' ? headBlockTech(s) : headBlock(s);
+  var vRight = visTextRight(s);
+  var head = family === 'tech' ? headBlockTech(s) : headBlock(s, undefined, vRight);
   var kind = s.kind || 'table';
   var fn = family === 'tech' ? TECH_KINDS[kind] : POINT_KINDS[kind];
   if (!fn) fn = family === 'tech' ? TECH_KINDS.table : POINT_KINDS.table;
+  if (s.visual && family !== 'tech') drawVisualPoint(s);
   var bodyFirst = head.last + 56;
   if (s.body && kind !== 'bars' && !(family === 'tech' && ['points', 'table', 'compare', 'quad', 'steps', 'lineage'].indexOf(kind) >= 0)) {
-    head.last = bodyBlock(s, bodyFirst, s.body_size || 24);
+    var bodyW = (s.visual && family !== 'tech' && bodyFirst < VIS_BOTTOM) ? (vRight - MX) : undefined;
+    head.last = bodyBlock(s, bodyFirst, s.body_size || 24, bodyW);
   }
   fn(s, head.last);
   drawSource(s.source || '');
