@@ -181,26 +181,12 @@
     "h": 116,
     "bytes": 8682
   },
-  "assets/kolmar_factory.jpg": {
-    "sha1": "5f5d02f25e71889050e4dce97158bc433f156c32",
-    "source": "downloads/beauty-point-04-06-src/kolmar_factory.png",
-    "w": 600,
-    "h": 610,
-    "bytes": 152310
-  },
   "assets/kolmar_logo.png": {
     "sha1": "6fca9f7bec741d97c9c543521be96ebcc8365654",
     "source": "downloads/beauty-point-logos/kolmar_logo.png",
     "w": 196,
     "h": 55,
     "bytes": 1736
-  },
-  "assets/kolmar_pps.jpg": {
-    "sha1": "26bba550c2d0d30ac1eb303ccd4f4e4d755ef050",
-    "source": "downloads/beauty-point-04-06-src/kolmar_pps.jpg",
-    "w": 500,
-    "h": 300,
-    "bytes": 134265
   },
   "assets/kolmar_sejong_exterior.jpg": {
     "sha1": "c4dd19367b7aa1e45e570854ee2537ab3030ba4e",
