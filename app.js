@@ -663,9 +663,15 @@ function coverBrief(cov) {
 }
 
 /* ---------------------------------------------------------------- 5. 공통 프레임 */
+var _frameAuto = false;
 function framePoint(page) {
-  drawLogo('black', MX, 74, 42);
-  if (page) drawText(page, CR, 96, 25, 'bold', KEY, 'rs');
+  var tone = 'black', color = KEY;
+  if (_frameAuto) {
+    tone = detectLogoTone();
+    color = tone === 'black' ? INK : WHITE;
+  }
+  drawLogo(tone, MX, 74, 42);
+  if (page) drawText(page, CR, 96, 25, 'bold', color, 'rs');
 }
 function progressPoint(cur, total) {
   _ctx.fillStyle = INK; _ctx.fillRect(0, BARY, W, 3);
@@ -708,9 +714,10 @@ function drawDisclaimer(text) {
 function drawRule(y, w) {
   _ctx.fillStyle = KEY; _ctx.fillRect(MX, y, w || 64, 3);
 }
-function takeaway(text, height, label) {
+function takeaway(text, height, label, limit) {
   var h = height || 112;
-  var y0 = CTM - h;
+  var base = limit || CTM;
+  var y0 = base - h;
   _ctx.fillStyle = INK; _ctx.fillRect(MX, y0, CR - MX, h);
   _ctx.fillStyle = KEY; _ctx.fillRect(MX, y0, 8, h);
   var fsize = h === 104 ? 24 : 25;
@@ -723,13 +730,14 @@ function takeaway(text, height, label) {
     first += h === 104 ? 10 : 12;
   }
   for (var i = 0; i < n; i++) drawText(lines[i], MX + 34, first + i * gap, fsize, 'bold', WHITE, 'ls');
+  return base;
 }
 
 /* ---------------------------------------------------------------- 5b. 본문 시각 카드 */
 function visTextRight(s) {
   var v = s && s.visual;
   if (!v) return CR;
-  if (v.mode === 'side') return CR - Number(v.w || 380) - 26;
+  if (v.mode === 'side' || v.mode === 'panel') return CR - Number(v.w || 380) - 26;
   if (v.mode === 'logo' || v.mode === 'photo' || v.mode === 'logos') return CR - VIS_W - VIS_TEXT_GAP;
   return CR;
 }
