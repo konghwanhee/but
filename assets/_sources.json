@@ -202,6 +202,20 @@
     "h": 300,
     "bytes": 134265
   },
+  "assets/kolmar_sejong_exterior.jpg": {
+    "sha1": "c4dd19367b7aa1e45e570854ee2537ab3030ba4e",
+    "source": "downloads/beauty-point-04-06-src/kolmar_sejong_exterior.jpg",
+    "w": 1600,
+    "h": 882,
+    "bytes": 253247
+  },
+  "assets/kolmar_sejong_line.jpg": {
+    "sha1": "5ce6153d6eb21f24560623698d54bc1b1625b9dd",
+    "source": "downloads/beauty-point-04-06-src/kolmar_sejong_line.jpg",
+    "w": 1280,
+    "h": 597,
+    "bytes": 181983
+  },
   "assets/logo-black.png": {
     "sha1": "46f670933aac45a4abb3d095c6e5b3ffedafcb92",
     "source": "scripts/fonts/logo-black.png",

@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-19T18:21:20+09:00",
+  "generatedAt": "2026-11-19T18:26:39+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -49,7 +49,7 @@
       "subtitle": "OEM · 설계는 브랜드가, 생산은 공장이",
       "coverThumb": "covers/beauty-point-04-cover.png",
       "jsonPath": "data/beauty-point-04.json",
-      "updatedAt": "2026-11-19T16:19:40+09:00"
+      "updatedAt": "2026-11-19T18:26:38+09:00"
     },
     {
       "id": "beauty-point-05",

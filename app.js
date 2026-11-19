@@ -17,6 +17,7 @@ var GRAY_EMPH = '#8A8A8A', GRAY_SOFT = '#9A9A9A', GRAY_BODY = '#3F3F3F', HAIRLIN
 var FS = '"Pretendard","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif';
 var WG = { regular: 400, medium: 500, bold: 700, extrabold: 800 };
 var KEY = '#1E4ED8';
+var KEY_TEXT = '#2A55BB';   // 작은 강조 글씨용 짙은 키 컬러(renderPage에서 KEY로 다시 계산)
 var VIS_W = 212, VIS_TOP = 146, VIS_BOTTOM = VIS_TOP + VIS_W, VIS_TEXT_GAP = 24;
 
 var IMGS = {};   // 경로 → URL. 저장소 상대경로(assets/…)는 경로를 그대로 쓴다. 로고만 미리 등록.
@@ -350,6 +351,13 @@ function drawLogo(tone, x, y, h) {
   }
   drawText('but', x, y + h * 0.85, h * 0.92, 'extrabold', tone === 'white' ? WHITE : INK, 'ls');
   return { w: h * 1.7, h: h };
+}
+function shadeHex(hex, depth) {
+  var c = String(hex || '#000000').replace('#', '');
+  if (c.length === 3) c = c.charAt(0) + c.charAt(0) + c.charAt(1) + c.charAt(1) + c.charAt(2) + c.charAt(2);
+  var r = parseInt(c.substr(0, 2), 16), g = parseInt(c.substr(2, 2), 16), b = parseInt(c.substr(4, 2), 16);
+  var f = function (v) { var x = Math.round(v * (1 - depth)); return (x < 16 ? '0' : '') + x.toString(16); };
+  return '#' + f(r) + f(g) + f(b);
 }
 function clamp01(v) { v = Number(v); if (isNaN(v)) return 0.5; return Math.max(0, Math.min(1, v)); }
 function clampNum(v, lo, hi) { v = Number(v); if (isNaN(v)) return lo; return Math.max(lo, Math.min(hi, v)); }
@@ -765,6 +773,34 @@ function drawBandPoint(s, top) {
   }
   _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
   _ctx.strokeRect(MX + 0.5, top + 0.5, w - 1, h - 1);
+  var cap = String(v.caption || '').trim();
+  if (cap && (v.caption_mode || 'overlay') === 'overlay') {
+    var bar = Number(v.caption_bar || 30);
+    _ctx.fillStyle = WHITE; _ctx.fillRect(MX + 1, top + h - bar, w - 2, bar - 1);
+    drawText(cap, MX + 16, top + h - bar / 2 + 1, Number(v.caption_size || 17), 'medium', INK, 'lm');
+  } else if (cap) {
+    var capY = top + h + 24, lines = wrapText(cap, Number(v.caption_size || 17), 'medium', w);
+    for (var i = 0; i < lines.length; i++) drawText(lines[i], MX, capY + i * 23, Number(v.caption_size || 17), 'medium', INK, 'ls');
+    return { x: MX, y: top, w: w, h: h + 24 + 23 * (lines.length - 1) + 4 };
+  }
+  return { x: MX, y: top, w: w, h: h };
+}
+function drawNotePoint(s, top) {
+  var v = s.visual, h = Number(v.h || 150), w = CR - MX;
+  _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
+  _ctx.strokeRect(MX + 0.5, top + 0.5, w - 1, h - 1);
+  _ctx.fillStyle = KEY; _ctx.fillRect(MX, top, 6, h - 1);
+  var y = top + 30;
+  if (v.title) { tracked(v.title, MX + 26, y, 15, 'bold', KEY_TEXT, 2); y += 26; }
+  var size = Number(v.size || 21);
+  (v.lines || []).forEach(function (ln) {
+    var ls = wrapText(ln, size, 'medium', w - 52);
+    for (var k = 0; k < ls.length; k++) {
+      drawText(ls[k], MX + 26, y + size, size, 'medium', INK, 'ls');
+      y += Math.round(size * 1.42);
+    }
+  });
+  if (v.caption) drawText(v.caption, MX + 26, top + h - 16, 14, 'medium', KEY_TEXT, 'ls');
   return { x: MX, y: top, w: w, h: h };
 }
 function drawStripPoint(s, top) {
@@ -826,7 +862,7 @@ function drawSidePoint(s) {
   return { x: x0, y: y0, w: w, h: h };
 }
 var POINT_VIS_MODES = { band: drawBandPoint, strip: drawStripPoint, grid: drawGridPoint,
-                        figures: drawFiguresPoint, side: drawSidePoint };
+                        figures: drawFiguresPoint, side: drawSidePoint, note: drawNotePoint };
 function whiteLogoCanvas(im, w, h) {
   var off = document.createElement('canvas');
   off.width = Math.max(1, Math.round(w)); off.height = Math.max(1, Math.round(h));
@@ -902,17 +938,24 @@ function pTable(s, headLast) {
   var bandH = s.takeaway ? 112 : 0;
   var avail = CTM - listTop - (bandH ? bandH + 30 : 0);
   var rowH = avail / Math.max(1, rows.length);
+  var boost = Number(spec.key_size_boost === undefined ? 2 : spec.key_size_boost);
   var size = Number(spec.cell_size || 24);
   while (size > 17) {
     var ok = true;
     for (var r = 0; r < rows.length && ok; r++) {
       for (var j2 = 0; j2 < rows[r].length; j2++) {
-        if (measure(rows[r][j2], size, 'medium') > widths[j2] - 34) { ok = false; break; }
+        var hot0 = keyCells[r + ',' + j2];
+        var parts0 = String(rows[r][j2]).split('\n');
+        for (var q = 0; q < parts0.length; q++) {
+          if (measure(parts0[q], size + (hot0 ? boost : 0), hot0 ? 'bold' : 'medium') > widths[j2] - 34) { ok = false; break; }
+        }
+        if (!ok) break;
       }
     }
     if (ok) break;
     size -= 1;
   }
+  var leadT = Math.round(size * 1.36);
   for (var i = 0; i < rows.length; i++) {
     var y0 = listTop + rowH * i, cy = y0 + rowH / 2;
     _ctx.fillStyle = INK; _ctx.fillRect(MX, y0, CR - MX, 1);
@@ -921,9 +964,16 @@ function pTable(s, headLast) {
       var align2 = spec.align && spec.align[j3] === 'r';
       var tx2 = align2 ? x2 + widths[j3] - 18 : x2 + (j3 ? 18 : 20);
       var hot = keyCells[i + ',' + j3];
-      var color = hot ? KEY : INK;
+      var parts = String(rows[i][j3]).split('\n');
+      var color = hot ? KEY_TEXT : INK;
       var wt = hot || j3 === 0 ? 'bold' : 'medium';
-      drawText(rows[i][j3], tx2, cy, size, wt, color, align2 ? 'rm' : 'lm');
+      var sz = size + (hot ? boost : 0);
+      var ty = cy - leadT * (parts.length - 1) / 2;
+      for (var k = 0; k < parts.length; k++) {
+        var wsz = k === 0 ? wt : 'medium';
+        var ssz = k === 0 ? sz : Math.max(17, size - 2);
+        drawText(parts[k], tx2, ty + k * leadT, ssz, hot && k > 0 ? 'bold' : wsz, color, align2 ? 'rm' : 'lm');
+      }
       x2 += widths[j3];
     }
   }
@@ -938,21 +988,32 @@ function pCards(s, headLast) {
   var cards = s.cards || [];
   var gap = 24, cw = (CR - MX - gap * (cards.length - 1)) / Math.max(1, cards.length);
   var pad = 34, bandH = s.takeaway ? 112 : 0;
+  var itemSize = Number(s.item_size || 21), itemGap = Math.round(itemSize * 1.5);
+  var titleSize = Number(s.card_title_size || 40), noteSize = Number(s.card_note_size || 19);
+  function parts(item) {
+    if (item && typeof item === 'object') return [String(item.text || ''), String(item.sub || '')];
+    return [String(item == null ? '' : item), ''];
+  }
   var limit = CTM - (bandH ? bandH + 34 : 0);
   var need = 0;
   cards.forEach(function (card) {
     var y = 178;
     (card.items || []).forEach(function (item) {
-      var lines = wrapText(item, 21, 'medium', cw - pad * 2 - 22);
-      y += 32 * lines.length + 16;
+      var p = parts(item);
+      var lines = wrapText(p[0], itemSize, 'medium', cw - pad * 2 - 22);
+      y += itemGap * lines.length;
+      if (p[1]) y += 24;
+      y += 16;
     });
-    if (card.note) y += 34;
+    if (card.note) y += 42;
     need = Math.max(need, y);
   });
   var ch = Math.min(limit - top, need + 56);
   ch = Math.max(ch, 320);
   var slack = limit - (top + ch);
   if (slack > 60) top += Math.round(slack * 0.45);
+
+  var ends = [];
   cards.forEach(function (card, i) {
     var x = MX + i * (cw + gap);
     var bg = (card.tone || 'ink') === 'ink' ? INK : KEY;
@@ -960,21 +1021,33 @@ function pCards(s, headLast) {
     var tx = x + pad;
     tracked(card.eyebrow || '', tx, top + 62, 18, 'bold', WHITE, 3);
     var title = card.title || '';
-    var size = 40;
+    var size = titleSize;
     while (measure(title, size, 'extrabold') > cw - pad * 2 && size > 28) size -= 1;
     drawText(title, tx, top + 122, size, 'extrabold', WHITE, 'ls');
     var y = top + 178;
     (card.items || []).forEach(function (item) {
+      var p = parts(item);
       _ctx.fillStyle = WHITE; _ctx.fillRect(tx, y - 9, 10, 10);
-      var lines = wrapText(item, 21, 'medium', cw - pad * 2 - 22);
-      for (var k = 0; k < lines.length; k++) drawText(lines[k], tx + 22, y + k * 32, 21, 'medium', WHITE, 'ls');
-      y += 32 * lines.length + 16;
+      var lines = wrapText(p[0], itemSize, 'medium', cw - pad * 2 - 22);
+      for (var k = 0; k < lines.length; k++) drawText(lines[k], tx + 22, y + k * itemGap, itemSize, 'medium', WHITE, 'ls');
+      y += itemGap * lines.length;
+      if (p[1]) {
+        drawText(p[1], tx + 22, y + 3, Number(s.card_sub_size || 15), 'medium', WHITE, 'ls');
+        y += 24;
+      }
+      y += 16;
     });
-    if (card.note) {
-      _ctx.fillStyle = WHITE; _ctx.fillRect(tx, top + ch - 74, cw - pad * 2, 2);
-      drawText(card.note, tx, top + ch - 40, 19, 'bold', WHITE, 'ls');
-    }
+    ends.push(y - 16);
   });
+  if (cards.some(function (c) { return c.note; })) {
+    var ruleY = Math.min(top + ch - 74, Math.max.apply(null, ends) + 26);
+    cards.forEach(function (card, i) {
+      if (!card.note) return;
+      var x2 = MX + i * (cw + gap);
+      _ctx.fillStyle = WHITE; _ctx.fillRect(x2 + pad, ruleY, cw - pad * 2, 2);
+      drawText(card.note, x2 + pad, ruleY + 34, noteSize, 'bold', WHITE, 'ls');
+    });
+  }
   if (s.takeaway) { takeaway(s.takeaway, 112, s.takeaway_label || 'POINT'); return CTM; }
   return top + ch;
 }
@@ -1108,8 +1181,11 @@ function noteBlock(s, noteH, note, withKeyBar) {
   var ny = CTM - noteH;
   _ctx.fillStyle = INK; _ctx.fillRect(MX, ny, CR - MX, noteH);
   if (withKeyBar) { _ctx.fillStyle = KEY; _ctx.fillRect(MX, ny, 8, noteH); }
+  var label = withKeyBar ? (s.note_label === undefined ? 'POINT' : String(s.note_label)) : '';
+  if (label) tracked(label, MX + 32, ny + 26, 15, 'bold', KEY, 3);
+  var base = ny + (label ? 62 : 50);
   var lines = wrapText(note, 21, 'bold', CR - MX - 64);
-  for (var i = 0; i < lines.length; i++) drawText(lines[i], MX + 32, ny + 50 + i * 30, 21, 'bold', WHITE, 'ls');
+  for (var i = 0; i < lines.length; i++) drawText(lines[i], MX + 32, base + i * 30, 21, 'bold', WHITE, 'ls');
 }
 
 function pList(s, headLast) {
@@ -1133,19 +1209,37 @@ function pList(s, headLast) {
 function pReasons(s, headLast) {
   var top = contentTopPoint(s, headLast, 52);
   var items = s.items || [], note = s.note || '', noteH = 0;
-  if (note) noteH = 34 + 30 * wrapText(note, 21, 'bold', CR - MX - 64).length + 28;
+  var label = note ? (s.note_label === undefined ? 'POINT' : String(s.note_label)) : '';
+  if (note) {
+    var nl = wrapText(note, 21, 'bold', CR - MX - 64).length;
+    noteH = (label ? 62 : 50) + 30 * (nl - 1) + 30;
+  }
   var avail = CTM - noteH - 18 - top;
-  var step = avail / Math.max(1, items.length);
   var numX = MX + 28, colX = MX + 132;
+  var colW = CR - colX;
+  var blocks = [], size = 21, gap = 31;
+  var tries = [21, 20, 19, 18, 17];
+  for (var t = 0; t < tries.length; t++) {
+    size = tries[t]; gap = Math.round(size * 1.48);
+    blocks = items.map(function (it) {
+      var lines = wrapText(it.body || '', size, 'regular', colW);
+      return { lines: lines, h: 82 + gap * (lines.length - 1) + 24 };
+    });
+    var sum = blocks.reduce(function (a, b) { return a + b.h; }, 0);
+    if (sum <= avail) break;
+  }
+  var step = avail / Math.max(1, items.length);
+  var y = top;
   items.forEach(function (item, i) {
-    var y = top + step * i;
-    var barH = Math.min(step - 34, 132);
+    var b = blocks[i], blk = Math.max(b.h, step);
+    var barH = Math.min(blk - 34, 132);
     _ctx.fillStyle = KEY; _ctx.fillRect(MX, y + 4, 7, barH);
     drawText(pad2(i + 1), numX, y + 60, 50, 'extrabold', KEY, 'ls');
     drawText(item.title, colX, y + 38, 31, 'bold', INK, 'ls');
-    var lines = wrapText(item.body || '', 21, 'regular', CR - colX);
-    for (var k = 0; k < lines.length; k++) drawText(lines[k], colX, y + 82 + k * 31, 21, 'regular', INK, 'ls');
-    _ctx.fillStyle = INK; _ctx.fillRect(MX, y + step - 22, CR - MX, 1);
+    for (var k = 0; k < b.lines.length; k++) drawText(b.lines[k], colX, y + 82 + k * gap, size, 'regular', INK, 'ls');
+    var ry = y + blk - 16;
+    _ctx.fillStyle = INK; _ctx.fillRect(MX, ry, CR - MX, 1);
+    y += blk;
   });
   if (note) noteBlock(s, noteH, note, true);
   return CTM;
@@ -1911,6 +2005,7 @@ function renderPage(page) {
   _ctx.clearRect(0, 0, W, H);
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
   KEY = (D && D.key_color) || '#1E4ED8';
+  KEY_TEXT = shadeHex(KEY, 0.22);
   try {
     if (page.type === 'cover') renderCover(D, state.family);
     else if (page.type === 'index') renderIndex(D);
