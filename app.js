@@ -1,6 +1,6 @@
 /* =============================================================================
    뷰티 카드뉴스 허브 — konghwanhee/but
-   · 홈: 챕터별(뷰티 포인트 / 뷰티 테크 / 데일리 브리핑) 표지 갤러리
+   · 홈: 챕터별(뷰티 포인트 / 뷰티 테크 / 뷰티 브리핑 / 뷰티 픽) 표지 갤러리
    · 상세: 표지·요약·본문 장표 1080x1350 실시간 캔버스 + 문구 수정
            + 현재/전체 장표 PNG 저장 + data/{id}.json GitHub 커밋(PAT)
    · 렌더 엔진은 scripts/cardnews-editor/app.js 의 캔버스·줄바꿈(kr_wrap) 코드를
@@ -2633,10 +2633,10 @@ var MANIFEST = { decks: [] };
 var DECK = {};
 var LS_PAT = 'but:pat';
 var CHAPTERS = [
-  { series: 'point', label: '뷰티 포인트', short: '포인트', desc: '뷰티 업계의 주목할 만한 트렌드와 핵심 이슈를 선별해 소개합니다. · MON · WED · FRI 08:00' },
-  { series: 'tech', label: '뷰티 테크', short: '테크', desc: '성분부터 작용기전, 신기술까지 뷰티 과학의 전문 지식을 깊이 있게 다룹니다. · SAT 08:00' },
-  { series: 'briefing', label: '데일리 뷰티 브리핑', short: '브리프', desc: '뷰티 업계의 최신 뉴스와 이슈, 보도자료 및 공시 정보를 매일 전합니다. · MON – FRI 18:00' },
-  { series: 'pick', label: '뷰티 픽', short: '픽', desc: '한 편으로 읽는 제품·트렌드 큐레이션. 결재한 날 올라갑니다. · IRREGULAR' }
+  { series: 'point', label: '뷰티 포인트', short: '포인트', badge: 'POINT', desc: '뷰티 업계의 주목할 만한 트렌드와 핵심 이슈를 선별해 소개합니다. · MON · WED · FRI 08:00' },
+  { series: 'tech', label: '뷰티 테크', short: '테크', badge: 'TECH', desc: '성분부터 작용기전, 신기술까지 뷰티 과학의 전문 지식을 깊이 있게 다룹니다. · SAT 08:00' },
+  { series: 'briefing', label: '뷰티 브리핑', short: '브리프', badge: 'BRIEF', desc: '뷰티 업계의 최신 뉴스와 이슈, 보도자료 및 공시 정보를 매일 전합니다. · MON – FRI 18:00' },
+  { series: 'pick', label: '뷰티 픽', short: '픽', badge: 'PICK', desc: '한 편으로 읽는 제품·트렌드 큐레이션. 결재한 날 올라갑니다. · IRREGULAR' }
 ];
 var filterSeries = 'all';
 var currentDeck = null;
@@ -2650,7 +2650,7 @@ function decksOf(series) {
 }
 function chapterOf(series) {
   for (var i = 0; i < CHAPTERS.length; i++) if (CHAPTERS[i].series === series) return CHAPTERS[i];
-  return { series: series, label: series, short: String(series || '').toUpperCase(), desc: '' };
+  return { series: series, label: series, short: String(series || ''), badge: String(series || '').toUpperCase(), desc: '' };
 }
 /* 테스트 항목 — manifest/data 의 isTest:true (또는 issueNo:"TEST") 로 구분한다.
    호 번호를 받지 않고, 결재·업로드 대상에서 빠지며, 갤러리에서 `픽 TEST` 처럼 표시된다. */
@@ -2659,11 +2659,15 @@ function deckIsTest(d) {
   if (d.isTest === true) return true;
   return String(d.issueNo || '').toUpperCase() === 'TEST';
 }
-/* 갤러리 배지·상세 헤더에 쓰는 호 표기: 포인트 07 / 브리프 01 / 픽 TEST */
+/* 갤러리 배지·상세 헤더에 쓰는 호 표기(영문 코드 + 0 없는 호수): POINT 7 / BRIEF 1 / BRIEF TEST / PICK TEST */
 function issueLabel(d) {
   var ch = chapterOf(d && d.series);
-  if (deckIsTest(d)) return ch.short + ' TEST';
-  return ch.short + ((d && d.issueNo) ? ' ' + pad2(d.issueNo) : '');
+  var tag = ch.badge || ch.short;
+  if (deckIsTest(d)) return tag + ' TEST';
+  var raw = (d && d.issueNo !== undefined && d.issueNo !== null) ? String(d.issueNo).trim() : '';
+  if (!raw) return tag;
+  var n = Number(raw);
+  return tag + ' ' + (isNaN(n) ? raw : n);
 }
 function fmtDate(d) {
   var m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
@@ -3087,7 +3091,7 @@ function approveToggle() {
     return;
   }
   if (!approveAllowed(state.presetId)) {
-    toast('결재는 포인트 · 테크 · 브리프 · 픽 호에서만 사용할 수 있습니다');
+    toast('결재는 POINT · TECH · BRIEF · PICK 정식 호에서만 사용할 수 있습니다');
     return;
   }
   var before = approvalOf(state.presetId);
