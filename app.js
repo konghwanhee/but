@@ -1309,8 +1309,13 @@ function noteBlock(s, noteH, note, withKeyBar, limit) {
   var ny = (limit || CTM) - noteH;
   _ctx.fillStyle = INK; _ctx.fillRect(MX, ny, CR - MX, noteH);
   if (withKeyBar) { _ctx.fillStyle = KEY; _ctx.fillRect(MX, ny, 8, noteH); }
-  var label = withKeyBar ? (s.note_label === undefined ? 'POINT' : String(s.note_label)) : '';
-  if (label) tracked(label, MX + 32, ny + 26, 15, 'bold', KEY, 3);
+  var label = s.note_label === undefined ? 'POINT' : String(s.note_label);
+  if (label) {
+    var kc = String(KEY).replace('#', '');
+    var rr = parseInt(kc.slice(0, 2), 16) / 255, gg = parseInt(kc.slice(2, 4), 16) / 255, bb = parseInt(kc.slice(4, 6), 16) / 255;
+    var lum = 0.2126 * rr + 0.7152 * gg + 0.0722 * bb;
+    tracked(label, MX + 32, ny + 26, 15, 'bold', (!withKeyBar || lum <= 0.45) ? WHITE : KEY, 3);
+  }
   var base = ny + (label ? 62 : 50);
   var lines = wrapText(note, 21, 'bold', CR - MX - 64);
   for (var i = 0; i < lines.length; i++) drawText(lines[i], MX + 32, base + i * 30, 21, 'bold', WHITE, 'ls');
