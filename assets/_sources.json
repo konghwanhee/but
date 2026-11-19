@@ -244,6 +244,13 @@
     "h": 805,
     "bytes": 104290
   },
+  "assets/medicube-capsule-cream.jpg": {
+    "sha1": "815d1138a23c9131712f062b2651776a99df93a5",
+    "source": "downloads/beauty-point-covers-src/medicube-capsule-cream.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 142340
+  },
   "assets/medicube-pink-serum.jpg": {
     "sha1": "e67eb99313bde66c6a59fd020cd3f69645fa53b7",
     "source": "downloads/beauty-point-covers-src/medicube-pink-serum.jpg",
@@ -341,6 +348,13 @@
     "w": 900,
     "h": 231,
     "bytes": 25754
+  },
+  "assets/tirtir_logo.png": {
+    "sha1": "8ead4dc34ba366d533145ad06bd5d930862d04ef",
+    "source": "downloads/beauty-point-logos/tirtir_logo.png",
+    "w": 900,
+    "h": 247,
+    "bytes": 14834
   },
   "assets/twoedit_sticks.jpg": {
     "sha1": "10d5f5f944daa4f9b4f6ec7beaa55e692afc935a",

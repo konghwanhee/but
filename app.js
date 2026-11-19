@@ -452,10 +452,25 @@ function drawLinesCenter(lines, firstY, gap, size, colorOf) {
 function coverPointBlock(cov) {
   var blockH = Number(cov.block_h || 660);
   var ok = false;
-  if (cov.image) ok = drawCoverCrop(cov.image, 0, blockH, W, H - blockH, cov.focus, cov.focus_y, cov.zoom || 1);
+  if (cov.image) {
+    if (String(cov.fit || 'cover').toLowerCase() === 'contain') {
+      _ctx.fillStyle = WHITE; _ctx.fillRect(0, blockH, W, H - blockH);
+      var im0 = getImage(cov.image);
+      if (imgOk(im0)) {
+        var rr = Math.min(W / im0.naturalWidth, (H - blockH) / im0.naturalHeight);
+        var nw0 = im0.naturalWidth * rr, nh0 = im0.naturalHeight * rr;
+        _ctx.drawImage(im0, (W - nw0) / 2, blockH + (H - blockH - nh0) / 2, nw0, nh0);
+        ok = true;
+      }
+    } else {
+      ok = drawCoverCrop(cov.image, 0, blockH, W, H - blockH, cov.focus, cov.focus_y, cov.zoom || 1);
+    }
+  }
   if (!ok) { _ctx.fillStyle = INK; _ctx.fillRect(0, blockH, W, H - blockH); }
+  var onLight = String(cov.logo_tone || 'white') === 'black';
+  var onBlock = onLight ? INK : WHITE;
   _ctx.fillStyle = cov.block_color || KEY; _ctx.fillRect(0, 0, W, blockH);
-  drawLogo('white', MX, Number(cov.logo_top === undefined ? 74 : cov.logo_top),
+  drawLogo(onLight ? 'black' : 'white', MX, Number(cov.logo_top === undefined ? 74 : cov.logo_top),
     Number(cov.logo_height || 42));
 
   var series = cov.series_name === undefined ? 'BEAUTY POINT' : String(cov.series_name);
@@ -463,7 +478,7 @@ function coverPointBlock(cov) {
     var fs = Number(cov.series_size || 22);
     var sw = trackedW(series, fs, 'bold', 4);
     tracked(series, CR - sw, Number(cov.series_baseline === undefined ? 132 : cov.series_baseline),
-      fs, 'bold', WHITE, 4);
+      fs, 'bold', onBlock, 4);
   }
   var num = cov.num === undefined ? '' : String(cov.num).trim();
   if (num) {
@@ -478,12 +493,12 @@ function coverPointBlock(cov) {
   var lastMax = subBase - Number(cov.sub_gap === undefined ? 74 : cov.sub_gap);
   var first = cov.head_first === undefined
     ? Math.min(420, lastMax - gap * (lines.length - 1)) : Number(cov.head_first);
-  drawLinesLeft(lines, MX, first, gap, size, function (t) { return t === 'key' ? INK : WHITE; });
+  drawLinesLeft(lines, MX, first, gap, size, function (t) { return t === 'key' ? INK : onBlock; });
 
   if (cov.sub) {
     var ss = Number(cov.sub_size || 27);
     while (ss > 20 && measure(cov.sub, ss, 'medium') > CR - MX) ss -= 1;
-    drawText(cov.sub, MX, subBase, ss, 'medium', WHITE, 'ls');
+    drawText(cov.sub, MX, subBase, ss, 'medium', onBlock, 'ls');
   }
 }
 
@@ -1036,7 +1051,7 @@ function pTable(s, headLast) {
   });
   var listTop = headTop + headH;
   var bandH = s.takeaway ? 112 : 0;
-  var avail = CTM - listTop - (bandH ? bandH + 30 : 0);
+  var avail = (s.__limit || CTM) - listTop - (bandH ? bandH + 30 : 0);
   var rowH = avail / Math.max(1, rows.length);
   var boost = Number(spec.key_size_boost === undefined ? 2 : spec.key_size_boost);
   var size = Number(spec.cell_size || 24);
@@ -1094,7 +1109,7 @@ function pCards(s, headLast) {
     if (item && typeof item === 'object') return [String(item.text || ''), String(item.sub || '')];
     return [String(item == null ? '' : item), ''];
   }
-  var limit = CTM - (bandH ? bandH + 34 : 0);
+  var limit = (s.__limit || CTM) - (bandH ? bandH + 34 : 0);
   var need = 0;
   cards.forEach(function (card) {
     var y = 178;
