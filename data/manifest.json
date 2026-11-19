@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-19T21:20:34+09:00",
+  "generatedAt": "2026-11-19T21:22:06+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -109,7 +109,7 @@
       "subtitle": "올리브영 색조 전문관 · 무신사 5일 5억 · 신규 11건",
       "coverThumb": "covers/beauty-brief-test-cover.png",
       "jsonPath": "data/beauty-brief-test.json",
-      "updatedAt": "2026-11-19T21:20:33+09:00",
+      "updatedAt": "2026-11-19T21:22:05+09:00",
       "isTest": true
     },
     {
