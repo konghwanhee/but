@@ -1843,7 +1843,7 @@ function tLineage(s, headLast) {
   return CTM;
 }
 
-/* ---------------------------------------------------------------- 8. 데일리 브리핑 */
+/* ---------------------------------------------------------------- 8. 뷰티 브리핑 */
 function frameBrief(page, progress) {
   drawLogo('black', MX, 78, 44);
   if (page) drawText(page, CR, 96, 25, 'medium', GRAY_SOFT, 'rs');
