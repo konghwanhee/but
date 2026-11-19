@@ -2633,10 +2633,10 @@ var MANIFEST = { decks: [] };
 var DECK = {};
 var LS_PAT = 'but:pat';
 var CHAPTERS = [
-  { series: 'point', label: '뷰티 포인트', short: '포인트', badge: 'POINT', desc: '뷰티 업계의 주목할 만한 트렌드와 핵심 이슈를 선별해 소개합니다. · MON · WED · FRI 08:00' },
-  { series: 'tech', label: '뷰티 테크', short: '테크', badge: 'TECH', desc: '성분부터 작용기전, 신기술까지 뷰티 과학의 전문 지식을 깊이 있게 다룹니다. · SAT 08:00' },
-  { series: 'briefing', label: '뷰티 브리핑', short: '브리프', badge: 'BRIEF', desc: '뷰티 업계의 최신 뉴스와 이슈, 보도자료 및 공시 정보를 매일 전합니다. · MON – FRI 18:00' },
-  { series: 'pick', label: '뷰티 픽', short: '픽', badge: 'PICK', desc: '한 편으로 읽는 제품·트렌드 큐레이션. 결재한 날 올라갑니다. · IRREGULAR' }
+  { series: 'point', label: '뷰티 포인트', short: '포인트', badge: 'POINT', desc: '뷰티 업계의 주목할 만한 트렌드와 핵심 이슈' },
+  { series: 'tech', label: '뷰티 테크', short: '테크', badge: 'TECH', desc: '성분부터 작용기전, 신기술까지 뷰티 과학' },
+  { series: 'briefing', label: '뷰티 브리핑', short: '브리프', badge: 'BRIEF', desc: '뷰티 업계의 최신 뉴스, 보도자료 및 공시 정보' },
+  { series: 'pick', label: '뷰티 픽', short: '픽', badge: 'PICK', desc: '한 편으로 읽는 제품·트렌드 큐레이션' }
 ];
 var filterSeries = 'all';
 var currentDeck = null;
