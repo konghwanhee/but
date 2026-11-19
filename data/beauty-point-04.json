@@ -233,8 +233,9 @@
       "takeaway": "OEM은 생산을 빌리는 대신, 설계를 쥐고 있어야 힘이 생깁니다.",
       "source": "화장품 제조 위탁 실무 안내 · 업계 인터뷰",
       "visual": {
-        "mode": "logo",
-        "image": "assets/kolmar_logo.png"
+        "mode": "photo",
+        "image": "assets/boj_reliefsun_2-1d256a.jpg",
+        "fit": "contain"
       }
     },
     {
@@ -296,9 +297,8 @@
       "takeaway": "만들어 주기만 하던 회사도 개발을 쥐는 순간 판이 바뀝니다.",
       "source": "한국콜마 · 포브스코리아 2014-10 · 한경매거진 2025-03 · 사업보고서 2024",
       "visual": {
-        "mode": "photo",
-        "image": "assets/boj_reliefsun_2-1d256a.jpg",
-        "fit": "contain"
+        "mode": "logo",
+        "image": "assets/kolmar_logo.png"
       }
     },
     {
@@ -398,8 +398,8 @@
         "mode": "photo",
         "image": "assets/kolmar_factory.jpg",
         "fit": "cover",
-        "focus": 0.55,
-        "lift": false
+        "lift": false,
+        "focus": 0.72
       }
     }
   ]
