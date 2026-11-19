@@ -3746,7 +3746,7 @@ function captionGroups(page) {
       { t: 'text', abs: true, path: ['caption'], label: '캡션 + 해시태그', rows: 6, hint: '결재 시 함께 커밋' }
     ])];
     if (state.family === 'pick') {
-      g.push(group('뷰티 픽 하단 날짜', [
+      g.unshift(group('뷰티 픽 하단 날짜', [
         { t: 'text', abs: true, path: ['date'], label: '날짜 (YYYY.MM.DD)', rows: 1, hint: '결재 시 결재일로 자동 변경' }
       ]));
     }
