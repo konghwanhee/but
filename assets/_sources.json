@@ -62,6 +62,13 @@
     "h": 2000,
     "bytes": 67323
   },
+  "assets/boj_reliefsun_2-1d256a.jpg": {
+    "sha1": "1d256a1cb0ea258f5be375d5df40f1068d4bd345",
+    "source": "downloads/beauty-point-cuts/boj_reliefsun_2.png",
+    "w": 1100,
+    "h": 1539,
+    "bytes": 94600
+  },
   "assets/boj_reliefsun_2-bdd3ab.jpg": {
     "sha1": "bdd3abbd7893baa9673c81eb1d40cb72b38cc81f",
     "source": "downloads/beauty-point-cuts/boj_reliefsun_2.png",
@@ -258,6 +265,13 @@
     "h": 400,
     "bytes": 64513
   },
+  "assets/medicube_3h-13ebd5.jpg": {
+    "sha1": "13ebd5802d0c1ec20aa5acecdef6e130f38fb800",
+    "source": "downloads/beauty-point-cuts/medicube_3h.png",
+    "w": 1100,
+    "h": 1371,
+    "bytes": 105125
+  },
   "assets/medicube_3h.jpg": {
     "sha1": "cd3fabe5c045bc187dcaac093fa6e847dab567c3",
     "source": "downloads/beauty-point-cuts/medicube_3h.png",
@@ -278,6 +292,13 @@
     "w": 2284,
     "h": 2320,
     "bytes": 305271
+  },
+  "assets/ordinary_azelaic-f1ef62.jpg": {
+    "sha1": "f1ef6222b8d7be53a7ec7eb3b5d5577ee97b618a",
+    "source": "downloads/beauty-point-cuts/ordinary_azelaic.png",
+    "w": 589,
+    "h": 1054,
+    "bytes": 65060
   },
   "assets/ordinary_azelaic.jpg": {
     "sha1": "e70f67654b7ab37be05ec563a2f5378a0580225d",

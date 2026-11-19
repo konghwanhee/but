@@ -363,8 +363,10 @@
       "source": "구다이글로벌 연혁 · 블로터 2026-09-25 · 연합뉴스 2026-04-13",
       "visual": {
         "mode": "photo",
-        "image": "assets/boj_reliefsun_2-bdd3ab.jpg",
-        "fit": "contain"
+        "image": "assets/boj-rice-still.webp",
+        "fit": "cover",
+        "lift": false,
+        "focus": 0.5
       }
     },
     {
@@ -490,7 +492,7 @@
       "source": "에이피알 2025 사업보고서(제12기) · 블로터 2026-08-26",
       "visual": {
         "mode": "photo",
-        "image": "assets/medicube_3h.jpg",
+        "image": "assets/medicube_3h-13ebd5.jpg",
         "fit": "contain"
       }
     },

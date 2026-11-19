@@ -186,8 +186,10 @@
       "source": "삼일PwC K-뷰티 가이드북 2025 · 코스맥스 · 화장품 제조 위탁 안내",
       "visual": {
         "mode": "photo",
-        "image": "assets/boj_reliefsun_2-bdd3ab.jpg",
-        "fit": "contain"
+        "image": "assets/boj-rice-still.webp",
+        "fit": "cover",
+        "lift": false,
+        "focus": 0.5
       }
     },
     {
@@ -295,7 +297,7 @@
       "source": "한국콜마 · 포브스코리아 2014-10 · 한경매거진 2025-03 · 사업보고서 2024",
       "visual": {
         "mode": "photo",
-        "image": "assets/boj_reliefsun-60717e.jpg",
+        "image": "assets/boj_reliefsun_2-1d256a.jpg",
         "fit": "contain"
       }
     },
