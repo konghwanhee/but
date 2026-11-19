@@ -59,13 +59,14 @@
       "note": "앞의 세 편을 읽고 남은 질문에 답하는 보완편입니다.",
       "source": "삼일PwC K-뷰티 가이드북 2025 · 각 사 공시",
       "visual": {
-        "mode": "logos",
+        "mode": "strip",
         "images": [
           "assets/ordinary_logo.png",
           "assets/amorepacific_logo.png",
           "assets/shiseido_logo.png",
           "assets/loreal_logo.png"
-        ]
+        ],
+        "h": 132
       }
     },
     {
@@ -131,14 +132,7 @@
       },
       "source": "TTA 정보통신용어사전 · 한국신약개발지원재단(KDDF) · 업계 자료",
       "takeaway": "PDM은 표준 용어가 아닙니다. 설계·제조 위탁이라는 뜻으로도 쓰이니, 계약서에 있으면 무엇을 맡기는지 먼저 확인합니다.",
-      "takeaway_label": "주의",
-      "visual": {
-        "mode": "logos",
-        "images": [
-          "assets/cosmax_logo.png",
-          "assets/kolmar_logo.png"
-        ]
-      }
+      "takeaway_label": "주의"
     },
     {
       "kind": "table",
@@ -195,9 +189,11 @@
       "takeaway": "이름을 비우고, 성분을 채웠습니다.",
       "source": "DECIEM 공식 사이트 · 디오디너리 공식 제품 페이지",
       "visual": {
-        "mode": "photo",
+        "mode": "side",
         "image": "assets/ordinary_azelaic-f1ef62.jpg",
-        "fit": "contain"
+        "w": 380,
+        "h": 300,
+        "tint": true
       }
     },
     {
@@ -253,11 +249,7 @@
         "cell_size": 21
       },
       "takeaway": "브랜드가 브랜드로 남으려면, 만드는 힘까지 자기 것이어야 했습니다.",
-      "source": "DECIEM · WWD 2024-06-03 · Canadian Lawyer 2024-05-31",
-      "visual": {
-        "mode": "logo",
-        "image": "assets/ordinary_logo.png"
-      }
+      "source": "DECIEM · WWD 2024-06-03 · Canadian Lawyer 2024-05-31"
     },
     {
       "kind": "table",
@@ -315,11 +307,12 @@
       "takeaway": "공장을 가진 회사도, 브랜드를 사는 데 주저하지 않습니다.",
       "source": "아모레퍼시픽 공시 · 시세이도 2019-11-27 보도자료 · 뷰티누리 2022-09",
       "visual": {
-        "mode": "logos",
+        "mode": "strip",
         "images": [
           "assets/amorepacific_logo.png",
           "assets/shiseido_logo.png"
-        ]
+        ],
+        "h": 124
       }
     },
     {
@@ -379,11 +372,7 @@
         "cell_size": 21
       },
       "takeaway": "만드는 힘과 브랜드를 쥐는 일은 따로입니다.",
-      "source": "로레알 그룹 소개 · 로레알 보도자료 2017-01-10 · 연합뉴스 2023-04-05",
-      "visual": {
-        "mode": "logo",
-        "image": "assets/loreal_logo.png"
-      }
+      "source": "로레알 그룹 소개 · 로레알 보도자료 2017-01-10 · 연합뉴스 2023-04-05"
     },
     {
       "kind": "table",
@@ -442,16 +431,7 @@
         "cell_size": 21
       },
       "takeaway": "누가 만들고, 누가 개발하고, 누가 브랜드를 쥐느냐. 그 조합이 값어치를 정합니다. 다음엔 이름표 뒤의 회사를 봅니다.",
-      "source": "뷰티 포인트 04~07호 정리",
-      "visual": {
-        "mode": "logos",
-        "images": [
-          "assets/kolmar_logo.png",
-          "assets/cosmax_logo.png",
-          "assets/gudai_logo.png",
-          "assets/ordinary_logo.png"
-        ]
-      }
+      "source": "뷰티 포인트 04~07호 정리"
     }
   ]
 }

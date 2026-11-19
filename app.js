@@ -712,12 +712,115 @@ function takeaway(text, height, label) {
 }
 
 /* ---------------------------------------------------------------- 5b. 본문 시각 카드 */
-function visTextRight(s) { return (s && s.visual) ? CR - VIS_W - VIS_TEXT_GAP : CR; }
+function visTextRight(s) {
+  var v = s && s.visual;
+  if (!v) return CR;
+  if (v.mode === 'side') return CR - Number(v.w || 380) - 26;
+  if (v.mode === 'logo' || v.mode === 'photo' || v.mode === 'logos') return CR - VIS_W - VIS_TEXT_GAP;
+  return CR;
+}
 function contentTopPoint(s, headLast, gap) {
   var g = Number(s.gap_after_head === undefined ? gap : s.gap_after_head);
-  var floor = s.visual ? VIS_BOTTOM + 30 : 0;
+  var floor = Number(s.__visFloor || 0);
   return Math.max(headLast + g, floor);
 }
+function tintOf(hex, mix) {
+  var c = String(hex || '#000000').replace('#', '');
+  var r = parseInt(c.substr(0, 2), 16), g = parseInt(c.substr(2, 2), 16), b = parseInt(c.substr(4, 2), 16);
+  var m = mix === undefined ? 0.075 : mix;
+  return 'rgb(' + Math.round(255 - (255 - r) * m) + ',' + Math.round(255 - (255 - g) * m) + ',' +
+         Math.round(255 - (255 - b) * m) + ')';
+}
+function tintLogoCanvas(im, w, h, color) {
+  var off = document.createElement('canvas');
+  off.width = Math.max(1, Math.round(w)); off.height = Math.max(1, Math.round(h));
+  var oc = off.getContext('2d');
+  oc.drawImage(im, 0, 0, off.width, off.height);
+  oc.globalCompositeOperation = 'source-in';
+  oc.fillStyle = color;
+  oc.fillRect(0, 0, off.width, off.height);
+  return off;
+}
+function drawTintLogo(path, x, y, w, h, color, maxW, maxH) {
+  var im = getImage(path);
+  if (!imgOk(im)) { placeholder(path, x, y, w, h); return; }
+  var r = Math.min(w * (maxW || 0.86) / im.naturalWidth, h * (maxH || 0.52) / im.naturalHeight);
+  var nw = im.naturalWidth * r, nh = im.naturalHeight * r;
+  _ctx.drawImage(tintLogoCanvas(im, nw, nh, color || INK), x + (w - nw) / 2, y + (h - nh) / 2);
+}
+/* 장표에 필요한 만큼만, 내용에 맞는 모양으로 — 파이썬 렌더러와 동일한 좌표 */
+function drawBandPoint(s, top) {
+  var v = s.visual, h = Number(v.h || 230), w = CR - MX;
+  if ((v.fit || 'cover') === 'cover') {
+    drawCoverCrop(v.image, MX, top, w, h, v.focus === undefined ? 0.5 : v.focus, 0.5, 1);
+  } else {
+    if (v.tint) { _ctx.fillStyle = tintOf(KEY, 0.06); _ctx.fillRect(MX, top, w, h); }
+    drawContain(v.image, MX + w * 0.03, top + h * 0.03, w * 0.94, h * 0.94, false);
+  }
+  _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
+  _ctx.strokeRect(MX + 0.5, top + 0.5, w - 1, h - 1);
+  return { x: MX, y: top, w: w, h: h };
+}
+function drawStripPoint(s, top) {
+  var v = s.visual, list = (v.images || [v.image]).filter(Boolean).slice(0, 4);
+  var h = Number(v.h || 120), w = CR - MX, n = Math.max(1, list.length), cw = w / n;
+  _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
+  _ctx.strokeRect(MX + 0.5, top + 0.5, w - 1, h - 1);
+  for (var i = 0; i < list.length; i++) {
+    var x0 = MX + i * cw;
+    if (i) { _ctx.fillStyle = INK; _ctx.fillRect(x0, top + 20, 1, h - 41); }
+    drawTintLogo(list[i], x0, top, cw, h, INK, 0.68, 0.50);
+  }
+  return { x: MX, y: top, w: w, h: h };
+}
+function drawGridPoint(s, top) {
+  var v = s.visual, cells = v.cells || [], cols = Number(v.cols || 2), gap = 20, w = CR - MX;
+  var cw = (w - gap * (cols - 1)) / cols, ch = Number(v.ch || 148);
+  for (var i = 0; i < cells.length; i++) {
+    var cx = MX + (i % cols) * (cw + gap), cy = top + Math.floor(i / cols) * (ch + gap);
+    var tone = cells[i].tone || 'ink';
+    _ctx.fillStyle = tone === 'ink' ? INK : KEY;
+    _ctx.fillRect(cx, cy, cw, ch);
+    drawTintLogo(cells[i].image, cx, cy + ch * 0.16, cw, ch * 0.40, WHITE, 0.56, 1);
+    if (cells[i].label) {
+      var tw = measure(cells[i].label, 19, 'bold');
+      drawText(cells[i].label, cx + cw / 2 - tw / 2, cy + ch - 22, 19, 'bold', WHITE, 'ls');
+    }
+  }
+  var rows = Math.ceil(cells.length / Math.max(1, cols));
+  return { x: MX, y: top, w: w, h: Math.round(ch * rows + gap * (rows - 1)) };
+}
+function drawFiguresPoint(s, top) {
+  var v = s.visual, cells = v.cells || [], h = Number(v.h || 178), w = CR - MX;
+  var n = Math.max(1, cells.length), cw = w / n;
+  _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
+  _ctx.strokeRect(MX + 0.5, top + 0.5, w - 1, h - 1);
+  for (var i = 0; i < cells.length; i++) {
+    var x0 = MX + i * cw;
+    if (i) { _ctx.fillStyle = INK; _ctx.fillRect(x0, top + 22, 1, h - 45); }
+    drawText(cells[i].value || '', x0 + 30, top + h * 0.52, 58, 'extrabold',
+             (cells[i].tone || 'key') === 'key' ? KEY : INK, 'ls');
+    drawText(cells[i].label || '', x0 + 30, top + h * 0.80, 20, 'medium', INK, 'ls');
+  }
+  return { x: MX, y: top, w: w, h: h };
+}
+function drawSidePoint(s) {
+  var v = s.visual, w = Number(v.w || 380), h = Number(v.h || 300);
+  var x0 = CR - w, y0 = Number(v.top === undefined ? VIS_TOP : v.top);
+  var isLogo = v.tone === 'key' || /\.svg$/.test(v.image || '') || /_logo\.png$/.test(v.image || '');
+  if (isLogo) {
+    _ctx.fillStyle = KEY; _ctx.fillRect(x0, y0, w, h);
+    drawTintLogo(v.image, x0, y0, w, h, WHITE, 0.72, 0.24);
+  } else {
+    if (v.tint !== false) { _ctx.fillStyle = tintOf(KEY, v.mix === undefined ? 0.075 : v.mix); _ctx.fillRect(x0, y0, w, h); }
+    drawContain(v.image, x0 + w * 0.08, y0 + h * 0.07, w * 0.84, h * 0.86, false);
+  }
+  _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
+  _ctx.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
+  return { x: x0, y: y0, w: w, h: h };
+}
+var POINT_VIS_MODES = { band: drawBandPoint, strip: drawStripPoint, grid: drawGridPoint,
+                        figures: drawFiguresPoint, side: drawSidePoint };
 function whiteLogoCanvas(im, w, h) {
   var off = document.createElement('canvas');
   off.width = Math.max(1, Math.round(w)); off.height = Math.max(1, Math.round(h));
@@ -1767,15 +1870,26 @@ var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, c
 function renderSlidePage(s, idx, total, family) {
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
   if (family === 'brief') return briefSlide(s, idx, total);
+  var v = family === 'tech' ? null : (s.visual || null);
+  var mode = v && v.mode;
+  var newMode = !!(v && POINT_VIS_MODES[mode]);
+  s.__visFloor = 0;
+  s.__visRect = null;
   var vRight = visTextRight(s);
+  if (v && !newMode) { drawVisualPoint(s); s.__visFloor = VIS_BOTTOM + 30; }
   var head = family === 'tech' ? headBlockTech(s) : headBlock(s, undefined, vRight);
+  if (newMode) {
+    var gap = mode === 'side' ? 0 : Number(v.gap === undefined ? 54 : v.gap);
+    var r = mode === 'side' ? drawSidePoint(s) : POINT_VIS_MODES[mode](s, head.last + gap);
+    s.__visRect = r;
+    s.__visFloor = r.y + r.h + Number(v.gap_after === undefined ? (mode === 'side' ? 34 : 36) : v.gap_after);
+  }
   var kind = s.kind || 'table';
   var fn = family === 'tech' ? TECH_KINDS[kind] : POINT_KINDS[kind];
   if (!fn) fn = family === 'tech' ? TECH_KINDS.table : POINT_KINDS.table;
-  if (s.visual && family !== 'tech') drawVisualPoint(s);
-  var bodyFirst = head.last + 56;
+  var bodyFirst = Math.max(head.last + 56, s.__visFloor || 0);
   if (s.body && kind !== 'bars' && !(family === 'tech' && ['points', 'table', 'compare', 'quad', 'steps', 'lineage'].indexOf(kind) >= 0)) {
-    var bodyW = (s.visual && family !== 'tech' && bodyFirst < VIS_BOTTOM) ? (vRight - MX) : undefined;
+    var bodyW = (v && !newMode && bodyFirst < VIS_BOTTOM) ? (vRight - MX) : undefined;
     head.last = bodyBlock(s, bodyFirst, s.body_size || 24, bodyW);
   }
   fn(s, head.last);

@@ -67,11 +67,7 @@
         }
       ],
       "takeaway": "처방을 누가 갖느냐. 이 하나가 OEM과 ODM을 가릅니다.",
-      "source": "삼일PwC K-뷰티 가이드북 2025 · 코스맥스 사업보고서",
-      "visual": {
-        "mode": "logo",
-        "image": "assets/cosmax_logo.png"
-      }
+      "source": "삼일PwC K-뷰티 가이드북 2025 · 코스맥스 사업보고서"
     },
     {
       "kind": "table",
@@ -144,14 +140,7 @@
         "cell_size": 22
       },
       "takeaway": "빠른 대신 처방은 공장 것입니다. 계약으로 정하지 않으면 그대로 남습니다.",
-      "source": "코스맥스·한국콜마 사업보고서 · 화장품 제조 위탁 실무",
-      "visual": {
-        "mode": "photo",
-        "image": "assets/cosmax_sh.jpg",
-        "fit": "cover",
-        "lift": false,
-        "focus": 0.5
-      }
+      "source": "코스맥스·한국콜마 사업보고서 · 화장품 제조 위탁 실무"
     },
     {
       "kind": "table",
@@ -200,11 +189,18 @@
       "takeaway": "속도는 공장에서 나오지만, 그 속도를 만든 것은 쌓아 둔 처방입니다.",
       "source": "한국콜마 PPS 보도자료(2024-11-06) · 연합뉴스 · 한국경제 2026-07-01",
       "visual": {
-        "mode": "photo",
-        "image": "assets/cosmax_korea.jpg",
-        "fit": "cover",
-        "lift": false,
-        "focus": 0.5
+        "mode": "figures",
+        "h": 178,
+        "cells": [
+          {
+            "value": "9~12개월",
+            "label": "브랜드가 직접 개발할 때"
+          },
+          {
+            "value": "3~6개월",
+            "label": "ODM에 맡겼을 때"
+          }
+        ]
       }
     },
     {
@@ -246,14 +242,7 @@
         }
       ],
       "takeaway": "ODM은 문을 넓혔지만, 그 문으로 누구나 들어올 수 있습니다.",
-      "source": "더벨 2026-09-02 · 녹색경제신문 2026-07-16 · 파이낸셜투데이 2024-12-03",
-      "visual": {
-        "mode": "photo",
-        "image": "assets/cosmax_gz.jpg",
-        "fit": "cover",
-        "lift": false,
-        "focus": 0.5
-      }
+      "source": "더벨 2026-09-02 · 녹색경제신문 2026-07-16 · 파이낸셜투데이 2024-12-03"
     },
     {
       "kind": "table",
@@ -312,11 +301,7 @@
         "cell_size": 21
       },
       "takeaway": "브랜드의 성공이 그대로 공장의 매출이 됐습니다.",
-      "source": "코스맥스 2025-02-24 보도자료 · 매경이코노미 2025-04 · 코스맥스 공식 사이트",
-      "visual": {
-        "mode": "logo",
-        "image": "assets/cosmax_logo.png"
-      }
+      "source": "코스맥스 2025-02-24 보도자료 · 매경이코노미 2025-04 · 코스맥스 공식 사이트"
     },
     {
       "kind": "table",
@@ -371,11 +356,7 @@
         "cell_size": 21
       },
       "takeaway": "제품만 잘 만드는 것으로는 부족해져, 규제와 유통까지 맡았습니다.",
-      "source": "코스메카코리아 2025 사업보고서 · 한국경제 2025-10-27 · 뉴시스 2025-08-30",
-      "visual": {
-        "mode": "logo",
-        "image": "assets/cosmecca_logo.png"
-      }
+      "source": "코스메카코리아 2025 사업보고서 · 한국경제 2025-10-27 · 뉴시스 2025-08-30"
     },
     {
       "kind": "table",
@@ -428,11 +409,12 @@
       "takeaway": "ODM이 넓힌 것은 개발의 범위이고, 브랜드의 주인은 고객사 그대로입니다.",
       "source": "코스맥스 공식 사이트(What we do) · 코스메카코리아 사업보고서 · JETRO 2025-04",
       "visual": {
-        "mode": "photo",
-        "image": "assets/cosmax_bk.jpg",
-        "fit": "cover",
-        "lift": false,
-        "focus": 0.5
+        "mode": "strip",
+        "images": [
+          "assets/cosmax_logo.png",
+          "assets/cosmecca_logo.png"
+        ],
+        "h": 150
       }
     },
     {
@@ -463,10 +445,10 @@
       "note": "ODM은 만들어 주는 곳이 아니라, 브랜드가 무엇으로 이길지 정하게 해 주는 발판입니다. 빠른 제품이 늘수록 같은 처방도 늘어납니다.",
       "source": "코스맥스 · 코스메카코리아 · 한국금융신문 2025-02-10",
       "visual": {
-        "mode": "photo",
+        "mode": "band",
         "image": "assets/cosmax_jk.jpg",
+        "h": 260,
         "fit": "cover",
-        "lift": false,
         "focus": 0.5
       }
     }
