@@ -1846,10 +1846,20 @@ function tLineage(s, headLast) {
 function frameBrief(page, progress) {
   drawLogo('black', MX, 78, 44);
   if (page) drawText(page, CR, 96, 25, 'medium', GRAY_SOFT, 'rs');
-  if (progress) {
-    var cur = progress[0], tot = Math.max(1, progress[1]);
-    _ctx.fillStyle = HAIRLINE; _ctx.fillRect(0, BARY, W, 6);
-    _ctx.fillStyle = '#1A1A1A'; _ctx.fillRect(0, BARY, W * cur / tot, 6);
+  if (progress) dotsBrief(progress[0], progress[1]);
+}
+/* 하단 점 넘김 인디케이터 — 뷰티 픽과 같은 감도(지름 8px · 간격 15px · 바닥에서 52px).
+   현재 장표만 #111111, 나머지는 은은한 그레이 #D2D2D2. */
+function dotsBrief(cur, tot) {
+  tot = Math.max(1, Number(tot) || 1);
+  cur = Math.min(Math.max(1, Number(cur) || 1), tot);
+  var gap = 15, r = 4, y = 1298;
+  var x0 = (W - (tot - 1) * gap) / 2;
+  for (var i = 0; i < tot; i++) {
+    _ctx.beginPath();
+    _ctx.fillStyle = (i === cur - 1) ? INK : '#D2D2D2';
+    _ctx.arc(x0 + i * gap, y, r, 0, Math.PI * 2);
+    _ctx.fill();
   }
 }
 function indexRows(c) {
