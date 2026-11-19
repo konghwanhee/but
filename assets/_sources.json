@@ -83,6 +83,13 @@
     "h": 900,
     "bytes": 63695
   },
+  "assets/building-portrait.jpg": {
+    "sha1": "58a17e5e3769b27df5fa00c5770fbc885478f44e",
+    "source": "downloads/beauty-pick-test-src/building-portrait.jpg",
+    "w": 735,
+    "h": 918,
+    "bytes": 211100
+  },
   "assets/cg_hongdae_store.jpg": {
     "sha1": "610a6ac04822b25982cdf7744b626ea6fd64002b",
     "source": "downloads/carousel-src/cg_hongdae_store.jpg",
@@ -173,6 +180,13 @@
     "w": 1000,
     "h": 1000,
     "bytes": 34599
+  },
+  "assets/fc59e6c76ae344dbad0ffaacf15c514f.jpg": {
+    "sha1": "5da04a4683789d0620e9b2980a7b253e6db61047",
+    "source": "downloads/beauty-pick-test-src/fc59e6c76ae344dbad0ffaacf15c514f.jpg",
+    "w": 1811,
+    "h": 1358,
+    "bytes": 624604
   },
   "assets/gudai_logo.png": {
     "sha1": "5b262acc59fbd5c4fdab3fdb8a67af18e3bec92e",
@@ -341,6 +355,20 @@
     "w": 900,
     "h": 645,
     "bytes": 76886
+  },
+  "assets/panel-1f.jpg": {
+    "sha1": "cd721102dfbeb0aaedba36d207ce31ab5d73c362",
+    "source": "downloads/beauty-pick-test-src/panel-1f.jpg",
+    "w": 878,
+    "h": 562,
+    "bytes": 154259
+  },
+  "assets/panel-2f-portrait.jpg": {
+    "sha1": "39ce26d850775ef9bf6ee69d0aff66db99ea5895",
+    "source": "downloads/beauty-pick-test-src/panel-2f-portrait.jpg",
+    "w": 832,
+    "h": 2068,
+    "bytes": 242955
   },
   "assets/pharma_rejuderma.jpg": {
     "sha1": "980d0a370e826858916c6f02ca851f7589f97ad9",

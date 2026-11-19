@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-20T08:03:02+09:00",
+  "generatedAt": "2026-11-20T08:48:43+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -118,11 +118,11 @@
       "seriesLabel": "뷰티 픽",
       "issueNo": null,
       "date": "2026-11-19",
-      "title": "몸만 알던 브랜드가, 얼굴을 꺼냈다",
-      "subtitle": "일리윤 첫 고기능 페이셜 라인 · 올리브영 단독",
+      "title": "브랜드는 빼고, 색만 남겼다",
+      "subtitle": "올리브영 컬러 그라운드 홍대 · 첫 색조 특화 매장",
       "coverThumb": "covers/beauty-pick-test-cover.png",
       "jsonPath": "data/beauty-pick-test.json",
-      "updatedAt": "2026-11-19T20:21:02+09:00",
+      "updatedAt": "2026-11-20T08:48:41+09:00",
       "isTest": true
     }
   ]
