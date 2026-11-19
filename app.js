@@ -864,15 +864,105 @@ function drawSidePoint(s) {
     _ctx.fillStyle = KEY; _ctx.fillRect(x0, y0, w, h);
     drawTintLogo(v.image, x0, y0, w, h, WHITE, 0.72, 0.24);
   } else {
-    if (v.tint !== false) { _ctx.fillStyle = tintOf(KEY, v.mix === undefined ? 0.075 : v.mix); _ctx.fillRect(x0, y0, w, h); }
-    drawContain(v.image, x0 + w * 0.08, y0 + h * 0.07, w * 0.84, h * 0.86, false);
+    if (v.fit === 'cover') {
+      drawCoverCrop(v.image, x0, y0, w, h, v.focus === undefined ? 0.5 : v.focus, 0.5, 1);
+    } else {
+      if (v.tint !== false) { _ctx.fillStyle = tintOf(KEY, v.mix === undefined ? 0.075 : v.mix); _ctx.fillRect(x0, y0, w, h); }
+      drawContain(v.image, x0 + w * 0.08, y0 + h * 0.07, w * 0.84, h * 0.86, false);
+    }
   }
   _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
   _ctx.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
   return { x: x0, y: y0, w: w, h: h };
 }
 var POINT_VIS_MODES = { band: drawBandPoint, strip: drawStripPoint, grid: drawGridPoint,
-                        figures: drawFiguresPoint, side: drawSidePoint, note: drawNotePoint };
+                        figures: drawFiguresPoint, side: drawSidePoint, note: drawNotePoint,
+                        logowall: drawLogoWallPoint };
+
+/* 전폭 로고 월 — 칸 없이 크기가 다른 로고를 한 줄로 (베이스라인 정렬) */
+function drawLogoWallPoint(s, top) {
+  var v = s.visual, list = (v.images || [v.image]).filter(Boolean);
+  var heights = (v.heights || [44, 66, 50, 74]).slice();
+  while (heights.length < list.length) heights.push(heights[heights.length - 1]);
+  var gap = Number(v.gap || 44), avail = CR - MX;
+  var maxH = Math.max.apply(null, heights.slice(0, list.length));
+  var items = list.map(function (p, i) {
+    var im = getImage(p), hh = heights[i];
+    if (!imgOk(im)) return { w: 0, h: hh, im: null, p: p };
+    return { w: im.naturalWidth * hh / im.naturalHeight, h: hh, im: im, p: p };
+  });
+  var sum = items.reduce(function (a, it) { return a + it.w; }, 0);
+  var total = sum + gap * (items.length - 1);
+  if (total > avail && sum > 0) {
+    var k = (avail - gap * (items.length - 1)) / sum;
+    items = items.map(function (it) { return { w: it.w * k, h: it.h * k, im: it.im, p: it.p }; });
+    maxH = maxH * k;
+    sum = items.reduce(function (a, it) { return a + it.w; }, 0);
+    total = sum + gap * (items.length - 1);
+  }
+  var x = MX + (avail - total) / 2, base = top + maxH;
+  items.forEach(function (it) {
+    if (!it.im) { placeholder(it.p, x, base - it.h, it.w, it.h); x += it.w + gap; return; }
+    _ctx.drawImage(tintLogoCanvas(it.im, it.w, it.h, INK), x, base - it.h);
+    x += it.w + gap;
+  });
+  _ctx.fillStyle = INK; _ctx.fillRect(MX, base + 18, avail, 1);
+  return { x: MX, y: top, w: avail, h: maxH + 19 };
+}
+
+/* 사진 가장자리 잉크 스크림 — 아래/위/왼쪽에서 오는 그라데이션 */
+function bandScrim(x, y, w, h, bottom, top, start, left) {
+  var s0 = y + h * (start === undefined ? 0.42 : start);
+  if (bottom > 0) {
+    var g = _ctx.createLinearGradient(0, s0, 0, y + h);
+    g.addColorStop(0, 'rgba(17,17,17,0)');
+    g.addColorStop(1, 'rgba(17,17,17,' + (bottom / 255).toFixed(3) + ')');
+    _ctx.fillStyle = g; _ctx.fillRect(x, s0, w, y + h - s0);
+  }
+  if (top > 0) {
+    var t1 = y + h * 0.34;
+    var gt = _ctx.createLinearGradient(0, y, 0, t1);
+    gt.addColorStop(0, 'rgba(17,17,17,' + (top / 255).toFixed(3) + ')');
+    gt.addColorStop(1, 'rgba(17,17,17,0)');
+    _ctx.fillStyle = gt; _ctx.fillRect(x, y, w, t1 - y);
+  }
+  if (left > 0) {
+    var gl = _ctx.createLinearGradient(x, 0, x + w * 0.72, 0);
+    gl.addColorStop(0, 'rgba(17,17,17,' + (left / 255).toFixed(3) + ')');
+    gl.addColorStop(0.33, 'rgba(17,17,17,' + (left / 255).toFixed(3) + ')');
+    gl.addColorStop(1, 'rgba(17,17,17,0)');
+    _ctx.fillStyle = gl; _ctx.fillRect(x, y, w * 0.72, h);
+  }
+}
+
+/* 전폭 상단 풀블리드 컷 — 제목을 사진 아래쪽에 얹는다 */
+function drawTopBandPoint(s) {
+  var v = s.visual, h = Number(v.h || 470), y0 = Number(v.top || 0);
+  drawCoverCrop(v.image, 0, y0, W, h, v.focus === undefined ? 0.5 : v.focus, 0.5, 1);
+  bandScrim(0, y0, W, h, Number(v.scrim_bottom === undefined ? 238 : v.scrim_bottom),
+    Number(v.scrim_top || 0), v.scrim_start, Number(v.scrim_left || 0));
+  _ctx.fillStyle = INK; _ctx.fillRect(0, y0 + h - 3, W, 3);
+  return { x: 0, y: y0, w: W, h: h };
+}
+
+function drawHeadOnPhoto(s, rect) {
+  var maxW = Math.round(W * 0.86) - MX;
+  var size = Number(s.head_size || 78);
+  var lines = headlineLines(s);
+  while (size > 40 && headlineWidth(lines, size, 'extrabold') > maxW) size -= 2;
+  var gap = Math.round(size * 1.18);
+  var last = rect.y + rect.h - Number(s.head_bottom === undefined ? 56 : s.head_bottom);
+  var first = last - gap * (lines.length - 1);
+  var label = s.label || '';
+  if (label) {
+    var ly = first - Math.round(size * 1.02) - 16;
+    var lw = trackedW(label, 21, 'bold', 3);
+    _ctx.fillStyle = KEY; _ctx.fillRect(MX, ly - 30, lw + 30, 36);
+    tracked(label, MX + 15, ly - 3, 21, 'bold', WHITE, 3);
+  }
+  drawLinesLeft(lines, MX, first, gap, size, function (t) { return t === 'key' ? KEY : WHITE; });
+  return { last: last, size: size };
+}
 function whiteLogoCanvas(im, w, h) {
   var off = document.createElement('canvas');
   off.width = Math.max(1, Math.round(w)); off.height = Math.max(1, Math.round(h));
@@ -989,7 +1079,7 @@ function pTable(s, headLast) {
   }
   var endY = listTop + rowH * rows.length;
   _ctx.fillStyle = INK; _ctx.fillRect(MX, endY, CR - MX, 2);
-  if (s.takeaway) { takeaway(s.takeaway, 112, s.takeaway_label || 'POINT'); return CTM; }
+  if (s.takeaway) { takeaway(s.takeaway, 112, s.takeaway_label || 'POINT', s.__limit || CTM); return s.__limit || CTM; }
   return endY;
 }
 
@@ -1058,7 +1148,7 @@ function pCards(s, headLast) {
       drawText(card.note, x2 + pad, ruleY + 34, noteSize, 'bold', WHITE, 'ls');
     });
   }
-  if (s.takeaway) { takeaway(s.takeaway, 112, s.takeaway_label || 'POINT'); return CTM; }
+  if (s.takeaway) { takeaway(s.takeaway, 112, s.takeaway_label || 'POINT', s.__limit || CTM); return s.__limit || CTM; }
   return top + ch;
 }
 
@@ -1187,8 +1277,8 @@ function pBrandWide(s, headLast) {
   return Math.max(capBottom, y);
 }
 
-function noteBlock(s, noteH, note, withKeyBar) {
-  var ny = CTM - noteH;
+function noteBlock(s, noteH, note, withKeyBar, limit) {
+  var ny = (limit || CTM) - noteH;
   _ctx.fillStyle = INK; _ctx.fillRect(MX, ny, CR - MX, noteH);
   if (withKeyBar) { _ctx.fillStyle = KEY; _ctx.fillRect(MX, ny, 8, noteH); }
   var label = withKeyBar ? (s.note_label === undefined ? 'POINT' : String(s.note_label)) : '';
@@ -1202,18 +1292,28 @@ function pList(s, headLast) {
   var top = contentTopPoint(s, headLast, 56);
   var items = s.items || [], note = s.note || '', noteH = 0;
   if (note) noteH = 34 + 30 * wrapText(note, 21, 'bold', CR - MX - 64).length + 28;
-  var avail = CTM - noteH - 20 - top;
+  var lim = s.__limit || CTM;
+  var avail = lim - noteH - 20 - top;
   var step = avail / Math.max(1, items.length);
+  var bodySize = 21, bodyGap = 31;
+  [21, 20, 19, 18, 17].some(function (bs) {
+    var lh = Math.round(bs * 1.48);
+    var fits = items.every(function (it) {
+      return 70 + lh * (wrapText(it.body || '', bs, 'regular', CR - MX - 88).length - 1) <= step - 44;
+    });
+    if (fits) { bodySize = bs; bodyGap = lh; return true; }
+    return false;
+  });
   items.forEach(function (item, i) {
     var y = top + step * i;
     drawText(pad2(i + 1), MX, y + 44, 40, 'extrabold', KEY, 'ls');
     drawText(item.title, MX + 88, y + 30, 27, 'bold', INK, 'ls');
-    var lines = wrapText(item.body || '', 21, 'regular', CR - MX - 88);
-    for (var k = 0; k < lines.length; k++) drawText(lines[k], MX + 88, y + 70 + k * 31, 21, 'regular', INK, 'ls');
+    var lines = wrapText(item.body || '', bodySize, 'regular', CR - MX - 88);
+    for (var k = 0; k < lines.length; k++) drawText(lines[k], MX + 88, y + 70 + k * bodyGap, bodySize, 'regular', INK, 'ls');
     _ctx.fillStyle = INK; _ctx.fillRect(MX, y + step - 26, CR - MX, 1);
   });
-  if (note) noteBlock(s, noteH, note, false);
-  return CTM;
+  if (note) noteBlock(s, noteH, note, false, lim);
+  return lim;
 }
 
 function pReasons(s, headLast) {
@@ -1982,24 +2082,41 @@ function renderSlidePage(s, idx, total, family) {
   if (family === 'brief') return briefSlide(s, idx, total);
   var v = family === 'tech' ? null : (s.visual || null);
   var mode = v && v.mode;
-  var newMode = !!(v && POINT_VIS_MODES[mode]);
+  var panelMode = mode === 'panel';
+  var topMode = mode === 'topband';
+  var newMode = !!(v && POINT_VIS_MODES[mode]) || panelMode;
   s.__visFloor = 0;
   s.__visRect = null;
+  s.__limit = 0;
+  s.__bodyRight = 0;
+  _frameAuto = false;
   var vRight = visTextRight(s);
-  if (v && !newMode) { drawVisualPoint(s); s.__visFloor = VIS_BOTTOM + 30; }
-  var head = family === 'tech' ? headBlockTech(s) : headBlock(s, undefined, vRight);
-  if (newMode) {
-    var gap = mode === 'side' ? 0 : Number(v.gap === undefined ? 54 : v.gap);
-    var r = mode === 'side' ? drawSidePoint(s) : POINT_VIS_MODES[mode](s, head.last + gap);
-    s.__visRect = r;
-    s.__visFloor = r.y + r.h + Number(v.gap_after === undefined ? (mode === 'side' ? 34 : 36) : v.gap_after);
+  var head;
+  if (topMode) {
+    var tb = drawTopBandPoint(s);
+    s.__visRect = tb;
+    _frameAuto = true;
+    var hl = drawHeadOnPhoto(s, tb);
+    s.__visFloor = tb.y + tb.h + Number(v.gap_after === undefined ? 46 : v.gap_after);
+    head = { last: hl.last, size: hl.size };
+  } else {
+    if (v && !newMode) { drawVisualPoint(s); s.__visFloor = VIS_BOTTOM + 30; }
+    head = family === 'tech' ? headBlockTech(s) : headBlock(s, undefined, vRight);
+    if (newMode) {
+      var gap = (mode === 'side' || panelMode) ? 0 : Number(v.gap === undefined ? 54 : v.gap);
+      var r = (mode === 'side' || panelMode) ? drawSidePoint(s) : POINT_VIS_MODES[mode](s, head.last + gap);
+      s.__visRect = r;
+      s.__visFloor = r.y + r.h + Number(v.gap_after === undefined ? (mode === 'side' ? 34 : 36) : v.gap_after);
+      if (panelMode) s.__bodyRight = r.x - 34;
+    }
   }
   var kind = s.kind || 'table';
   var fn = family === 'tech' ? TECH_KINDS[kind] : POINT_KINDS[kind];
   if (!fn) fn = family === 'tech' ? TECH_KINDS.table : POINT_KINDS.table;
-  var bodyFirst = Math.max(head.last + 56, s.__visFloor || 0);
+  var bodyFirst = panelMode ? head.last + 56 : Math.max(head.last + 56, s.__visFloor || 0);
   if (s.body && kind !== 'bars' && !(family === 'tech' && ['points', 'table', 'compare', 'quad', 'steps', 'lineage'].indexOf(kind) >= 0)) {
-    var bodyW = (v && !newMode && bodyFirst < VIS_BOTTOM) ? (vRight - MX) : undefined;
+    var bodyW = panelMode && s.__bodyRight ? (s.__bodyRight - MX)
+      : ((v && !newMode && bodyFirst < VIS_BOTTOM) ? (vRight - MX) : undefined);
     head.last = bodyBlock(s, bodyFirst, s.body_size || 24, bodyW);
   }
   fn(s, head.last);
@@ -2741,9 +2858,11 @@ function tableField(colsPath, rowsPath, label, hint) {
     var thead = el('tr', 'headRow');
     cols.forEach(function (c, j) {
       var th = document.createElement('th');
-      var inp = document.createElement('input');
-      inp.type = 'text'; inp.value = c === undefined || c === null ? '' : String(c);
+      var inp = document.createElement('textarea');
+      inp.rows = 1; inp.value = c === undefined || c === null ? '' : String(c);
       inp.addEventListener('input', function () {
+        inp.style.height = 'auto';
+        inp.style.height = (inp.scrollHeight) + 'px';
         var a = getPath(colsPath) || []; a[j] = inp.value; setPath(colsPath, a); commit();
       });
       th.appendChild(inp); thead.appendChild(th);
@@ -2753,9 +2872,11 @@ function tableField(colsPath, rowsPath, label, hint) {
       var tr = document.createElement('tr');
       cols.forEach(function (c, j) {
         var td = document.createElement('td');
-        var inp = document.createElement('input');
-        inp.type = 'text'; inp.value = row[j] === undefined || row[j] === null ? '' : String(row[j]);
+        var inp = document.createElement('textarea');
+        inp.rows = 1; inp.value = row[j] === undefined || row[j] === null ? '' : String(row[j]);
         inp.addEventListener('input', function () {
+          inp.style.height = 'auto';
+          inp.style.height = (inp.scrollHeight) + 'px';
           var rs = getPath(rowsPath) || [];
           if (!rs[i]) return;
           rs[i][j] = inp.value; setPath(rowsPath, rs); commit();

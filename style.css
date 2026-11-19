@@ -337,12 +337,12 @@ table.grid{border-collapse:collapse; width:100%; min-width:280px}
 table.grid td{padding:0; border-bottom:1px solid #f2ebea; border-right:1px solid #f2ebea; vertical-align:middle; min-width:146px}
 table.grid td:last-child{border-right:none}
 table.grid tr:last-child td{border-bottom:none}
-table.grid input{border:none!important;border-radius:0!important;box-shadow:none!important;padding:6px 7px!important;
+table.grid input,table.grid textarea{border:none!important;border-radius:0!important;box-shadow:none!important;padding:6px 7px!important;resize:none;overflow:hidden;font:inherit;width:100%;box-sizing:border-box;background:transparent;color:inherit;line-height:1.35;
   font-size:12px;background:transparent;min-width:140px;width:100%}
-table.grid input:focus{background:#fbf3f4}
+table.grid input:focus,table.grid textarea:focus{background:#fbf3f4}
 table.grid th{font-size:10px;font-weight:700;color:#9c8c89;text-align:left;padding:5px 7px;background:var(--soft);
   border-bottom:1px solid var(--line); border-right:1px solid #f2ebea; white-space:nowrap}
-table.grid tr.headRow input{font-weight:700;background:#fbf7f5}
+table.grid tr.headRow input,table.grid tr.headRow textarea{font-weight:700;background:#fbf7f5}
 
 /* ---------- 토스트 · 모달 ---------- */
 .toast{position:fixed; left:50%; bottom:26px; transform:translate(-50%,14px); background:#111; color:#fff;
