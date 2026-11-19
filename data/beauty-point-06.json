@@ -377,7 +377,8 @@
         "image": "assets/boj_reliefsun_2-1d256a.jpg",
         "w": 380,
         "h": 300,
-        "tint": true
+        "tint": true,
+        "mix": 0.14
       }
     },
     {
@@ -502,7 +503,8 @@
         "image": "assets/medicube_3h-13ebd5.jpg",
         "w": 380,
         "h": 300,
-        "tint": true
+        "tint": true,
+        "mix": 0.14
       }
     },
     {
