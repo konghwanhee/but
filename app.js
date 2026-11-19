@@ -745,7 +745,7 @@ function takeaway(text, height, label, limit) {
     var kc = String(KEY).replace('#', '');
     var rr = parseInt(kc.slice(0, 2), 16) / 255, gg = parseInt(kc.slice(2, 4), 16) / 255, bb = parseInt(kc.slice(4, 6), 16) / 255;
     var lum = 0.2126 * rr + 0.7152 * gg + 0.0722 * bb;
-    tracked(label, MX + 34, y0 + (h === 104 ? 28 : 30), 15, 'bold', lum > 0.45 ? KEY : WHITE, 3);
+    tracked(label, MX + 34, y0 + (h === 104 ? 28 : 30), 15, 'bold', lum > 0.15 ? KEY : WHITE, 3);
     first += h === 104 ? 10 : 12;
   }
   for (var i = 0; i < n; i++) drawText(lines[i], MX + 34, first + i * gap, fsize, 'bold', WHITE, 'ls');
@@ -1314,7 +1314,7 @@ function noteBlock(s, noteH, note, withKeyBar, limit) {
     var kc = String(KEY).replace('#', '');
     var rr = parseInt(kc.slice(0, 2), 16) / 255, gg = parseInt(kc.slice(2, 4), 16) / 255, bb = parseInt(kc.slice(4, 6), 16) / 255;
     var lum = 0.2126 * rr + 0.7152 * gg + 0.0722 * bb;
-    tracked(label, MX + 32, ny + 26, 15, 'bold', (!withKeyBar || lum <= 0.45) ? WHITE : KEY, 3);
+    tracked(label, MX + 32, ny + 26, 15, 'bold', (!withKeyBar || lum <= 0.15) ? WHITE : KEY, 3);
   }
   var base = ny + (label ? 62 : 50);
   var lines = wrapText(note, 21, 'bold', CR - MX - 64);
