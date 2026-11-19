@@ -742,7 +742,10 @@ function takeaway(text, height, label, limit) {
   var gap = h === 104 ? 32 : 33;
   var first = y0 + h / 2 - gap * (n - 1) / 2 + (h === 104 ? 12 : 10);
   if (label) {
-    tracked(label, MX + 34, y0 + (h === 104 ? 28 : 30), 15, 'bold', KEY, 3);
+    var kc = String(KEY).replace('#', '');
+    var rr = parseInt(kc.slice(0, 2), 16) / 255, gg = parseInt(kc.slice(2, 4), 16) / 255, bb = parseInt(kc.slice(4, 6), 16) / 255;
+    var lum = 0.2126 * rr + 0.7152 * gg + 0.0722 * bb;
+    tracked(label, MX + 34, y0 + (h === 104 ? 28 : 30), 15, 'bold', lum > 0.45 ? KEY : WHITE, 3);
     first += h === 104 ? 10 : 12;
   }
   for (var i = 0; i < n; i++) drawText(lines[i], MX + 34, first + i * gap, fsize, 'bold', WHITE, 'ls');
@@ -830,13 +833,20 @@ function drawNotePoint(s, top) {
   return { x: MX, y: top, w: w, h: h };
 }
 function drawStripPoint(s, top) {
-  var v = s.visual, list = (v.images || [v.image]).filter(Boolean).slice(0, 4);
-  var h = Number(v.h || 120), w = CR - MX, n = Math.max(1, list.length), cw = w / n;
+  var v = s.visual, labels = v.labels || [];
+  var list = labels.length ? [] : (v.images || [v.image]).filter(Boolean).slice(0, 4);
+  var h = Number(v.h || 120), w = CR - MX, n = Math.max(1, labels.length || list.length), cw = w / n;
   _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
   _ctx.strokeRect(MX + 0.5, top + 0.5, w - 1, h - 1);
-  for (var i = 0; i < list.length; i++) {
+  for (var i = 0; i < n; i++) {
     var x0 = MX + i * cw;
     if (i) { _ctx.fillStyle = INK; _ctx.fillRect(x0, top + 20, 1, h - 41); }
+    if (labels.length) {
+      var size = Number(v.label_size || 25);
+      while (size > 14 && measure(String(labels[i]), size, 'bold') > cw * 0.82) size--;
+      drawText(String(labels[i]), x0 + cw / 2, top + h / 2, size, 'bold', INK, 'mm');
+      continue;
+    }
     drawTintLogo(list[i], x0, top, cw, h, INK, 0.68, 0.50);
   }
   return { x: MX, y: top, w: w, h: h };
