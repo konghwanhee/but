@@ -2652,6 +2652,19 @@ function chapterOf(series) {
   for (var i = 0; i < CHAPTERS.length; i++) if (CHAPTERS[i].series === series) return CHAPTERS[i];
   return { series: series, label: series, short: String(series || '').toUpperCase(), desc: '' };
 }
+/* 테스트 항목 — manifest/data 의 isTest:true (또는 issueNo:"TEST") 로 구분한다.
+   호 번호를 받지 않고, 결재·업로드 대상에서 빠지며, 갤러리에서 `픽 TEST` 처럼 표시된다. */
+function deckIsTest(d) {
+  if (!d) return false;
+  if (d.isTest === true) return true;
+  return String(d.issueNo || '').toUpperCase() === 'TEST';
+}
+/* 갤러리 배지·상세 헤더에 쓰는 호 표기: 포인트 07 / 브리프 01 / 픽 TEST */
+function issueLabel(d) {
+  var ch = chapterOf(d && d.series);
+  if (deckIsTest(d)) return ch.short + ' TEST';
+  return ch.short + ((d && d.issueNo) ? ' ' + pad2(d.issueNo) : '');
+}
 function fmtDate(d) {
   var m = String(d || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
   return m ? m[1] + '.' + m[2] + '.' + m[3] : String(d || '');
@@ -2689,6 +2702,7 @@ function loadDeck(id, opts) {
         if (data.approved && data.approvedAt) DECK[id].approvedAt = data.approvedAt;
         else delete DECK[id].approvedAt;
       }
+      if (DECK[id] && typeof data.isTest === 'boolean') DECK[id].isTest = data.isTest;
       state.family = familyOf(D);
       state.presetId = id;
       state.savedKey = 'butEditor:' + id;
@@ -2875,14 +2889,16 @@ function fmtUploadAt(v, full) {
 var APPROVE_SERIES = { point: 1, tech: 1, briefing: 1, pick: 1 };
 function approveAllowed(id) {
   var m = id ? DECK[id] : null;
-  return !!(m && APPROVE_SERIES[m.series]);
+  return !!(m && APPROVE_SERIES[m.series] && !deckIsTest(m));
 }
 function isoToDotted(iso) {
   var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
   return m ? m[1] + '.' + m[2] + '.' + m[3] : '';
 }
 function deckStatus(d) {
-  if (!d || !APPROVE_SERIES[d.series]) return null;
+  if (!d) return null;
+  if (deckIsTest(d)) return { kind: 'test', text: '테스트 전용 · 결재·업로드 제외' };
+  if (!APPROVE_SERIES[d.series]) return null;
   if (d.publishedAt) return { kind: 'done', text: '업로드 완료 · ' + fmtUploadAt(d.publishedAt, true).split(' ')[0] };
   if (d.approved) {
     var when = d.scheduledUploadAt ? fmtUploadAt(d.scheduledUploadAt) : '';
@@ -2918,11 +2934,13 @@ function updateApproveBtn() {
   }
   var st = document.getElementById('deckStatus');
   if (st) {
-    var s = allowed ? deckStatus(id ? DECK[id] : null) : null;
+    var s = deckStatus(id ? DECK[id] : null);
     st.hidden = !s;
     st.className = 'apStatus' + (s ? ' ' + s.kind : '');
     st.textContent = s ? s.text : '';
-    st.setAttribute('title', id ? statusTip(DECK[id]) : '');
+    st.setAttribute('title', deckIsTest(id ? DECK[id] : null)
+      ? '실제 발행 전 테스트용 항목입니다 · 결재·업로드 대상에서 제외됩니다'
+      : (id ? statusTip(DECK[id]) : ''));
   }
 }
 
@@ -2957,7 +2975,7 @@ function setManifestFields(id, fields, token, message) {
 /* 결재 상태를 GitHub(data/{id}.json + manifest.json)에 커밋 */
 function commitApproval(next, token) {
   var id = state.presetId;
-  if (!id || !D || !approveAllowed(id)) return;
+  if (!id || !D || !approveAllowed(id) || deckIsTest(DECK[id])) return;
   var m = DECK[id] || {};
   var series = m.series || 'point';
   var prev = {
@@ -3064,6 +3082,10 @@ function approveToggle() {
     return;
   }
   if (!D || !state.presetId) return;
+  if (deckIsTest(DECK[state.presetId])) {
+    toast('테스트 항목은 결재할 수 없습니다 · 정식 호에서 결재해 주세요');
+    return;
+  }
   if (!approveAllowed(state.presetId)) {
     toast('결재는 포인트 · 테크 · 브리프 · 픽 호에서만 사용할 수 있습니다');
     return;
@@ -3775,7 +3797,7 @@ function cardEl(d, i) {
   var ch = chapterOf(d.series);
   var b = document.createElement('button');
   b.type = 'button';
-  b.className = 'card';
+  b.className = 'card' + (deckIsTest(d) ? ' isTest' : '');
   b.setAttribute('data-id', d.id);
   b.setAttribute('aria-label', d.title + ' — 문구 수정 화면 열기');
 
@@ -3788,8 +3810,8 @@ function cardEl(d, i) {
   img.decoding = 'async';
   cover.appendChild(img);
   var issue = document.createElement('span');
-  issue.className = 'issue';
-  issue.textContent = ch.short + (d.issueNo ? ' ' + pad2(d.issueNo) : '');
+  issue.className = 'issue' + (deckIsTest(d) ? ' test' : '');
+  issue.textContent = issueLabel(d);
   cover.appendChild(issue);
   b.appendChild(cover);
 
@@ -3845,6 +3867,8 @@ function galMode() {
 
 function sortDecks(list) {
   return (list || []).slice().sort(function (a, b) {
+    var ta = deckIsTest(a) ? 1 : 0, tb = deckIsTest(b) ? 1 : 0;
+    if (ta !== tb) return ta - tb;                          /* TEST 항목은 챕터 맨 뒤로 */
     var da = String(a.date || ''), db = String(b.date || '');
     if (da !== db) return da < db ? 1 : -1;                 /* 최신 날짜 먼저 */
     var na = Number(a.issueNo || 0), nb = Number(b.issueNo || 0);
@@ -4050,8 +4074,7 @@ function showEditor(id) {
   document.getElementById('viewGallery').hidden = true;
   document.getElementById('viewEditor').hidden = false;
   document.getElementById('deckTitle').textContent = meta.title || meta.id;
-  var ch = chapterOf(meta.series);
-  var bits = [ch.short + (meta.issueNo ? ' ' + pad2(meta.issueNo) : '')];
+  var bits = [issueLabel(meta)];
   bits.push(fmtDate(meta.date));
   document.getElementById('deckSub').textContent = bits.join(' · ');
   document.title = (meta.title || meta.id) + ' · 카드뉴스 허브';
