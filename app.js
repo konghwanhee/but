@@ -3388,6 +3388,125 @@ function tableField(colsPath, rowsPath, label, hint) {
   draw();
   return grp;
 }
+/* ---------------------------------------------------------------- 11b. 인스타 캡션
+   뷰티 브리핑: 1~2장 공통 오프닝(openingCaption) + 3장~마지막 장 장표별 캡션(slideCaptions, 길이 = slides.length).
+   뷰티 포인트·테크·픽: 기존 단일 caption 그대로. */
+var CAP_LIMIT = 2200;   /* 인스타 캡션 한도(자) */
+function isBrief() { return state.family === 'brief'; }
+function capArr() {
+  if (!D) return [];
+  if (!Array.isArray(D.slideCaptions)) D.slideCaptions = [];
+  return D.slideCaptions;
+}
+function slideCap(i) { var a = capArr(); var v = a[i]; return v === undefined || v === null ? '' : String(v); }
+function capLen(s) { return Array.prototype.slice.call(String(s || '')).length; }
+function copyCaption(text, label) {
+  var t = String(text || '');
+  if (!t.replace(/\s/g, '')) { toast('복사할 캡션이 비어 있습니다'); return; }
+  function done() { toast((label ? label + ' · ' : '') + capLen(t) + '자 복사했습니다'); }
+  function fallback() {
+    var ta = document.createElement('textarea');
+    ta.value = t; ta.setAttribute('readonly', '');
+    ta.style.position = 'fixed'; ta.style.left = '-9999px'; ta.style.top = '0';
+    document.body.appendChild(ta); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) { }
+    ta.remove();
+    if (ok) done(); else toast('복사하지 못했습니다 · 본문을 길게 눌러 직접 복사해 주세요');
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(done, fallback);
+  } else fallback();
+}
+function captionField(path, label, hint) {
+  var wrap = el('div', 'fld capFld');
+  var lb = el('label');
+  lb.appendChild(document.createTextNode(label));
+  var cnt = el('span', 'n', '');
+  lb.appendChild(cnt);
+  wrap.appendChild(lb);
+  if (hint) wrap.appendChild(el('p', 'capHint', hint));
+  var ta = document.createElement('textarea');
+  ta.className = 'tall capArea'; ta.rows = 6; ta.spellcheck = false;
+  var v = getPath(path);
+  ta.value = v === undefined || v === null ? '' : String(v);
+  function upd() {
+    var n = capLen(ta.value);
+    cnt.textContent = n + '자 / ' + CAP_LIMIT.toLocaleString('en-US');
+    cnt.className = 'n' + (n > CAP_LIMIT ? ' over' : '');
+  }
+  ta.addEventListener('input', function () { setPath(path, ta.value); autoGrow(ta); upd(); commit(); });
+  wrap.appendChild(ta);
+  var row = el('div', 'capRow');
+  var cp = el('button', 'mini', '캡션 복사'); cp.type = 'button';
+  cp.addEventListener('click', function () { copyCaption(ta.value, label); });
+  row.appendChild(cp);
+  wrap.appendChild(row);
+  upd();
+  setTimeout(function () { autoGrow(ta); upd(); }, 0);
+  return wrap;
+}
+function allCaptions() {
+  var out = [String((D && D.openingCaption) || '').trim()];
+  (D && D.slides || []).forEach(function (s, i) { var t = slideCap(i).trim(); if (t) out.push(t); });
+  return out.filter(function (t) { return t; }).join('\n\n\n');
+}
+/* 장표 캡션 전체 보기 — 장표로 바로 이동 + 한 장씩 복사 */
+function captionOverview() {
+  var box = el('div', 'capList');
+  var items = [{ label: '1~2장 공통 오프닝', page: 0, text: String((D && D.openingCaption) || ''), sub: '표지 · 목차' }];
+  ((D && D.slides) || []).forEach(function (s, i) {
+    var sub = String(s.index_title || headlineText(s.headline || []) || '').split(/\s+/).filter(Boolean).join(' ');
+    items.push({ label: (i + 3) + '장 캡션', page: i + 2, text: slideCap(i), sub: sub });
+  });
+  items.forEach(function (it) {
+    var row = el('div', 'capItem');
+    var head = el('div', 'capItemHead');
+    var jump = el('button', 'capJump', it.label); jump.type = 'button';
+    jump.title = '이 장표로 이동';
+    jump.addEventListener('click', function () { goPage(it.page); });
+    head.appendChild(jump);
+    if (it.sub) head.appendChild(el('span', 'capItemSub', it.sub));
+    head.appendChild(el('span', 'capItemLen', capLen(it.text) + '자'));
+    var cp = el('button', 'mini', '복사'); cp.type = 'button';
+    cp.addEventListener('click', function () { copyCaption(it.text, it.label); });
+    head.appendChild(cp);
+    row.appendChild(head);
+    row.appendChild(el('pre', 'capItemText', it.text ? it.text : '(아직 없음)'));
+    box.appendChild(row);
+  });
+  var foot = el('div', 'capRow');
+  var all = el('button', 'mini', '전체 캡션 복사'); all.type = 'button';
+  all.addEventListener('click', function () { copyCaption(allCaptions(), '전체 캡션'); });
+  foot.appendChild(all);
+  box.appendChild(foot);
+  return box;
+}
+/* 기존 단일 caption(01. 02. …)을 1~2장 오프닝 + 장표별 캡션 초안으로 나눈다 — 누를 때만. */
+function splitLegacyCaption() {
+  var text = String((D && D.caption) || '').replace(/\r/g, '').trim();
+  var n = ((D && D.slides) || []).length;
+  if (!text || !n) { toast('나눌 기존 캡션이 없습니다'); return; }
+  var parts = text.split(/\n{2,}(?=\d{1,2}\.\s)/);
+  if (parts.length !== n + 1) {
+    toast('기존 캡션을 ' + n + '개 장표로 자동으로 나누지 못했습니다 · 직접 채워 주세요');
+    return;
+  }
+  var opening = parts[0].trim();
+  var items = parts.slice(1).map(function (b) { return b.trim(); });
+  var li = items.length - 1, lines = items[li].split('\n'), tail = [];
+  while (lines.length) {
+    var ln = lines[lines.length - 1].trim();
+    if (!ln || ln.charAt(0) === '#' || /^원문 기사는/.test(ln)) { if (ln) tail.unshift(ln); lines.pop(); }
+    else break;
+  }
+  items[li] = lines.join('\n').trim();
+  if (tail.length) opening += '\n\n' + tail.join('\n');
+  D.slideCaptions = items;
+  D.openingCaption = opening;
+  buildPanel(); commit();
+  toast('기존 캡션을 1~2장 오프닝 + 장표별 ' + n + '개로 나눴습니다 · 확인 후 GitHub에 저장해 주세요');
+}
 function itemBox(title, kicker) {
   var box = el('div', 'item');
   var h = el('h4');
@@ -3406,6 +3525,15 @@ function renderNodes(nodes, basePath, container) {
     if (nd.t === 'text') container.appendChild(textField(nodePath(nd, basePath), nd.label, nd.rows, nd.hint));
     else if (nd.t === 'lines') container.appendChild(headlineField(nodePath(nd, basePath), nd.label));
     else if (nd.t === 'strarr') container.appendChild(strArrField(nodePath(nd, basePath), nd.label, nd.hint));
+    else if (nd.t === 'cap') container.appendChild(captionField(nodePath(nd, basePath), nd.label, nd.hint));
+    else if (nd.t === 'capList') container.appendChild(captionOverview());
+    else if (nd.t === 'splitLegacy') {
+      var sp = el('button', 'mini', nd.label || '기존 캡션을 장표별로 나누기');
+      sp.type = 'button';
+      sp.addEventListener('click', splitLegacyCaption);
+      container.appendChild(el('p', 'subnote', nd.hint || ''));
+      container.appendChild(sp);
+    }
     else if (nd.t === 'table') container.appendChild(tableField(nodePath({ path: nd.colsPath, abs: nd.abs }, basePath), nodePath({ path: nd.rowsPath, abs: nd.abs }, basePath), nd.label, nd.hint));
     else if (nd.t === 'obj') {
       var box = el('div', 'item');
@@ -3434,8 +3562,8 @@ function renderNodes(nodes, basePath, container) {
   });
 }
 
-function group(title, nodes, cnt) {
-  return { title: title, nodes: nodes, cnt: cnt };
+function group(title, nodes, cnt, open) {
+  return { title: title, nodes: nodes, cnt: cnt, open: open };
 }
 
 function coverSpec() {
@@ -3608,6 +3736,43 @@ function kindName(kind, fam) {
   return names[kind] || '내용';
 }
 
+/* 인스타 캡션 그룹 — 브리핑은 장표별, 나머지는 단일 caption */
+function captionGroups(page) {
+  if (!isBrief()) {
+    var g = [group('인스타 본문 캡션', [
+      { t: 'text', abs: true, path: ['caption'], label: '캡션 + 해시태그', rows: 6, hint: '결재 시 함께 커밋' }
+    ])];
+    if (state.family === 'pick') {
+      g.push(group('뷰티 픽 하단 날짜', [
+        { t: 'text', abs: true, path: ['date'], label: '날짜 (YYYY.MM.DD)', rows: 1, hint: '결재 시 결재일로 자동 변경' }
+      ]));
+    }
+    return g;
+  }
+  var n = ((D && D.slides) || []).length;
+  var openNodes = [{
+    t: 'cap', abs: true, path: ['openingCaption'], label: '1~2장 공통 오프닝 캡션',
+    hint: '1장(표지)과 2장(오늘의 뷰티 N)에 같은 캡션이 붙습니다 · 1장·2장 어느 쪽에서 고쳐도 함께 바뀝니다.'
+  }];
+  if (!(Array.isArray(D.slideCaptions) && D.slideCaptions.length) && D.caption) {
+    openNodes.push({
+      t: 'splitLegacy', label: '기존 단일 캡션에서 장표별 캡션 초안 만들기',
+      hint: '예전 방식(01. 02. …)으로 쓴 caption이 남아 있습니다. 눌러서 1~2장 오프닝과 장표별 캡션으로 나눌 수 있습니다(확인 후 저장).'
+    });
+  }
+  var openG = group('인스타 캡션 · 1~2장 공통 오프닝', openNodes, null, page.type === 'slide' ? false : true);
+  var out = [];
+  if (page.type === 'slide') {
+    var i = page.i;
+    out.push(group((i + 3) + '장 캡션', [{
+      t: 'cap', abs: true, path: ['slideCaptions', i], label: (i + 3) + '장 캡션',
+      hint: '이 장표에만 붙는 개별 캡션 · 본문 제목 / 본문요약 / (빈 줄) / 추가 내용 / (빈 줄) / 매체보도일 (항목 사이는 빈 줄)'
+    }], (i + 3) + '/' + (n + 2), true));
+  }
+  out.push(openG);
+  out.push(group('장표 캡션 전체 보기', [{ t: 'capList', abs: true }], n + 1 + '개', false));
+  return out;
+}
 function buildPanel() {
   var body = document.getElementById('panelBody');
   body.innerHTML = '';
@@ -3615,20 +3780,12 @@ function buildPanel() {
   if (!page) return;
   var basePath = page.type === 'cover' ? ['cover'] : page.type === 'index' ? ['index'] : ['slides', page.i];
   var specs = page.type === 'cover' ? coverSpec() : page.type === 'index' ? indexSpec() : slideSpec(D.slides[page.i] || {}, page.i);
-  // 인스타 본문 캡션 — 어느 장표에서든 고칠 수 있게 맨 위에 둔다.
-  var head = [group('인스타 본문 캡션', [
-    { t: 'text', abs: true, path: ['caption'], label: '캡션 + 해시태그', rows: 6, hint: '결재 시 함께 커밋' }
-  ])];
-  if (state.family === 'pick') {
-    head.push(group('뷰티 픽 하단 날짜', [
-      { t: 'text', abs: true, path: ['date'], label: '날짜 (YYYY.MM.DD)', rows: 1, hint: '결재 시 결재일로 자동 변경' }
-    ]));
-  }
-  specs = head.concat(specs);
+  // 인스타 캡션 — 어느 장표에서든 고칠 수 있게 맨 위에 둔다.
+  specs = captionGroups(page).concat(specs);
   specs.forEach(function (g, gi) {
     var det = document.createElement('details');
     det.className = 'grp';
-    if (gi < 2) det.open = true;
+    if (g.open === true || (g.open === undefined && gi < 2)) det.open = true;
     var sum = document.createElement('summary');
     sum.appendChild(document.createTextNode(g.title));
     if (g.cnt) sum.appendChild(el('span', 'cnt', g.cnt));
