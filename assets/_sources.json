@@ -69,6 +69,13 @@
     "h": 2000,
     "bytes": 104413
   },
+  "assets/bosa-illiyoon.jpg": {
+    "sha1": "1927e93a0cc1a395014f3baf1663c48d96265bca",
+    "source": "downloads/beauty-pick-01-src/bosa-illiyoon.jpg",
+    "w": 600,
+    "h": 900,
+    "bytes": 63695
+  },
   "assets/clio_logo.png": {
     "sha1": "93f0234c58f93cd5ca41d12d775eddd7b87f5584",
     "source": "downloads/beauty-point-logos/clio_logo.png",
