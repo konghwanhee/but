@@ -219,13 +219,13 @@
       "image_height": 330,
       "images": [
         {
-          "image": "downloads/beauty-point-src/aestura365_tube.png",
+          "image": "assets/aestura365_tube.png",
           "tag": "올리브영",
           "caption": "아토베리어365 크림 80ml",
           "contain": true
         },
         {
-          "image": "downloads/beauty-point-src/md_tube_final.png",
+          "image": "assets/md_tube_final.png",
           "tag": "피부과",
           "caption": "아토베리어 크림 MD 160g",
           "focus": 0.5,

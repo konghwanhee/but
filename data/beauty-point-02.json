@@ -107,13 +107,13 @@
       "image_height": 300,
       "images": [
         {
-          "image": "downloads/beauty-point-02-src/md_pair.png",
+          "image": "assets/md_pair.jpg",
           "tag": "병·의원",
           "caption": "리쥬더마 아토 크림 MD",
           "framed": true
         },
         {
-          "image": "downloads/beauty-point-02-src/rej_vis_rejuvenex.png",
+          "image": "assets/rej_vis_rejuvenex.png",
           "tag": "약국",
           "caption": "리쥬비넥스 크림 10g",
           "framed": true
