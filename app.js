@@ -3389,7 +3389,8 @@ function tableField(colsPath, rowsPath, label, hint) {
   return grp;
 }
 /* ---------------------------------------------------------------- 11b. 인스타 캡션
-   뷰티 브리핑: 1~2장 공통 오프닝(openingCaption) + 3장~마지막 장 장표별 캡션(slideCaptions, 길이 = slides.length).
+   뷰티 브리핑: 1장 오프닝(openingCaption, 2장 자동 반영) + 3장~마지막 장 장표별 캡션(slideCaptions, 길이 = slides.length).
+   오프닝 캡션 편집·복사 UI는 1장(표지)에만 두고, 2장(요약)에는 안내 한 줄만 둔다.
    뷰티 포인트·테크·픽: 기존 단일 caption 그대로. */
 var CAP_LIMIT = 2200;   /* 인스타 캡션 한도(자) */
 function isBrief() { return state.family === 'brief'; }
@@ -3454,7 +3455,7 @@ function allCaptions() {
 /* 장표 캡션 전체 보기 — 장표로 바로 이동 + 한 장씩 복사 */
 function captionOverview() {
   var box = el('div', 'capList');
-  var items = [{ label: '1~2장 공통 오프닝', page: 0, text: String((D && D.openingCaption) || ''), sub: '표지 · 목차' }];
+  var items = [{ label: '1장 오프닝 (2장 자동 반영)', page: 0, text: String((D && D.openingCaption) || ''), sub: '2장 자동 반영 · 1장 표지에서 수정' }];
   ((D && D.slides) || []).forEach(function (s, i) {
     var sub = String(s.index_title || headlineText(s.headline || []) || '').split(/\s+/).filter(Boolean).join(' ');
     items.push({ label: (i + 3) + '장 캡션', page: i + 2, text: slideCap(i), sub: sub });
@@ -3482,7 +3483,7 @@ function captionOverview() {
   box.appendChild(foot);
   return box;
 }
-/* 기존 단일 caption(01. 02. …)을 1~2장 오프닝 + 장표별 캡션 초안으로 나눈다 — 누를 때만. */
+/* 기존 단일 caption(01. 02. …)을 1장 오프닝(2장 자동 반영) + 장표별 캡션 초안으로 나눈다 — 누를 때만. */
 function splitLegacyCaption() {
   var text = String((D && D.caption) || '').replace(/\r/g, '').trim();
   var n = ((D && D.slides) || []).length;
@@ -3505,7 +3506,7 @@ function splitLegacyCaption() {
   D.slideCaptions = items;
   D.openingCaption = opening;
   buildPanel(); commit();
-  toast('기존 캡션을 1~2장 오프닝 + 장표별 ' + n + '개로 나눴습니다 · 확인 후 GitHub에 저장해 주세요');
+  toast('기존 캡션을 1장 오프닝 + 장표별 ' + n + '개로 나눴습니다 · 확인 후 GitHub에 저장해 주세요');
 }
 function itemBox(title, kicker) {
   var box = el('div', 'item');
@@ -3527,6 +3528,7 @@ function renderNodes(nodes, basePath, container) {
     else if (nd.t === 'strarr') container.appendChild(strArrField(nodePath(nd, basePath), nd.label, nd.hint));
     else if (nd.t === 'cap') container.appendChild(captionField(nodePath(nd, basePath), nd.label, nd.hint));
     else if (nd.t === 'capList') container.appendChild(captionOverview());
+    else if (nd.t === 'note') container.appendChild(el('p', 'subnote', nd.text || ''));
     else if (nd.t === 'splitLegacy') {
       var sp = el('button', 'mini', nd.label || '기존 캡션을 장표별로 나누기');
       sp.type = 'button';
@@ -3736,7 +3738,8 @@ function kindName(kind, fam) {
   return names[kind] || '내용';
 }
 
-/* 인스타 캡션 그룹 — 브리핑은 장표별, 나머지는 단일 caption */
+/* 인스타 캡션 그룹 — 브리핑은 장표별, 나머지는 단일 caption.
+   1장(표지)에만 오프닝 캡션 편집·복사 UI를 두고, 2장(요약)에는 안내 한 줄만 둔다. */
 function captionGroups(page) {
   if (!isBrief()) {
     var g = [group('인스타 본문 캡션', [
@@ -3750,26 +3753,33 @@ function captionGroups(page) {
     return g;
   }
   var n = ((D && D.slides) || []).length;
-  var openNodes = [{
-    t: 'cap', abs: true, path: ['openingCaption'], label: '1~2장 공통 오프닝 캡션',
-    hint: '1장(표지)과 2장(오늘의 뷰티 N)에 같은 캡션이 붙습니다 · 1장·2장 어느 쪽에서 고쳐도 함께 바뀝니다.'
-  }];
-  if (!(Array.isArray(D.slideCaptions) && D.slideCaptions.length) && D.caption) {
-    openNodes.push({
-      t: 'splitLegacy', label: '기존 단일 캡션에서 장표별 캡션 초안 만들기',
-      hint: '예전 방식(01. 02. …)으로 쓴 caption이 남아 있습니다. 눌러서 1~2장 오프닝과 장표별 캡션으로 나눌 수 있습니다(확인 후 저장).'
-    });
-  }
-  var openG = group('인스타 캡션 · 1~2장 공통 오프닝', openNodes, null, page.type === 'slide' ? false : true);
   var out = [];
-  if (page.type === 'slide') {
-    var i = page.i;
-    out.push(group((i + 3) + '장 캡션', [{
-      t: 'cap', abs: true, path: ['slideCaptions', i], label: (i + 3) + '장 캡션',
-      hint: '이 장표에만 붙는 개별 캡션 · 본문 제목 / 본문요약 / (빈 줄) / 추가 내용 / (빈 줄) / 매체보도일 (항목 사이는 빈 줄)'
-    }], (i + 3) + '/' + (n + 2), true));
+  if (page.type === 'cover') {
+    var openNodes = [{
+      t: 'cap', abs: true, path: ['openingCaption'], label: '1장 오프닝 캡션 (2장 자동 반영)',
+      hint: '여기서 고친 캡션이 2장(오늘의 뷰티 N)에도 그대로 붙습니다 · 2장에는 입력 칸이 없습니다.'
+    }];
+    if (!(Array.isArray(D.slideCaptions) && D.slideCaptions.length) && D.caption) {
+      openNodes.push({
+        t: 'splitLegacy', label: '기존 단일 캡션에서 장표별 캡션 초안 만들기',
+        hint: '예전 방식(01. 02. …)으로 쓴 caption이 남아 있습니다. 눌러서 1장 오프닝과 장표별 캡션으로 나눌 수 있습니다(확인 후 저장).'
+      });
+    }
+    out.push(group('인스타 캡션 · 1장 오프닝 (2장 자동 반영)', openNodes, null, true));
+    out.push(group('장표 캡션 전체 보기', [{ t: 'capList', abs: true }], n + 1 + '개', false));
+    return out;
   }
-  out.push(openG);
+  if (page.type === 'index') {
+    out.push(group('인스타 캡션', [{
+      t: 'note', text: '1장 오프닝 캡션이 2장에 자동 반영됩니다 · 캡션은 1장(표지)에서 수정해 주세요.'
+    }], null, true));
+    return out;
+  }
+  var i = page.i;
+  out.push(group((i + 3) + '장 캡션', [{
+    t: 'cap', abs: true, path: ['slideCaptions', i], label: (i + 3) + '장 캡션',
+    hint: '이 장표에만 붙는 개별 캡션 · 본문 제목 / 본문요약 / (빈 줄) / 추가 내용 / (빈 줄) / 매체보도일 (항목 사이는 빈 줄)'
+  }], (i + 3) + '/' + (n + 2), true));
   out.push(group('장표 캡션 전체 보기', [{ t: 'capList', abs: true }], n + 1 + '개', false));
   return out;
 }
@@ -3780,8 +3790,8 @@ function buildPanel() {
   if (!page) return;
   var basePath = page.type === 'cover' ? ['cover'] : page.type === 'index' ? ['index'] : ['slides', page.i];
   var specs = page.type === 'cover' ? coverSpec() : page.type === 'index' ? indexSpec() : slideSpec(D.slides[page.i] || {}, page.i);
-  // 인스타 캡션 — 어느 장표에서든 고칠 수 있게 맨 위에 둔다.
-  specs = captionGroups(page).concat(specs);
+  // 인스타 캡션 — 표지·장표 문구 수정 칸을 모두 내보낸 뒤 맨 아래에 둔다.
+  specs = specs.concat(captionGroups(page));
   specs.forEach(function (g, gi) {
     var det = document.createElement('details');
     det.className = 'grp';
