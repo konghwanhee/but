@@ -575,6 +575,7 @@ function renderCover(c, family) {
   var cov = c.cover || {};
   _ctx.fillStyle = INK; _ctx.fillRect(0, 0, W, H);
   if (family === 'brief') return coverBrief(cov);
+  if (family === 'pick') return pickCover();
   var tech = family === 'tech';
   var layout = coverLayout(cov, family);
   if (layout === 'solid') return coverTechSolid(cov);
@@ -2098,6 +2099,406 @@ function roundRect(ctx2, x, y, w, h, r) {
   ctx2.closePath();
 }
 
+/* ---------------------------------------------------------------- 8b. 뷰티 픽 (BEAUTY PICK)
+   scripts/beauty_pick_carousel.py 의 레이아웃을 캔버스로 옮긴 것.
+   PAPER #F4F1EB · AZURINE #0A64C8 · 풀블리드 사진 표지 · 도트 인디케이터 ·
+   하단 `BEAUTY PICK · YYYY.MM.DD` / `n / NN` 푸터. */
+var P_MX = 88, P_RIGHT = 992, P_CW = P_RIGHT - P_MX, P_INK = '#131313';
+function pKey() { return (D && D.key_color) || '#0A64C8'; }
+function pDeep() { return (D && D.deep_color) || '#002A7E'; }
+function pPaper() { return (D && D.paper) || '#F4F1EB'; }
+function pRGB(hex) {
+  var c = String(hex || '#000000').replace('#', '');
+  if (c.length === 3) c = c.charAt(0) + c.charAt(0) + c.charAt(1) + c.charAt(1) + c.charAt(2) + c.charAt(2);
+  return [parseInt(c.substr(0, 2), 16), parseInt(c.substr(2, 2), 16), parseInt(c.substr(4, 2), 16)];
+}
+function pA(hex, a) { var r = pRGB(hex); return 'rgba(' + r[0] + ',' + r[1] + ',' + r[2] + ',' + a + ')'; }
+function pMix(a, b, t) {
+  var x = pRGB(a), y = pRGB(b);
+  return 'rgb(' + Math.round(x[0] * (1 - t) + y[0] * t) + ',' +
+    Math.round(x[1] * (1 - t) + y[1] * t) + ',' + Math.round(x[2] * (1 - t) + y[2] * t) + ')';
+}
+function pSmooth(t) { return t * t * (3 - 2 * t); }
+/* 구간별 알파가 있는 세로 스크림. stops 는 [[dy, alpha(0~255)], …] */
+function pStops(x, y, w, h, rgb, stops) {
+  var g = _ctx.createLinearGradient(0, y, 0, y + h);
+  for (var i = 0; i <= 64; i++) {
+    var t = i / 64, yy = t * h, a = 0;
+    for (var k = 0; k < stops.length - 1; k++) {
+      var y0 = stops[k][0], a0 = stops[k][1], y1 = stops[k + 1][0], a1 = stops[k + 1][1];
+      if (yy >= y0 && yy <= y1) { a = a0 + (a1 - a0) * pSmooth((yy - y0) / (y1 - y0 || 1)); break; }
+      if (yy > y1) a = a1;
+    }
+    g.addColorStop(t, 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + (a / 255).toFixed(3) + ')');
+  }
+  _ctx.fillStyle = g; _ctx.fillRect(x, y, w, h);
+}
+function pRound(x, y, w, h, r) {
+  _ctx.beginPath();
+  _ctx.moveTo(x + r, y);
+  _ctx.arcTo(x + w, y, x + w, y + h, r);
+  _ctx.arcTo(x + w, y + h, x, y + h, r);
+  _ctx.arcTo(x, y + h, x, y, r);
+  _ctx.arcTo(x, y, x + w, y, r);
+  _ctx.closePath();
+}
+function pHLine(x0, y0, x1, y1, color, lw) {
+  _ctx.strokeStyle = color; _ctx.lineWidth = lw || 1;
+  _ctx.beginPath(); _ctx.moveTo(x0, y0); _ctx.lineTo(x1, y1); _ctx.stroke();
+}
+function pImgFilter(f, fn) {
+  var had = false;
+  try { _ctx.filter = f; had = true; } catch (e) { }
+  fn();
+  if (had) { try { _ctx.filter = 'none'; } catch (e) { } }
+}
+function pLogoW(h) {
+  var im = getImage('__logo_black__');
+  if (imgOk(im)) return im.naturalWidth * h / im.naturalHeight;
+  return h * 1.7;
+}
+function pHead(page, label, dark) {
+  drawText(page, P_MX, 118, 26, 'extrabold', dark ? WHITE : P_INK, 'ls');
+  pHLine(P_MX, 136, P_MX + 34, 136, dark ? 'rgba(255,255,255,0.40)' : pA(P_INK, 0.45), 2);
+  tracked(String(label || '').toUpperCase(), P_MX, 170, 20, 'medium',
+    dark ? 'rgba(255,255,255,0.62)' : pA(P_INK, 0.62), 6);
+  drawLogo(dark ? 'white' : 'black', P_RIGHT - pLogoW(28), 100, 28);
+}
+function pDots(total, cur, dark) {
+  var gap = 15, r = 3, y = 1298, x0 = (W - (total - 1) * gap) / 2;
+  for (var i = 0; i < total; i++) {
+    var on = (i === cur - 1);
+    _ctx.beginPath();
+    _ctx.fillStyle = dark ? (on ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.43)')
+      : (on ? pA(P_INK, 0.75) : pA(P_INK, 0.28));
+    _ctx.arc(x0 + i * gap, y, r, 0, Math.PI * 2); _ctx.fill();
+  }
+}
+function pFooter(page, total, source, dark) {
+  var muted = dark ? 'rgba(255,255,255,0.55)' : pA(P_INK, 0.5);
+  if (source) {
+    var lines = wrapText(source, 17, 'regular', P_CW - 60);
+    if (lines.length) drawText(lines[0], P_MX, 1204, 17, 'regular', dark ? 'rgba(255,255,255,0.47)' : pA(P_INK, 0.42), 'ls');
+    pHLine(P_MX, 1222, P_RIGHT, 1222, dark ? 'rgba(255,255,255,0.16)' : pA(P_INK, 0.12), 1);
+  }
+  var s = String((D && D.series) || 'BEAUTY PICK') + ' · ' + String((D && D.date) || '');
+  tracked(s, P_MX, 1252, 17, 'medium', muted, 2);
+  var t = page + ' / ' + pad2(total);
+  tracked(t, P_RIGHT - trackedW(t, 17, 'medium', 2), 1252, 17, 'medium', muted, 2);
+}
+function pHeadText(lines, top, size, fill, maxW) {
+  var arr = (lines || []).map(function (l) { return Array.isArray(l) ? l.join('') : String(l); });
+  var mw = maxW || P_CW, over = true, guard = 0;
+  while (over && size > 46 && guard++ < 60) {
+    over = false;
+    for (var i = 0; i < arr.length; i++) if (measure(arr[i], size, 'extrabold') > mw) { over = true; break; }
+    if (over) size -= 2;
+  }
+  var lh = Math.round(size * 1.16);
+  for (var j = 0; j < arr.length; j++) drawText(arr[j], P_MX, top + j * lh + size * 0.82, size, 'extrabold', fill, 'ls');
+  return top + lh * arr.length;
+}
+function pLead(text, top, maxW, dark, size) {
+  size = size || 27;
+  var lines = wrapText(text || '', size, 'bold', (maxW || P_CW) - 28);
+  var lh = Math.round(size * 1.38), h = lh * lines.length;
+  pHLine(P_MX + 2, top + 4, P_MX + 2, top + h - 6, dark ? 'rgba(255,255,255,0.35)' : pA(P_INK, 0.22), 2);
+  for (var i = 0; i < lines.length; i++) {
+    drawText(lines[i], P_MX + 28, top + i * lh + size * 0.8, size, 'bold', dark ? WHITE : P_INK, 'ls');
+  }
+  return top + h;
+}
+function pPara(text, x, top, size, lineH, maxW, color) {
+  var lines = wrapText(text || '', size, 'regular', maxW);
+  for (var i = 0; i < lines.length; i++) {
+    drawText(lines[i], x, top + i * lineH + lineH * 0.72, size, 'regular', color, 'ls');
+  }
+  return top + lineH * lines.length;
+}
+function pTags(tags, y, dark) {
+  var x = P_MX;
+  (tags || []).forEach(function (t) {
+    var s = String(t).toUpperCase(), tw = trackedW(s, 18, 'medium', 2.4);
+    pRound(x, y, tw + 44, 46, 23);
+    _ctx.strokeStyle = dark ? 'rgba(255,255,255,0.59)' : pA(P_INK, 0.32);
+    _ctx.lineWidth = 1; _ctx.stroke();
+    tracked(s, x + 22, y + 30, 18, 'medium', dark ? WHITE : pA(P_INK, 0.82), 2.4);
+    x += tw + 54;
+  });
+}
+function pTakeaway(text, top, dark, width) {
+  if (!text) return top;
+  var w = width || P_CW;
+  var lines = wrapText(text, 24, 'bold', w - 34);
+  var lh = 36;
+  _ctx.fillStyle = pKey(); _ctx.fillRect(P_MX, top + 2, 4, lh * lines.length - 8);
+  for (var i = 0; i < lines.length; i++) {
+    drawText(lines[i], P_MX + 22, top + i * lh + 26, 24, 'bold',
+      dark ? 'rgba(255,255,255,0.92)' : pMix(P_INK, pKey(), 0.35), 'ls');
+  }
+  return top + lh * lines.length;
+}
+
+function pickCover() {
+  var c = (D && D.cover) || {};
+  _ctx.fillStyle = '#EFEDE8'; _ctx.fillRect(0, 0, W, H);
+  if (c.image) {
+    pImgFilter('contrast(1.05) saturate(0.93)', function () {
+      drawCoverCrop(c.image, 0, 0, W, H, 0.5, c.focus_y === undefined ? 0.5 : c.focus_y, 1);
+    });
+  }
+  pStops(0, 0, W, H, [8, 10, 14], [[380, 0], [660, 150], [860, 220], [1040, 245], [H, 252]]);
+  pHead(c.page || '01', c.label || 'PICK', false);
+
+  var total = 1 + ((D.slides || []).length);
+  var dotsY = 1298, tagsY = 1168;
+  var bodyLines = wrapText(c.body || '', 25, 'regular', 800);
+  var bodyLh = 41, bodyH = bodyLines.length * bodyLh;
+  var bodyTop = tagsY - 44 - bodyH;
+  var leadTop = bodyTop - 54;
+  var hl = (c.headline || []).map(function (l) { return Array.isArray(l) ? l.join('') : String(l); });
+  var headSize = 84, over = true, guard = 0;
+  while (over && headSize > 46 && guard++ < 40) {
+    over = false;
+    for (var i = 0; i < hl.length; i++) if (measure(hl[i], headSize, 'extrabold') > 890) { over = true; break; }
+    if (over) headSize -= 2;
+  }
+  var headLh = Math.round(headSize * 1.14);
+  var headTop = leadTop - 30 - headLh * hl.length;
+  for (var j = 0; j < hl.length; j++) {
+    drawText(hl[j], P_MX, headTop + j * headLh + headSize * 0.82, headSize, 'extrabold', WHITE, 'ls');
+  }
+  tracked(c.lead || '', P_MX + 30, leadTop + 26, 26, 'bold', 'rgba(255,255,255,0.91)', 1.6);
+  pHLine(P_MX + 3, bodyTop - 2, P_MX + 3, tagsY - 50, 'rgba(255,255,255,0.27)', 2);
+  for (var k = 0; k < bodyLines.length; k++) {
+    drawText(bodyLines[k], P_MX + 30, bodyTop + k * bodyLh + 30, 25, 'regular', 'rgba(255,255,255,0.85)', 'ls');
+  }
+  pTags(c.tags || [], tagsY, true);
+  pDots(total, 1, true);
+}
+
+function pickSlide(s, idx, total) {
+  _ctx.fillStyle = pPaper(); _ctx.fillRect(0, 0, W, H);
+  var page = s.page || pad2(idx);
+  var kind = s.kind || 'story';
+  if (kind === 'stats') return pickStats(s, page, total);
+  if (kind === 'diagram') return pickDiagram(s, page, total);
+  if (kind === 'table') return pickTable(s, page, total);
+  if (kind === 'checks') return pickChecks(s, page, total);
+  if (kind === 'closing') return pickClosing(s, page, total);
+  return pickStory(s, page, total);
+}
+
+function pickStory(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 258, 72, P_INK);
+  y = Math.max(y + 24, 462);
+  y = pLead(s.body, y, 900, false, 27);
+  var factsTop = y + 52;
+  pHLine(P_MX, factsTop, P_RIGHT, factsTop, pA(P_INK, 0.16), 1);
+  var colW = P_CW / 3;
+  (s.facts || []).forEach(function (f, i) {
+    var x = P_MX + i * colW;
+    drawText(f[0], x, factsTop + 66, 42, 'extrabold', P_INK, 'ls');
+    drawText(f[1], x, factsTop + 103, 20, 'regular', pA(P_INK, 0.62), 'ls');
+  });
+  var tk = pTakeaway(s.takeaway, factsTop + 146, false);
+  if (s.source) drawText(s.source, P_MX, Math.min(tk + 34, 842), 17, 'regular', pA(P_INK, 0.42), 'ls');
+  var bandTop = 872, bandH = H - bandTop;
+  if (s.image) {
+    pImgFilter('contrast(1.05) saturate(0.9)', function () {
+      drawCoverCrop(s.image, 0, bandTop, W, bandH, 0.5, s.band_focus === undefined ? 0.34 : s.band_focus, 1);
+    });
+  }
+  pStops(0, bandTop, W, bandH, [8, 10, 14], [[0, 0], [150, 60], [bandH, 236]]);
+  pFooter(page, total, null, true);
+  pDots(total, Number(page) || (Number(total) - 1), true);
+}
+
+function pickStats(s, page, total) {
+  pHead(page, s.label, false);
+  var side = s.side_image;
+  var textW = P_CW;
+  if (side) {
+    var colX = 664;
+    textW = colX - P_MX - 56;
+    if (side.image) {
+      pImgFilter('contrast(1.04) saturate(0.9)', function () {
+        drawCoverCrop(side.image, colX, 176, W - colX, 1034, 0.5, 0.34, 1);
+      });
+    }
+    pHLine(colX - 30, 176, colX - 30, 1210, pA(P_INK, 0.12), 1);
+  }
+  var y = pHeadText(s.headline || [], 258, side ? 66 : 72, P_INK, textW);
+  var top = Math.max(y + 34, 470);
+  if (side) {
+    (s.stats || []).forEach(function (st) {
+      drawText(st.value, P_MX, top + 96, 104, 'extrabold', pMix(P_INK, pKey(), 0.55), 'ls');
+      drawText(st.unit, P_MX + 4, top + 140, 27, 'bold', P_INK, 'ls');
+      drawText(st.note, P_MX + 4, top + 178, 21, 'regular', pA(P_INK, 0.6), 'ls');
+      top += 214;
+    });
+    pHLine(P_MX, top - 8, P_MX + textW, top - 8, pA(P_INK, 0.14), 1);
+    var y2 = pPara(s.body, P_MX, top + 22, 23, 38, textW, pA(P_INK, 0.84));
+    pTakeaway(s.takeaway, y2 + 26, false, textW);
+    if (s.source) drawText(s.source, P_MX, 1204, 17, 'regular', pA(P_INK, 0.42), 'ls');
+    pHLine(P_MX, 1222, P_RIGHT, 1222, pA(P_INK, 0.12), 1);
+    var s1 = String((D && D.series) || 'BEAUTY PICK') + ' · ' + String((D && D.date) || '');
+    tracked(s1, P_MX, 1252, 17, 'medium', pA(P_INK, 0.5), 2);
+    var t1 = page + ' / ' + pad2(total);
+    tracked(t1, P_RIGHT - trackedW(t1, 17, 'medium', 2), 1252, 17, 'medium', pA(P_INK, 0.5), 2);
+    pDots(total, Number(page) || 3, false);
+    return;
+  }
+  var colW = (P_CW - 60) / 2;
+  (s.stats || []).forEach(function (st, i) {
+    var x = P_MX + i * (colW + 60);
+    drawText(st.value, x, top + 120, 126, 'extrabold', pMix(P_INK, pKey(), 0.55), 'ls');
+    drawText(st.unit, x, top + 172, 28, 'bold', P_INK, 'ls');
+    drawText(st.note, x, top + 212, 21, 'regular', pA(P_INK, 0.6), 'ls');
+  });
+  pHLine(P_MX + colW + 30, top + 10, P_MX + colW + 30, top + 236, pA(P_INK, 0.14), 1);
+  var bodyTop = top + 300;
+  pHLine(P_MX, bodyTop - 34, P_RIGHT, bodyTop - 34, pA(P_INK, 0.14), 1);
+  var y3 = pPara(s.body, P_MX, bodyTop, 26, 44, 900, pA(P_INK, 0.84));
+  pTakeaway(s.takeaway, y3 + 30, false);
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 3, false);
+}
+
+function pickDiagram(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 258, 72, P_INK);
+  var top = Math.max(y + 40, 486);
+  if (s.banner) {
+    var bw = trackedW(s.banner, 18, 'medium', 3);
+    pRound(P_RIGHT - bw - 56, top - 64, bw + 56, 46, 23);
+    _ctx.fillStyle = pMix(P_INK, pKey(), 0.85); _ctx.fill();
+    tracked(s.banner, P_RIGHT - bw - 28, top - 33, 18, 'medium', WHITE, 3);
+  }
+  var barTop = top;
+  (s.rows || []).forEach(function (row) {
+    var w = Math.round((P_CW - 60) * (row.ratio === undefined ? 1 : Number(row.ratio))) + 60;
+    pRound(P_MX, barTop, w, 128, 6);
+    _ctx.fillStyle = row.tone === 'key' ? pMix(P_INK, pKey(), 0.85) : P_INK; _ctx.fill();
+    drawText(row.title, P_MX + 40, barTop + 56, 38, 'extrabold', WHITE, 'ls');
+    tracked(row.sub || '', P_MX + 40, barTop + 96, 18, 'medium', 'rgba(255,255,255,0.75)', 3);
+    drawText(row.text || '', P_MX, barTop + 178, 23, 'regular', pA(P_INK, 0.72), 'ls');
+    barTop += 236;
+  });
+  var y2 = pPara(s.body, P_MX, barTop + 26, 26, 44, 900, pA(P_INK, 0.84));
+  pTakeaway(s.takeaway, y2 + 30, false);
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 4, false);
+}
+
+function pickTable(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 258, 72, P_INK);
+  var top = Math.max(y + 40, 480);
+  var widths = s.widths || [];
+  var xs = [P_MX];
+  for (var i = 0; i < widths.length - 1; i++) xs.push(xs[xs.length - 1] + P_CW * widths[i] / 100);
+  pHLine(P_MX, top, P_RIGHT, top, pA(P_INK, 0.75), 2);
+  (s.columns || []).forEach(function (col, j) {
+    tracked(col, xs[j], top + 40, 18, 'medium', pA(P_INK, 0.55), 3);
+  });
+  var rowTop = top + 66;
+  (s.rows || []).forEach(function (row) {
+    var nameLines = wrapText(row[0], 20, 'bold', P_CW * (widths[0] || 36) / 100 - 26);
+    var rowH = nameLines.length < 3 ? 132 : 154;
+    pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
+    var ny = rowTop + 34;
+    for (var k = 0; k < nameLines.length; k++) {
+      drawText(nameLines[k], xs[0], ny + 24, 20, 'bold', P_INK, 'ls'); ny += 30;
+    }
+    drawText(row[1], xs[1], rowTop + 58, 22, 'regular', pA(P_INK, 0.7), 'ls');
+    drawText(row[2], xs[2], rowTop + 60, 26, 'extrabold', pMix(P_INK, pKey(), 0.5), 'ls');
+    drawText(row[3], xs[3], rowTop + 58, 21, 'regular', pA(P_INK, 0.7), 'ls');
+    rowTop += rowH;
+  });
+  pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
+  var noteY = rowTop + 40;
+  if (s.note) {
+    var nl = wrapText(s.note, 19, 'regular', P_CW);
+    for (var j = 0; j < nl.length; j++) drawText(nl[j], P_MX, noteY + j * 28 + 16, 19, 'regular', pA(P_INK, 0.52), 'ls');
+  }
+  pTakeaway(s.takeaway, noteY + 74, false);
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 5, false);
+}
+
+function pickChecks(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 252, 72, P_INK);
+  var cy = Math.max(y + 26, 452);
+  (s.items || []).forEach(function (item, idx) {
+    pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
+    drawText(pad2(idx + 1), P_MX, cy + 50, 20, 'extrabold', pMix(P_INK, pKey(), 0.6), 'ls');
+    drawText(item.title, P_MX + 56, cy + 52, 29, 'extrabold', P_INK, 'ls');
+    var lines = wrapText(item.body, 23, 'regular', P_CW - 56);
+    for (var j = 0; j < lines.length; j++) drawText(lines[j], P_MX + 56, cy + 98 + j * 34, 23, 'regular', pA(P_INK, 0.74), 'ls');
+    cy += 98 + lines.length * 34 + 30;
+  });
+  pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
+  pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 6, false);
+}
+
+function pickClosing(s, page, total) {
+  var bg = s.bg_image;
+  if (bg) {
+    pImgFilter('grayscale(1) brightness(0.52) contrast(1.15)', function () {
+      drawCoverCrop(bg, 0, 0, W, H, 0.5, 0.42, 1);
+    });
+    _ctx.save();
+    try { _ctx.globalCompositeOperation = 'color'; } catch (e) { }
+    _ctx.globalAlpha = 0.55;
+    _ctx.fillStyle = 'rgb(120,150,195)';
+    _ctx.fillRect(0, 0, W, H);
+    _ctx.restore();
+    _ctx.fillStyle = 'rgba(0,42,126,0.32)'; _ctx.fillRect(0, 0, W, H);
+    pStops(0, 0, W, H, [8, 10, 14], [[0, 80], [300, 55], [700, 95], [1000, 195], [H, 225]]);
+  } else {
+    _ctx.fillStyle = pDeep(); _ctx.fillRect(0, 0, W, H);
+    var g = _ctx.createLinearGradient(0, 0, 0, H);
+    for (var i = 0; i <= 24; i++) {
+      var t = i / 24;
+      g.addColorStop(t, 'rgba(255,255,255,' + (0.2 * Math.pow(1 - t, 1.4)).toFixed(3) + ')');
+    }
+    _ctx.fillStyle = g; _ctx.fillRect(0, 0, W, H);
+  }
+  pHead(page, s.label, true);
+  var y = pHeadText(s.headline, 268, 76, WHITE);
+  y = Math.max(y + 34, 500);
+  y = pPara(s.body, P_MX, y, 26, 44, 906, 'rgba(255,255,255,0.82)');
+  pTags(s.tags || [], y + 40, true);
+
+  var sy = 872;
+  tracked('SOURCES', P_MX, sy, 16, 'medium', 'rgba(255,255,255,0.47)', 4);
+  pHLine(P_MX, sy + 12, P_MX + 40, sy + 12, 'rgba(255,255,255,0.35)', 1);
+  var yy = sy + 42;
+  (s.sources || []).forEach(function (src) {
+    var lines = wrapText('· ' + src, 18, 'regular', P_CW - 10);
+    for (var j = 0; j < lines.length; j++) {
+      drawText(lines[j], P_MX, yy + 14, 18, 'regular', 'rgba(255,255,255,0.59)', 'ls');
+      yy += 26;
+    }
+  });
+  if (s.credit) drawText(s.credit, P_MX, yy + 24, 17, 'medium', 'rgba(255,255,255,0.63)', 'ls');
+
+  var disc = (D && D.disclaimer) || '';
+  if (disc) {
+    var dl = wrapText(disc, 16, 'regular', P_CW);
+    for (var k = 0; k < dl.length; k++) drawText(dl[k], P_MX, 1206 + k * 22 + 12, 16, 'regular', 'rgba(255,255,255,0.43)', 'ls');
+  }
+  var f2 = String((D && D.series) || 'BEAUTY PICK') + ' · ' + String((D && D.date) || '');
+  tracked(f2, P_MX, 1306, 16, 'medium', 'rgba(255,255,255,0.47)', 2);
+  var t2 = page + ' / ' + pad2(total);
+  tracked(t2, P_RIGHT - trackedW(t2, 16, 'medium', 2), 1306, 16, 'medium', 'rgba(255,255,255,0.47)', 2);
+}
+
 /* ---------------------------------------------------------------- 9. 장표 렌더 */
 var POINT_KINDS = { table: pTable, cards: pCards, brand_pair: pBrandPair, brand_wide: pBrandWide, list: pList, reasons: pReasons, bars: pBars };
 var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, compare: tCompare, products: tProducts, quad: tQuad, steps: tSteps, lineage: tLineage, closing: tClosing };
@@ -2105,6 +2506,7 @@ var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, c
 function renderSlidePage(s, idx, total, family) {
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
   if (family === 'brief') return briefSlide(s, idx, total);
+  if (family === 'pick') return pickSlide(s, idx, total + 1);
   var v = family === 'tech' ? null : (s.visual || null);
   var mode = v && v.mode;
   var panelMode = mode === 'panel';
@@ -2181,10 +2583,15 @@ var _raf = 0, _saveT = 0;
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
 function familyOf(d) {
+  if (d && d.family === 'pick') return 'pick';
+  if (d && (d.series === 'BEAUTY PICK' || d.series === 'pick')) return 'pick';
   if (d && d.index) return 'brief';
   var tech = ['points', 'band', 'split', 'compare', 'quad', 'products', 'steps', 'lineage', 'closing'];
   var kinds = ((d && d.slides) || []).map(function (s) { return s.kind; });
-  for (var i = 0; i < kinds.length; i++) if (tech.indexOf(kinds[i]) >= 0) return 'tech';
+  for (var i = 0; i < kinds.length; i++) {
+    if (kinds[i] === 'story' || kinds[i] === 'stats' || kinds[i] === 'diagram' || kinds[i] === 'checks') return 'pick';
+    if (tech.indexOf(kinds[i]) >= 0) return 'tech';
+  }
   return 'point';
 }
 function buildPages() {
@@ -2199,7 +2606,10 @@ function pageName(p, i) {
   if (p.type === 'index') return '요약';
   var s = (D.slides || [])[p.i] || {};
   var lab = String(s.label || '').replace(/^\d+\s*·\s*/, '');
-  return (p.i + 1) + '/' + (D.slides || []).length + (lab ? ' · ' + lab : '');
+  var head = (state.family === 'pick' && s.page)
+    ? String(s.page) + '/' + pad2((D.slides || []).length + 1)
+    : (p.i + 1) + '/' + (D.slides || []).length;
+  return head + (lab ? ' · ' + lab : '');
 }
 function requestRender() {
   if (_raf) return;
@@ -2223,9 +2633,10 @@ var MANIFEST = { decks: [] };
 var DECK = {};
 var LS_PAT = 'but:pat';
 var CHAPTERS = [
-  { series: 'point', label: '뷰티 포인트', short: 'POINT', desc: '뷰티 업계의 주목할 만한 트렌드와 핵심 이슈를 선별해 소개합니다. · MON · WED · FRI' },
-  { series: 'tech', label: '뷰티 테크', short: 'TECH', desc: '성분부터 작용기전, 신기술까지 뷰티 과학의 전문 지식을 깊이 있게 다룹니다. · DEEP DIVE · ONE TOPIC' },
-  { series: 'briefing', label: '데일리 브리핑', short: 'BRIEF', desc: '뷰티 업계의 최신 뉴스와 이슈, 보도자료 및 공시 정보를 매일 전합니다. · MON – FRI · EVENING' }
+  { series: 'point', label: '뷰티 포인트', short: '포인트', desc: '뷰티 업계의 주목할 만한 트렌드와 핵심 이슈를 선별해 소개합니다. · MON · WED · FRI 08:00' },
+  { series: 'tech', label: '뷰티 테크', short: '테크', desc: '성분부터 작용기전, 신기술까지 뷰티 과학의 전문 지식을 깊이 있게 다룹니다. · SAT 08:00' },
+  { series: 'briefing', label: '데일리 뷰티 브리핑', short: '브리프', desc: '뷰티 업계의 최신 뉴스와 이슈, 보도자료 및 공시 정보를 매일 전합니다. · MON – FRI 18:00' },
+  { series: 'pick', label: '뷰티 픽', short: '픽', desc: '한 편으로 읽는 제품·트렌드 큐레이션. 결재한 날 올라갑니다. · IRREGULAR' }
 ];
 var filterSeries = 'all';
 var currentDeck = null;
@@ -2273,7 +2684,7 @@ function loadDeck(id, opts) {
       if (!data || !Array.isArray(data.slides)) throw new Error('slides 배열이 없는 JSON입니다');
       D = clone(data);
       // 목록(manifest)에 아직 없는 결재 기록이 카드뉴스 JSON 에 있으면 같이 맞춰 둔다.
-      if (DECK[id] && DECK[id].series === 'briefing' && typeof data.approved === 'boolean') {
+      if (DECK[id] && typeof data.approved === 'boolean') {
         DECK[id].approved = data.approved;
         if (data.approved && data.approvedAt) DECK[id].approvedAt = data.approvedAt;
         else delete DECK[id].approvedAt;
@@ -2424,15 +2835,22 @@ function kstWall(now) {
   var t = new Date(now.getTime() + 9 * 3600 * 1000);
   return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), h: t.getUTCHours() };
 }
-/* 결재 시점 기준 업로드 예정: 오늘 18:00 전이면 오늘 18:00, 지났으면 다음 날 18:00 (KST) */
-function nextUploadSlot(now) {
-  var k = kstWall(now || new Date());
+/* 결재 시점 기준 업로드 예정 시각(KST).
+   브리프 18:00 · 포인트/테크 08:00 · 픽은 결재한 순간(비정기, 당일 업로드). */
+function nextUploadSlot(now, series) {
+  var when = now || new Date();
+  var k = kstWall(when);
   var y = k.y, m = k.m, d = k.d;
-  if (k.h >= 18) {
+  if (series === 'pick') {
+    var t = new Date(when.getTime() + 9 * 3600 * 1000);
+    return y + '-' + p2n(m) + '-' + p2n(d) + 'T' + p2n(k.h) + ':' + p2n(t.getUTCMinutes()) + ':00+09:00';
+  }
+  var hour = series === 'briefing' ? 18 : 8;
+  if (k.h >= hour) {
     var nx = new Date(Date.UTC(y, m - 1, d + 1));
     y = nx.getUTCFullYear(); m = nx.getUTCMonth() + 1; d = nx.getUTCDate();
   }
-  return y + '-' + p2n(m) + '-' + p2n(d) + 'T18:00:00+09:00';
+  return y + '-' + p2n(m) + '-' + p2n(d) + 'T' + p2n(hour) + ':00:00+09:00';
 }
 /* ISO 시각(UTC 'Z' 포함)은 KST 로 바꾸고, 'YYYY-MM-DD 18:00' 같은 표기는 그대로 읽는다. */
 function fmtUploadAt(v, full) {
@@ -2453,19 +2871,25 @@ function fmtUploadAt(v, full) {
   return (hh !== null) ? date + ' ' + p2n(hh) + ':' + p2n(mi) : date;
 }
 /* 카드·편집 화면에 보일 결재 상태 문구 */
-/* 결재는 데일리 브리핑(briefing) 호에서만 쓴다. 뷰티 포인트·뷰티 테크는 표시도 허용도 하지 않는다. */
+/* 결재는 네 챕터(포인트 · 테크 · 브리프 · 픽) 모두에서 쓴다. */
+var APPROVE_SERIES = { point: 1, tech: 1, briefing: 1, pick: 1 };
 function approveAllowed(id) {
   var m = id ? DECK[id] : null;
-  return !!(m && m.series === 'briefing');
+  return !!(m && APPROVE_SERIES[m.series]);
+}
+function isoToDotted(iso) {
+  var m = String(iso || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? m[1] + '.' + m[2] + '.' + m[3] : '';
 }
 function deckStatus(d) {
-  if (!d || d.series !== 'briefing') return null;
+  if (!d || !APPROVE_SERIES[d.series]) return null;
   if (d.publishedAt) return { kind: 'done', text: '업로드 완료 · ' + fmtUploadAt(d.publishedAt, true).split(' ')[0] };
   if (d.approved) {
-    return {
-      kind: 'scheduled',
-      text: '결재됨' + (d.scheduledUploadAt ? ' · 예정 ' + fmtUploadAt(d.scheduledUploadAt) : ' · 업로드 예정')
-    };
+    var when = d.scheduledUploadAt ? fmtUploadAt(d.scheduledUploadAt) : '';
+    var tail = d.series === 'pick'
+      ? (when ? ' · ' + when + ' 업로드' : ' · 업로드 예정')
+      : (when ? ' · 예정 ' + when : ' · 업로드 예정');
+    return { kind: 'scheduled', text: '결재됨' + tail };
   }
   return null;
 }
@@ -2535,57 +2959,72 @@ function commitApproval(next, token) {
   var id = state.presetId;
   if (!id || !D || !approveAllowed(id)) return;
   var m = DECK[id] || {};
+  var series = m.series || 'point';
   var prev = {
     approved: (typeof m.approved === 'boolean') ? m.approved : (typeof D.approved === 'boolean' ? D.approved : false),
     approvedAt: m.approvedAt || D.approvedAt || null,
     scheduledUploadAt: m.scheduledUploadAt || D.scheduledUploadAt || null,
     publishedAt: m.publishedAt || D.publishedAt || null
   };
-  var fields;
+  var fields, manFields, dataFields;
+  var prevDate = D.date;
   if (next) {
+    var sched = nextUploadSlot(new Date(), series);
     fields = {
       approved: true,
       approvedAt: new Date().toISOString(),
-      scheduledUploadAt: nextUploadSlot(new Date()),
+      scheduledUploadAt: sched,
       publishedAt: prev.publishedAt || null
     };
+    dataFields = clone(fields);
+    manFields = clone(fields);
+    if (series === 'pick') {
+      // 뷰티 픽: 하단 `BEAUTY PICK · YYYY.MM.DD` 날짜를 결재일(업로드일)로 바꿔 함께 커밋
+      dataFields.date = isoToDotted(sched);
+      manFields.date = sched.slice(0, 10);
+    }
   } else {
     fields = { approved: false, approvedAt: null, scheduledUploadAt: null, publishedAt: prev.publishedAt || null };
+    dataFields = fields;
+    manFields = fields;
   }
 
   var btn = document.getElementById('btnApprove');
   btn.disabled = true;
   toast(next ? '결재를 기록하는 중…' : '결재를 취소하는 중…');
 
-  Object.keys(fields).forEach(function (k) { D[k] = fields[k]; });
+  Object.keys(dataFields).forEach(function (k) { D[k] = dataFields[k]; });
 
   var path = 'data/' + id + '.json';
   var title = m.title || id;
   var text = JSON.stringify(D, null, 2) + '\n';
-  var msg = (next ? '결재: ' : '결재 취소: ') + title + ' (' + id + ')';
+  var msg = (next ? '결재: ' : '결재 취소: ') + title + ' (' + id + ')' +
+    (next && series === 'pick' ? ' · 날짜 ' + dataFields.date : '');
 
   ghRead(path, token)
     .then(function (cur) { return ghWrite(path, text, msg, token, cur && cur.sha); })
     .then(function () {
-      return setManifestFields(id, fields, token, msg)
-        .catch(function () { return setManifestFields(id, fields, token, msg); });
+      return setManifestFields(id, manFields, token, msg)
+        .catch(function () { return setManifestFields(id, manFields, token, msg); });
     })
     .then(function () {
-      applyApprovalLocal(id, fields);
+      applyApprovalLocal(id, manFields);
       clearTimeout(_saveT);
       lsDel(state.savedKey);
       state.dirty = false;
       markDirty(false);
       updateApproveBtn();
+      requestRender();          // 뷰티 픽은 하단 날짜가 결재일로 바뀐 캔버스를 바로 다시 그린다
       renderGallery();
       if (next) {
-        toast('결재했습니다\n업로드 예정 ' + fmtUploadAt(fields.scheduledUploadAt, true) + ' · ' + path);
+        toast('결재했습니다\n업로드 예정 ' + fmtUploadAt(manFields.scheduledUploadAt, true) + ' · ' + path);
       } else {
         toast('결재를 취소했습니다 · ' + path);
       }
     })
     .catch(function (err) {
       Object.keys(prev).forEach(function (k) { D[k] = prev[k]; });
+      D.date = prevDate;
       updateApproveBtn();
       toast('결재 상태를 저장하지 못했습니다 · ' + err.message + '\n잠시 뒤 [결재]를 다시 눌러 주세요');
     })
@@ -2626,14 +3065,20 @@ function approveToggle() {
   }
   if (!D || !state.presetId) return;
   if (!approveAllowed(state.presetId)) {
-    toast('결재는 데일리 브리핑 호에서만 사용할 수 있습니다');
+    toast('결재는 포인트 · 테크 · 브리프 · 픽 호에서만 사용할 수 있습니다');
     return;
   }
   var before = approvalOf(state.presetId);
   var next = !before;
+  var series = (DECK[state.presetId] || {}).series || 'point';
+  var schedule = series === 'briefing' ? '오늘/내일 18:00'
+    : series === 'pick' ? '결재한 날짜 (당일 업로드)'
+      : '오늘/내일 08:00';
   askConfirm(next ? {
     title: '결재',
-    body: '이 카드뉴스를 결재할까요? 결재 시 GitHub에 저장되며 업로드 예정 상태가 됩니다.',
+    body: series === 'pick'
+      ? '이 카드뉴스를 결재할까요? 결재하면 GitHub에 저장되고, 하단 날짜가 결재일(' + isoToDotted(nextUploadSlot(new Date(), 'pick').slice(0, 10)) + ')로 바뀌어 함께 커밋됩니다.'
+      : '이 카드뉴스를 결재할까요? 결재 시 GitHub에 저장되고 ' + schedule + ' 업로드 예정으로 기록됩니다.',
     ok: '결재 확정'
   } : {
     title: '결재 취소',
@@ -2696,7 +3141,8 @@ function buildTabs() {
     var b = document.createElement('button');
     b.type = 'button';
     b.className = 'tab' + (i === state.page ? ' on' : '');
-    var num = p.type === 'cover' ? '표지' : p.type === 'index' ? '요약' : pad2(p.i + 1);
+    var num = p.type === 'cover' ? '표지' : p.type === 'index' ? '요약'
+      : (state.family === 'pick' && (D.slides[p.i] || {}).page) ? String((D.slides[p.i] || {}).page) : pad2(p.i + 1);
     var nm = p.type === 'slide'
       ? ((D.slides || [])[p.i] || {}).label || ''
       : (p.type === 'cover' ? '첫 장' : '오늘의 뷰티');
@@ -2967,6 +3413,15 @@ function group(title, nodes, cnt) {
 function coverSpec() {
   var g = [];
   var cov = D.cover || {};
+  if (state.family === 'pick') {
+    g.push(group('표지 문구 (뷰티 픽)', [
+      { t: 'lines', path: ['headline'], label: '표지 헤드라인' },
+      { t: 'text', path: ['lead'], label: '리드 (굵은 한 줄)', rows: 1 },
+      { t: 'text', path: ['body'], label: '본문', rows: 3 },
+      { t: 'strarr', path: ['tags'], label: '알약 태그' }
+    ]));
+    return g;
+  }
   var layout = coverLayout(cov, state.family);
   var nodes = [{ t: 'lines', path: ['headline'], label: '표지 헤드라인' }];
   if (layout === 'block') {
@@ -3064,6 +3519,26 @@ function slideSpec(s, i) {
       push({ t: 'arr', path: ['rows'], kicker: '단계', titleFn: function (it) { return it.name || ''; }, nodes: [{ t: 'text', path: ['num'], label: '번호', rows: 1 }, { t: 'text', path: ['name'], label: '이름', rows: 1 }, { t: 'text', path: ['sub'], label: '부제', rows: 1 }, { t: 'text', path: ['tag'], label: '태그', rows: 1 }] });
       if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '노트', rows: 2 });
     }
+  } else if (fam === 'pick') {
+    if (kind === 'story') {
+      push({ t: 'arr', path: ['facts'], kicker: '사실', titleFn: function (it) { return it[0] || '사실'; }, nodes: [{ t: 'text', path: [0], label: '큰 값', rows: 1 }, { t: 'text', path: [1], label: '설명', rows: 1 }] });
+    } else if (kind === 'stats') {
+      push({ t: 'arr', path: ['stats'], kicker: '숫자', titleFn: function (it) { return (it.value || '') + ' ' + (it.unit || ''); }, nodes: [{ t: 'text', path: ['value'], label: '값', rows: 1 }, { t: 'text', path: ['unit'], label: '단위·이름', rows: 1 }, { t: 'text', path: ['note'], label: '설명', rows: 1 }] });
+      if (s.side_image) push({ t: 'obj', path: ['side_image'], title: '오른쪽 사진', nodes: [{ t: 'text', path: ['credit'], label: '사진 크레딧', rows: 1 }] });
+    } else if (kind === 'diagram') {
+      push({ t: 'text', path: ['banner'], label: '오른쪽 배지 문구', rows: 1 });
+      push({ t: 'arr', path: ['rows'], kicker: '층', titleFn: function (it) { return it.title || '층'; }, nodes: [{ t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'text', path: ['sub'], label: '영문 라벨', rows: 1 }, { t: 'text', path: ['text'], label: '설명', rows: 1 }, { t: 'text', path: ['ratio'], label: '막대 비율 (0~1)', rows: 1 }, { t: 'text', path: ['tone'], label: '색 (ink 또는 key)', rows: 1 }] });
+    } else if (kind === 'table') {
+      push({ t: 'strarr', path: ['columns'], label: '열 이름' });
+      push({ t: 'table', colsPath: ['columns'], rowsPath: ['rows'], label: '칸 고치기', hint: '칸을 누르면 바로 반영' });
+      if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '표 아래 노트', rows: 2 });
+    } else if (kind === 'checks') {
+      push({ t: 'arr', path: ['items'], kicker: '항목', titleFn: function (it, k) { return pad2(k + 1) + ' · ' + (it.title || ''); }, nodes: [{ t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'text', path: ['body'], label: '본문', rows: 3 }] });
+    } else if (kind === 'closing') {
+      push({ t: 'text', path: ['credit'], label: '사진 크레딧', rows: 1 });
+      push({ t: 'strarr', path: ['sources'], label: '출처 목록' });
+      push({ t: 'text', abs: true, path: ['disclaimer'], label: '면책 문구', rows: 3 });
+    }
   } else {
     if (kind === 'table') push({ t: 'table', colsPath: ['table', 'columns'], rowsPath: ['table', 'rows'], label: '칸 고치기' });
     else if (kind === 'cards') push({ t: 'arr', path: ['cards'], kicker: '카드', titleFn: function (it) { return it.title || ''; }, nodes: [{ t: 'text', path: ['eyebrow'], label: '아이브로우', rows: 1 }, { t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'strarr', path: ['items'], label: '항목' }, { t: 'text', path: ['note'], label: '하단 메모', rows: 1 }] });
@@ -3112,6 +3587,16 @@ function buildPanel() {
   if (!page) return;
   var basePath = page.type === 'cover' ? ['cover'] : page.type === 'index' ? ['index'] : ['slides', page.i];
   var specs = page.type === 'cover' ? coverSpec() : page.type === 'index' ? indexSpec() : slideSpec(D.slides[page.i] || {}, page.i);
+  // 인스타 본문 캡션 — 어느 장표에서든 고칠 수 있게 맨 위에 둔다.
+  var head = [group('인스타 본문 캡션', [
+    { t: 'text', abs: true, path: ['caption'], label: '캡션 + 해시태그', rows: 6, hint: '결재 시 함께 커밋' }
+  ])];
+  if (state.family === 'pick') {
+    head.push(group('뷰티 픽 하단 날짜', [
+      { t: 'text', abs: true, path: ['date'], label: '날짜 (YYYY.MM.DD)', rows: 1, hint: '결재 시 결재일로 자동 변경' }
+    ]));
+  }
+  specs = head.concat(specs);
   specs.forEach(function (g, gi) {
     var det = document.createElement('details');
     det.className = 'grp';
@@ -3565,8 +4050,8 @@ function showEditor(id) {
   document.getElementById('viewGallery').hidden = true;
   document.getElementById('viewEditor').hidden = false;
   document.getElementById('deckTitle').textContent = meta.title || meta.id;
-  var bits = [meta.seriesLabel || chapterOf(meta.series).label];
-  if (meta.issueNo) bits.push(pad2(meta.issueNo) + '호');
+  var ch = chapterOf(meta.series);
+  var bits = [ch.short + (meta.issueNo ? ' ' + pad2(meta.issueNo) : '')];
   bits.push(fmtDate(meta.date));
   document.getElementById('deckSub').textContent = bits.join(' · ');
   document.title = (meta.title || meta.id) + ' · 카드뉴스 허브';
