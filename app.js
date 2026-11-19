@@ -887,8 +887,10 @@ function drawSidePoint(s) {
       drawContain(v.image, x0 + w * 0.08, y0 + h * 0.07, w * 0.84, h * 0.86, false);
     }
   }
-  _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
-  _ctx.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
+  if (v.frame !== false) {
+    _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
+    _ctx.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
+  }
   return { x: x0, y: y0, w: w, h: h };
 }
 var POINT_VIS_MODES = { band: drawBandPoint, strip: drawStripPoint, grid: drawGridPoint,
