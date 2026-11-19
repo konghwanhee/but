@@ -691,6 +691,12 @@ function bodyBlock(slide, base, size, maxW) {
 function drawSource(text) {
   if (text) drawText(text, MX, SRCB, 19, 'medium', KEY, 'ls');
 }
+function drawDisclaimer(text) {
+  if (!text) return;
+  var lines = wrapText(text, 15, 'medium', CR - MX);
+  var y = SRCB + 36;
+  for (var i = 0; i < lines.length; i++) { drawText(lines[i], MX, y, 15, 'medium', INK, 'ls'); y += 21; }
+}
 function drawRule(y, w) {
   _ctx.fillStyle = KEY; _ctx.fillRect(MX, y, w || 64, 3);
 }
@@ -1894,6 +1900,7 @@ function renderSlidePage(s, idx, total, family) {
   }
   fn(s, head.last);
   drawSource(s.source || '');
+  drawDisclaimer(s.disclaimer || '');
   progressPoint(idx, total);
   framePoint(idx + '/' + total);
 }
