@@ -90,6 +90,13 @@
     "h": 918,
     "bytes": 211100
   },
+  "assets/cerave_aesop_side.jpg": {
+    "sha1": "2b8f6e8c6d2f6516b8712115a5098aba15e6da43",
+    "source": "downloads/beauty-point-07-v2-src/cerave_aesop_side.png",
+    "w": 720,
+    "h": 860,
+    "bytes": 65197
+  },
   "assets/cg_hongdae_store.jpg": {
     "sha1": "610a6ac04822b25982cdf7744b626ea6fd64002b",
     "source": "downloads/carousel-src/cg_hongdae_store.jpg",
@@ -153,6 +160,13 @@
     "h": 62,
     "bytes": 4756
   },
+  "assets/cosrx_snail96_essence.jpg": {
+    "sha1": "5ea170cffe62b2d741cc9667d47087d1d9fdc4d2",
+    "source": "downloads/beauty-point-07-v2-src/cosrx_snail96_essence.jpg",
+    "w": 272,
+    "h": 706,
+    "bytes": 33951
+  },
   "assets/cover_iope_retinol.jpg": {
     "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
     "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
@@ -180,6 +194,13 @@
     "w": 1000,
     "h": 1000,
     "bytes": 34599
+  },
+  "assets/de_protini_cream.jpg": {
+    "sha1": "7be9083634beb782eb05edda52b731456b3cd861",
+    "source": "downloads/beauty-point-07-v2-src/de_protini_cream.jpg",
+    "w": 297,
+    "h": 320,
+    "bytes": 23373
   },
   "assets/fc59e6c76ae344dbad0ffaacf15c514f.jpg": {
     "sha1": "5da04a4683789d0620e9b2980a7b253e6db61047",
@@ -342,6 +363,13 @@
     "h": 1054,
     "bytes": 65060
   },
+  "assets/ordinary_azelaic_ink_card.jpg": {
+    "sha1": "f329b20468bd21dafb7cff6603834597724dfa37",
+    "source": "downloads/beauty-point-07-v2-src/ordinary_azelaic_ink_card.png",
+    "w": 680,
+    "h": 840,
+    "bytes": 41462
+  },
   "assets/ordinary_azelaic_white.jpg": {
     "sha1": "3b7f4c9c8ef010c4d8e5f16bfc631e48cf9ed2a9",
     "source": "downloads/beauty-point-07-src/ordinary_azelaic_white.jpg",
@@ -355,6 +383,13 @@
     "w": 900,
     "h": 645,
     "bytes": 76886
+  },
+  "assets/ordinary_wordmark.png": {
+    "sha1": "cc5fceee8b9285f79b9ac70fd3b6fd04a744cdde",
+    "source": "downloads/beauty-point-07-v2-src/ordinary_wordmark.png",
+    "w": 900,
+    "h": 324,
+    "bytes": 40703
   },
   "assets/panel-1f.jpg": {
     "sha1": "cd721102dfbeb0aaedba36d207ce31ab5d73c362",
