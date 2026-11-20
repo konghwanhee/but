@@ -1,4 +1,11 @@
 {
+  "assets/aesop_serum_cutout.png": {
+    "sha1": "1b31b2f378a82b93e0817693679e9f6ff70fa50c",
+    "source": "downloads/beauty-point-07-v3-src/aesop_serum_cutout.png",
+    "w": 607,
+    "h": 1067,
+    "bytes": 404926
+  },
   "assets/aestura365_tube.png": {
     "sha1": "1b596a2d14923a34b402d794b75e80347385913d",
     "source": "downloads/beauty-point-src/aestura365_tube.png",
@@ -97,6 +104,13 @@
     "h": 860,
     "bytes": 65197
   },
+  "assets/cerave_cream_cutout.png": {
+    "sha1": "cd959e7e8ed48cbdddcb48bd8d8171c0579da84d",
+    "source": "downloads/beauty-point-07-v3-src/cerave_cream_cutout.png",
+    "w": 451,
+    "h": 477,
+    "bytes": 181543
+  },
   "assets/cg_hongdae_store.jpg": {
     "sha1": "610a6ac04822b25982cdf7744b626ea6fd64002b",
     "source": "downloads/carousel-src/cg_hongdae_store.jpg",
@@ -160,6 +174,13 @@
     "h": 62,
     "bytes": 4756
   },
+  "assets/cosrx_snail96_cutout.png": {
+    "sha1": "486a69b2041b0d60f4157c7e5576008bc05a6413",
+    "source": "downloads/beauty-point-07-v3-src/cosrx_snail96_cutout.png",
+    "w": 357,
+    "h": 752,
+    "bytes": 103477
+  },
   "assets/cosrx_snail96_essence.jpg": {
     "sha1": "5ea170cffe62b2d741cc9667d47087d1d9fdc4d2",
     "source": "downloads/beauty-point-07-v2-src/cosrx_snail96_essence.jpg",
@@ -201,6 +222,13 @@
     "w": 297,
     "h": 320,
     "bytes": 23373
+  },
+  "assets/de_protini_cutout.png": {
+    "sha1": "f12472dfcbf8e6a0c9bcdae02122c170445b23dc",
+    "source": "downloads/beauty-point-07-v3-src/de_protini_cutout.png",
+    "w": 301,
+    "h": 330,
+    "bytes": 132449
   },
   "assets/fc59e6c76ae344dbad0ffaacf15c514f.jpg": {
     "sha1": "5da04a4683789d0620e9b2980a7b253e6db61047",
@@ -369,6 +397,13 @@
     "w": 680,
     "h": 840,
     "bytes": 41462
+  },
+  "assets/ordinary_azelaic_tube.png": {
+    "sha1": "e410cb6124e9b4b64e812a5b3a05e694d974d422",
+    "source": "downloads/beauty-point-07-v3-src/ordinary_azelaic_tube.png",
+    "w": 513,
+    "h": 979,
+    "bytes": 325519
   },
   "assets/ordinary_azelaic_white.jpg": {
     "sha1": "3b7f4c9c8ef010c4d8e5f16bfc631e48cf9ed2a9",
