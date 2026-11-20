@@ -3772,7 +3772,7 @@ function captionGroups(page) {
   if (page.type === 'cover') {
     var openNodes = [{
       t: 'cap', abs: true, path: ['openingCaption'], label: '1장 오프닝 캡션 (2장 자동 반영)',
-      hint: '여기서 고친 캡션이 2장(오늘의 뷰티 N)에도 그대로 붙습니다 · 2장에는 입력 칸이 없습니다.'
+      hint: '00일 뷰티 소식 00건을 모았습니다. → 빈 줄 → 요약 1~2줄 → 빈 줄 → 고정 두 문장 · 해시태그 없이 · 2장(오늘의 뷰티 N)에도 그대로 붙습니다'
     }];
     if (!(Array.isArray(D.slideCaptions) && D.slideCaptions.length) && D.caption) {
       openNodes.push({
