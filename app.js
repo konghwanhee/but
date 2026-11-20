@@ -3758,7 +3758,7 @@ function kindName(kind, fam) {
 function captionGroups(page) {
   if (!isBrief()) {
     var g = [group('인스타 본문 캡션', [
-      { t: 'text', abs: true, path: ['caption'], label: '캡션 + 해시태그', rows: 6, hint: '결재 시 함께 커밋' }
+      { t: 'text', abs: true, path: ['caption'], label: '인스타 캡션', rows: 6, hint: '제목 1줄 · 빈 줄 · 요약 2~3줄 (해시태그 없이) · 결재 시 함께 커밋' }
     ])];
     if (state.family === 'pick') {
       g.unshift(group('뷰티 픽 하단 날짜', [
