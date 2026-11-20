@@ -341,6 +341,27 @@ function drawContainPlain(path, x, y, w, h) {
   var nw = im.naturalWidth * r, nh = im.naturalHeight * r;
   _ctx.drawImage(im, x + (w - nw) / 2, y + (h - nh), nw, nh);
 }
+
+// 투명 누끼 — 배경·테두리 없이 알파 그대로 앉힌다(제품 사진은 이 방식만 쓴다).
+function cutoutFit(path, maxW, maxH, height) {
+  var im = getImage(path);
+  if (!imgOk(im)) return { w: maxW, h: maxH, im: im };
+  var r = height ? height / im.naturalHeight
+                 : Math.min(maxW / im.naturalWidth, maxH / im.naturalHeight);
+  var w = im.naturalWidth * r, h = im.naturalHeight * r;
+  if (w > maxW) { h *= maxW / w; w = maxW; }
+  if (h > maxH) { w *= maxH / h; h = maxH; }
+  return { w: Math.max(1, Math.round(w)), h: Math.max(1, Math.round(h)), im: im };
+}
+
+function drawCutout(path, x, y, w, h, align) {
+  var f = cutoutFit(path, w, h, null);
+  if (!imgOk(f.im)) { placeholder(path, x, y, w, h); return f; }
+  var px = x + (w - f.w) / 2;
+  var py = align === 'center' ? y + (h - f.h) / 2 : y + (h - f.h);
+  _ctx.drawImage(f.im, px, py, f.w, f.h);
+  return { w: f.w, h: f.h, x: px, y: py };
+}
 function drawLogo(tone, x, y, h) {
   var key = tone === 'white' ? '__logo_white__' : '__logo_black__';
   var im = getImage(key);
@@ -885,8 +906,32 @@ function drawFiguresPoint(s, top) {
 function drawSidePoint(s) {
   var v = s.visual, w = Number(v.w || 380), h = Number(v.h || 300);
   var x0 = CR - w, y0 = Number(v.top === undefined ? VIS_TOP : v.top);
+  var cutout = !!v.cutout;
+  if (cutout && v.images && v.images.length) {
+    // 누끼 2~3개를 같은 바닥선에 맞춰 나란히(카드·테두리 없음)
+    var specs = v.images, gap = Number(v.gap === undefined ? 30 : v.gap);
+    var sizes = specs.map(function (sp) {
+      return cutoutFit(sp.image, w, h, Math.min(Number(sp.height || h), h));
+    });
+    var total = sizes.reduce(function (a, q) { return a + q.w; }, 0) + gap * (sizes.length - 1);
+    if (total > w) {
+      var f = w / total;
+      sizes = sizes.map(function (q) { return { w: Math.max(1, Math.round(q.w * f)), h: Math.max(1, Math.round(q.h * f)), im: q.im }; });
+      total = sizes.reduce(function (a, q) { return a + q.w; }, 0) + gap * (sizes.length - 1);
+    }
+    var cx = x0 + (w - total) / 2, base = y0 + h;
+    sizes.forEach(function (q) {
+      if (imgOk(q.im)) _ctx.drawImage(q.im, cx, base - q.h, q.w, q.h);
+      cx += q.w + gap;
+    });
+    return { x: x0, y: y0, w: w, h: h };
+  }
   var isLogo = v.tone === 'key' || /\.svg$/.test(v.image || '') || /_logo\.png$/.test(v.image || '');
-  if (isLogo) {
+  if (cutout && !isLogo) {
+    var sc = Number(v.fit_scale === undefined ? 1 : v.fit_scale);
+    var sy = Number(v.fit_scale_y === undefined ? sc : v.fit_scale_y);
+    drawCutout(v.image, x0, y0, w * sc, h * sy, 'center');
+  } else if (isLogo) {
     _ctx.fillStyle = KEY; _ctx.fillRect(x0, y0, w, h);
     drawTintLogo(v.image, x0, y0, w, h, WHITE, 0.72, 0.24);
   } else {
@@ -897,7 +942,7 @@ function drawSidePoint(s) {
       drawContain(v.image, x0 + w * 0.08, y0 + h * 0.07, w * 0.84, h * 0.86, false);
     }
   }
-  if (v.frame !== false) {
+  if (v.frame !== false && !cutout) {
     _ctx.strokeStyle = INK; _ctx.lineWidth = 1;
     _ctx.strokeRect(x0 + 0.5, y0 + 0.5, w - 1, h - 1);
   }
@@ -1182,23 +1227,46 @@ function pCards(s, headLast) {
 
 function pBrandPair(s, headLast) {
   var top = contentTopPoint(s, headLast, 48);
-  var images = s.images || [], n = images.length || 1, gap = 24;
+  var images = s.images || [], n = images.length || 1;
+  var cutout = !!s.cutout;
+  var gap = Number(s.gap === undefined ? (cutout ? 52 : 24) : s.gap);
   var cell = (CR - MX - gap * (n - 1)) / n;
   var ih = Number(s.image_height || 300);
-  images.forEach(function (spec, i) {
-    var x = MX + i * (cell + gap);
-    if (spec.framed) drawContain(spec.image, x, top, cell, ih, true);
-    else {
-      drawContainPlain(spec.image, x, top, cell, ih);
-      _ctx.fillStyle = INK; _ctx.fillRect(x, top + ih + 2, cell, 2);
+  var tdy = Number(s.tag_gap === undefined ? 12 : s.tag_gap);
+  function tagAt(x, tag) {
+    if (cutout && (s.tag_style === undefined ? 'text' : s.tag_style) === 'text') {
+      tracked(tag, x + 2, top - tdy - 6, 16, 'bold', INK, 2);
+      return;
     }
-    if (spec.caption) drawText(spec.caption, x, top + ih + 30, 19, 'bold', INK, 'ls');
-    if (spec.tag) {
-      var tw = trackedW(spec.tag, 16, 'bold', 2);
-      _ctx.fillStyle = KEY; _ctx.fillRect(x, top - 12, tw + 26, 32);
-      tracked(spec.tag, x + 13, top + 15, 16, 'bold', WHITE, 2);
-    }
-  });
+    var tw = trackedW(tag, 16, 'bold', 2);
+    _ctx.fillStyle = KEY; _ctx.fillRect(x, top - tdy, tw + 26, 32);
+    tracked(tag, x + 13, top - tdy + 27, 16, 'bold', WHITE, 2);
+  }
+  if (cutout) {
+    // 누끼는 칸에 가두지 않고 한 덩어리로 묶어 가운데 앉힌다
+    var sizes = images.map(function (spec) {
+      return cutoutFit(spec.image, CR - MX, ih, Math.min(Number(spec.height || ih), ih));
+    });
+    var total = sizes.reduce(function (a, q) { return a + q.w; }, 0) + gap * (n - 1);
+    var cursor = MX + (((CR - MX - total) / 2) * (s.pack === false ? 0 : 1));
+    images.forEach(function (spec, i) {
+      var q = sizes[i];
+      if (imgOk(q.im)) _ctx.drawImage(q.im, cursor, top + (ih - q.h), q.w, q.h);
+      if (spec.tag) tagAt(cursor, spec.tag);
+      cursor += q.w + gap;
+    });
+  } else {
+    images.forEach(function (spec, i) {
+      var x = MX + i * (cell + gap);
+      if (spec.framed) drawContain(spec.image, x, top, cell, ih, true);
+      else {
+        drawContainPlain(spec.image, x, top, cell, ih);
+        _ctx.fillStyle = INK; _ctx.fillRect(x, top + ih + 2, cell, 2);
+      }
+      if (spec.caption) drawText(spec.caption, x, top + ih + 30, 19, 'bold', INK, 'ls');
+      if (spec.tag) tagAt(x, spec.tag);
+    });
+  }
   var cap = images[0] && images[0].caption;
   var tableTop = top + ih + (cap ? 58 : 40);
   var spec2 = s.table || {}, cols = spec2.columns || [], rows = spec2.rows || [];
