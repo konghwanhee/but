@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-20T19:55:01+09:00",
+  "generatedAt": "2026-11-20T19:57:35+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -109,7 +109,7 @@
       "subtitle": "이름은 비슷해도 역할은 다릅니다",
       "coverThumb": "covers/beauty-tech-02-cover.png",
       "jsonPath": "data/beauty-tech-02.json",
-      "updatedAt": "2026-11-20T19:55:00+09:00"
+      "updatedAt": "2026-11-20T19:57:34+09:00"
     },
     {
       "id": "beauty-brief-test",
