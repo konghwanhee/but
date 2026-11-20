@@ -20,6 +20,13 @@
     "h": 1080,
     "bytes": 28582
   },
+  "assets/amore_beauty_park_osan.jpg": {
+    "sha1": "c38c0ba6f3781e6f934fea6fc0c1fa870fa8a7ff",
+    "source": "downloads/beauty-point-07-v14-src/amore_beauty_park_osan.jpg",
+    "w": 918,
+    "h": 612,
+    "bytes": 210775
+  },
   "assets/amorepacific_logo.png": {
     "sha1": "f8a9037577cee2fef297cb674d438d18aff489bc",
     "source": "downloads/beauty-point-logos/amorepacific_logo.png",
