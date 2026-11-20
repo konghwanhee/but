@@ -1746,7 +1746,8 @@ function tProducts(s, headLast) {
     linesS.forEach(function (ln, k) { drawText(ln, MX + 30, ty + k * 28, 19, 'bold', WHITE, 'ls'); });
     top += sh + 34;
   }
-  var items = s.items || [], gap = 40;
+  var cutout = !!s.cutout;
+  var items = s.items || [], gap = Number(s.gap || 40);
   var cw = (CR - MX - gap * (items.length - 1)) / Math.max(1, items.length);
   var ih = Number(s.image_height || 300);
   var limit = CTM - (s.takeaway ? 120 : 0);
@@ -1756,17 +1757,27 @@ function tProducts(s, headLast) {
   items.forEach(function (it, i) {
     var x = MX + i * (cw + gap);
     if (it.tag) {
-      var tw = trackedW(it.tag, 15, 'bold', 2);
-      _ctx.fillStyle = KEY; _ctx.fillRect(x, top, tw + 28, 32);
-      tracked(it.tag, x + 14, top + 21, 15, 'bold', WHITE, 2);
+      if (cutout && (s.tag_style === undefined ? 'text' : s.tag_style) === 'text') {
+        // 누끼 위에는 상자 없이 작은 글자만(사각 칩도 '박스'로 읽힌다)
+        tracked(it.tag, x + 2, top + 22, 15, 'bold', INK, 2);
+      } else {
+        var tw = trackedW(it.tag, 15, 'bold', 2);
+        _ctx.fillStyle = KEY; _ctx.fillRect(x, top, tw + 28, 32);
+        tracked(it.tag, x + 14, top + 21, 15, 'bold', WHITE, 2);
+      }
     }
-    var im = getImage(it.image);
-    if (imgOk(im)) {
-      var r = Math.min(cw / im.naturalWidth, ih / im.naturalHeight);
-      var nw = im.naturalWidth * r, nh = im.naturalHeight * r;
-      _ctx.drawImage(im, x + (cw - nw) / 2, top + 40 + (ih - nh), nw, nh);
-    } else placeholder(it.image, x, top + 40, cw, ih);
-    _ctx.fillStyle = INK; _ctx.fillRect(x, top + 40 + ih + 2, cw, 1);
+    if (cutout) {
+      // 투명 누끼 그대로 — 바탕·구분선 없이 알파만 얹는다
+      drawCutout(it.image, x, top + 40, cw, ih);
+    } else {
+      var im = getImage(it.image);
+      if (imgOk(im)) {
+        var r = Math.min(cw / im.naturalWidth, ih / im.naturalHeight);
+        var nw = im.naturalWidth * r, nh = im.naturalHeight * r;
+        _ctx.drawImage(im, x + (cw - nw) / 2, top + 40 + (ih - nh), nw, nh);
+      } else placeholder(it.image, x, top + 40, cw, ih);
+      _ctx.fillStyle = INK; _ctx.fillRect(x, top + 40 + ih + 2, cw, 1);
+    }
     var nameLines = wrapText(it.name || '', 25, 'extrabold', cw);
     var ny = top + 40 + ih + 44;
     nameLines.forEach(function (ln, k) { drawText(ln, x, ny + k * 32, 25, 'extrabold', INK, 'ls'); });
