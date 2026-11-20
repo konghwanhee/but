@@ -3757,7 +3757,7 @@ function kindName(kind, fam) {
    1장(표지)에만 오프닝 캡션 편집·복사 UI를 두고, 2장(요약)에는 안내 한 줄만 둔다. */
 function captionGroups(page) {
   if (!isBrief()) {
-    var g = [group('인스타 본문 캡션', [
+    var g = [group('인스타 캡션', [
       { t: 'text', abs: true, path: ['caption'], label: '인스타 캡션', rows: 6, hint: '제목 1줄 · 빈 줄 · 요약 2~3줄 (해시태그 없이) · 결재 시 함께 커밋' }
     ])];
     if (state.family === 'pick') {
