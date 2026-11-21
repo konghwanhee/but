@@ -636,6 +636,41 @@
     "h": 231,
     "bytes": 25754
   },
+  "assets/tex-01-rejuran.png": {
+    "sha1": "e6199758da222df999ac1707471670f64ebfaf14",
+    "source": "downloads/beauty-point-02-v8-assets/tex-01-rejuran.png",
+    "w": 1070,
+    "h": 988,
+    "bytes": 1130191
+  },
+  "assets/tex-02-rejuderma.png": {
+    "sha1": "9cacf6698174fb6de870f5dba28b99d81a98adb1",
+    "source": "downloads/beauty-point-02-v8-assets/tex-02-rejuderma.png",
+    "w": 1129,
+    "h": 1025,
+    "bytes": 1368971
+  },
+  "assets/tex-03-rejvnx-inj.png": {
+    "sha1": "242a5b5a332350c0db768f6763376dc0c8e1893d",
+    "source": "downloads/beauty-point-02-v8-assets/tex-03-rejvnx-inj.png",
+    "w": 1081,
+    "h": 845,
+    "bytes": 752669
+  },
+  "assets/tex-04-rejvnx-cream.png": {
+    "sha1": "4ad2c6761bfbd15daee7b7fd62d33adf33944dd9",
+    "source": "downloads/beauty-point-02-v8-assets/tex-04-rejvnx-cream.png",
+    "w": 1069,
+    "h": 619,
+    "bytes": 574910
+  },
+  "assets/tex-05-rejudex.png": {
+    "sha1": "23ac15009581048504590b3cf6f3f7237857674e",
+    "source": "downloads/beauty-point-02-v8-assets/tex-05-rejudex.png",
+    "w": 1057,
+    "h": 888,
+    "bytes": 811291
+  },
   "assets/tirtir_logo.png": {
     "sha1": "8ead4dc34ba366d533145ad06bd5d930862d04ef",
     "source": "downloads/beauty-point-logos/tirtir_logo.png",

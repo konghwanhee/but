@@ -148,6 +148,7 @@
     },
     {
       "kind": "lineup",
+      "layout": "rows",
       "label": "04 · 제품 5종",
       "headline": [
         [
@@ -157,49 +158,121 @@
           "다섯 가지로 나뉩니다"
         ]
       ],
-      "body": "성분 계열과 허가 분류가 제품마다 다릅니다. 같은 PDRN이라도 주사제는 전문의약품, 크림은 일반의약품입니다.",
+      "body": "같은 PDRN이라도 포장과 쓰임, 제형이 제품마다 다릅니다.",
       "body_size": 21,
-      "family_size": 15,
-      "name_size": 19,
-      "class_size": 15,
+      "gap_after_head": 30,
       "products": [
         {
           "family": "PN",
           "name": "리쥬란",
           "class": "의료기기 4등급",
-          "image": "assets/rejuran-5fe89e.png",
-          "height": 462
+          "image": "assets/tex-01-rejuran.png",
+          "spec": [
+            {
+              "label": "포장",
+              "value": "시린지 2mL × 2"
+            },
+            {
+              "label": "사용",
+              "value": "의료진이 피부에 서서히 주입"
+            },
+            {
+              "label": "제형",
+              "value": "무색 투명한 고점도 젤"
+            }
+          ]
         },
         {
           "family": "PDRN",
           "name": "리쥬더마 아토 크림 MD",
           "class": "의료기기 2등급",
-          "image": "assets/rejuderma-456aab.png",
-          "height": 470
+          "image": "assets/tex-02-rejuderma.png",
+          "spec": [
+            {
+              "label": "포장",
+              "value": "튜브 100mL · 230mL"
+            },
+            {
+              "label": "사용",
+              "value": "하루 두 번 얇게 발라 마사지"
+            },
+            {
+              "label": "제형",
+              "value": "피부에 막을 만드는 고보습 크림"
+            }
+          ]
         },
         {
           "family": "PDRN",
           "name": "리쥬비넥스주",
           "class": "전문의약품",
-          "image": "assets/rejvnx_inj-bb0bb5.png",
-          "height": 405
+          "image": "assets/tex-03-rejvnx-inj.png",
+          "spec": [
+            {
+              "label": "포장",
+              "value": "유리 앰플 3mL × 5"
+            },
+            {
+              "label": "사용",
+              "value": "1일 1앰플, 근육 또는 피하"
+            },
+            {
+              "label": "제형",
+              "value": "무색 투명한 묽은 액"
+            }
+          ]
         },
         {
           "family": "PDRN",
           "name": "리쥬비넥스크림",
           "class": "일반의약품",
-          "image": "assets/rejvnx_cream-e04b3f.png",
-          "height": 415
+          "image": "assets/tex-04-rejvnx-cream.png",
+          "spec": [
+            {
+              "label": "포장",
+              "value": "튜브 10g"
+            },
+            {
+              "label": "사용",
+              "value": "환부에 1일 1~2회 도포"
+            },
+            {
+              "label": "제형",
+              "value": "흰색의 균질한 크림"
+            }
+          ]
         },
         {
           "family": "c-PDRN",
           "name": "리쥬덱스",
           "class": "코스메틱",
-          "image": "assets/rejudex-5afffe.png",
-          "height": 432
+          "image": "assets/tex-05-rejudex.png",
+          "spec": [
+            {
+              "label": "포장",
+              "value": "튜브 20g"
+            },
+            {
+              "label": "사용",
+              "value": "아침저녁 두 번 펴 바름"
+            },
+            {
+              "label": "제형",
+              "value": "부드럽게 펴 발리는 크림"
+            }
+          ]
         }
       ],
-      "source": "식약처 의료기기 전자민원창구 · 의약품안전나라 · 파마리서치 · 올리브영"
+      "source": "식약처 의료기기 전자민원창구 · 의약품안전나라 · 파마리서치 · 올리브영",
+      "swatch_w": 176,
+      "swatch_h": 112,
+      "name_size": 26,
+      "spec_size": 18,
+      "spec_label_size": 14,
+      "spec_label_w": 56,
+      "spec_top": 78,
+      "spec_gap": 24,
+      "name_top": 44
     },
     {
       "kind": "list",

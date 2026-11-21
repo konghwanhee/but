@@ -1423,6 +1423,7 @@ function pList(s, headLast) {
 
 /* 제품 한 줄 비교 — 성분 계열 · 제품 누끼 · 허가 분류 (파이썬 make_lineup 과 같은 좌표) */
 function pLineup(s, headLast) {
+  if (s.layout === 'rows') return pLineupRows(s, headLast);
   var items = s.products || [], n = Math.max(1, items.length);
   var lim = s.__limit || CTM;
   var bandH = s.takeaway ? 112 : 0;
@@ -1464,6 +1465,36 @@ function pLineup(s, headLast) {
   var bottom = ny + Math.round(nameSize * 1.22) * 2 + clsSize + 12;
   if (s.takeaway) takeaway(s.takeaway, bandH, s.takeaway_label || 'POINT', lim);
   return bottom;
+}
+
+/* 제품을 행으로 — 제형 스와치 + 제품명·허가 분류 + 포장/사용/제형 (파이썬 make_lineup_rows 와 같은 좌표) */
+function pLineupRows(s, headLast) {
+  var items = s.products || [], n = Math.max(1, items.length);
+  var lim = s.__limit || CTM;
+  var top = Math.max(headLast + Number(s.gap_after_head === undefined ? 26 : s.gap_after_head), 0);
+  var rowH = (lim - top) / n;
+  var swW = Number(s.swatch_w || 150), swH = Number(s.swatch_h || 108);
+  var textX = MX + swW + 18;
+  var nameSize = Number(s.name_size || 25), metaSize = Number(s.class_size || 14);
+  var specSize = Number(s.spec_size || 17), labelSize = Number(s.spec_label_size || 13);
+  var labelW = Number(s.spec_label_w || 54);
+  var nameTop = Number(s.name_top === undefined ? 38 : s.name_top);
+  var specTop = Number(s.spec_top === undefined ? 76 : s.spec_top);
+  var specGap = Number(s.spec_gap || 26);
+  items.forEach(function (it, k) {
+    var y0 = top + rowH * k;
+    if (k) { _ctx.fillStyle = INK; _ctx.fillRect(MX, y0, CR - MX, 1); }
+    if (it.image) drawContain(it.image, MX, y0 + (rowH - swH) / 2, swW, swH, false);
+    drawText(it.name || '', textX, y0 + nameTop, nameSize, 'bold', INK, 'ls');
+    var meta = [it.family, it.class].filter(function (v) { return !!v; }).join(' · ');
+    if (meta) drawText(meta, CR, y0 + nameTop, metaSize, 'bold', KEY_TEXT, 'rs');
+    (it.spec || []).slice(0, 3).forEach(function (sp, j) {
+      var by = y0 + specTop + j * specGap;
+      if (sp.label) drawText(sp.label, textX, by, labelSize, 'bold', KEY, 'ls');
+      drawText(sp.value || '', textX + labelW, by, specSize, 'medium', INK, 'ls');
+    });
+  });
+  return top + rowH * n;
 }
 
 /* 직접 만든 도해 이미지 한 장 — 사슬 길이·입자 비교 (파이썬 make_figure 와 같은 좌표) */
@@ -3885,7 +3916,11 @@ function slideSpec(s, i) {
       push({ t: 'arr', path: ['products'], kicker: '제품', titleFn: function (it) { return it.name || ''; }, nodes: [
         { t: 'text', path: ['family'], label: '성분 계열', rows: 1 },
         { t: 'text', path: ['name'], label: '제품명', rows: 2 },
-        { t: 'text', path: ['class'], label: '허가 분류', rows: 1 }
+        { t: 'text', path: ['class'], label: '허가 분류', rows: 1 },
+        { t: 'arr', path: ['spec'], kicker: '포장 · 사용 · 제형', titleFn: function (it) { return it.label || ''; }, nodes: [
+          { t: 'text', path: ['label'], label: '표기', rows: 1 },
+          { t: 'text', path: ['value'], label: '내용', rows: 2 }
+        ] }
       ] });
     } else if (kind === 'figure') {
       if (s.caption !== undefined) push({ t: 'text', path: ['caption'], label: '그림 캐션', rows: 1 });
