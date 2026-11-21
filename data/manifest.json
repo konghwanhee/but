@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-21T09:00:58+09:00",
+  "generatedAt": "2026-11-21T09:02:31+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -21,11 +21,11 @@
       "seriesLabel": "뷰티 포인트",
       "issueNo": 2,
       "date": "2026-11-16",
-      "title": "연어 DNA 크림, 세 갈래로 팔린다",
-      "subtitle": "올리브영 화장품 · 병원 의료기기 · 약국 일반의약품",
+      "title": "같은 연어 DNA, 법이 셋으로 갈린다",
+      "subtitle": "의료기기 · 의약품 · 화장품, 허가가 가르는 판매처와 표시 문구",
       "coverThumb": "covers/beauty-point-02-cover.png",
       "jsonPath": "data/beauty-point-02.json",
-      "updatedAt": "2026-11-21T09:00:57+09:00"
+      "updatedAt": "2026-11-21T09:02:30+09:00"
     },
     {
       "id": "beauty-point-03",
