@@ -1,618 +1,625 @@
 {
- "assets/aesop_serum_cutout.png": {
-  "sha1": "1b31b2f378a82b93e0817693679e9f6ff70fa50c",
-  "source": "downloads/beauty-point-07-v3-src/aesop_serum_cutout.png",
-  "w": 607,
-  "h": 1067,
-  "bytes": 404926
- },
- "assets/aestura365_tube.png": {
-  "sha1": "1b596a2d14923a34b402d794b75e80347385913d",
-  "source": "downloads/beauty-point-src/aestura365_tube.png",
-  "w": 560,
-  "h": 750,
-  "bytes": 125933
- },
- "assets/aesturamd_1002_7.webp": {
-  "sha1": "1203657fd4948062af1fdca67efc13f13cafe53a",
-  "source": "downloads/beauty-point-src/aesturamd_1002_7.webp",
-  "w": 2000,
-  "h": 1080,
-  "bytes": 28582
- },
- "assets/amore_beauty_park_osan.jpg": {
-  "sha1": "c38c0ba6f3781e6f934fea6fc0c1fa870fa8a7ff",
-  "source": "downloads/beauty-point-07-v14-src/amore_beauty_park_osan.jpg",
-  "w": 918,
-  "h": 612,
-  "bytes": 210775
- },
- "assets/amorepacific_logo.png": {
-  "sha1": "f8a9037577cee2fef297cb674d438d18aff489bc",
-  "source": "downloads/beauty-point-logos/amorepacific_logo.png",
-  "w": 900,
-  "h": 175,
-  "bytes": 29907
- },
- "assets/apr_logo.png": {
-  "sha1": "da12e108f3300372ef62e4a6b86456ead47074c7",
-  "source": "downloads/beauty-point-logos/apr_logo.png",
-  "w": 328,
-  "h": 470,
-  "bytes": 17216
- },
- "assets/band.jpg": {
-  "sha1": "04b8f4ed6156ac200f08f58567c92140c153d37a",
-  "source": "downloads/beauty-tech-02-assets/band.png",
-  "w": 1400,
-  "h": 933,
-  "bytes": 322435
- },
- "assets/beauty-point-02-v3-cover-art2.jpg": {
-  "sha1": "d71a1face3e7fb3a6d5e54b48398e37e8f019874",
-  "source": "downloads/beauty-point-02-v3-cover-art2.png",
-  "w": 1536,
-  "h": 1024,
-  "bytes": 158671
- },
- "assets/beauty-tech-cover-visual.png": {
-  "sha1": "e6568d37d0903240567d52794c433c2a30a5e22c",
-  "source": "downloads/beauty-tech-cover-visual.png",
-  "w": 1269,
-  "h": 785,
-  "bytes": 875317
- },
- "assets/boj-rice-still.webp": {
-  "sha1": "c35f44ef6e2f7a77024aae7781153d1485e24f9d",
-  "source": "downloads/beauty-point-covers-src/boj-rice-still.webp",
-  "w": 1024,
-  "h": 1536,
-  "bytes": 97706
- },
- "assets/boj_logo-0c086b.png": {
-  "sha1": "0c086be2b7ebe6786f5f879711cf8959da22ed37",
-  "source": "downloads/brand-src/boj_logo.png",
-  "w": 2501,
-  "h": 236,
-  "bytes": 40707
- },
- "assets/boj_logo.png": {
-  "sha1": "c0cfb8f6a37b3d1adfa3b5e56bc69a4920c74cf5",
-  "source": "downloads/beauty-point-logos/boj_logo.png",
-  "w": 900,
-  "h": 172,
-  "bytes": 28795
- },
- "assets/boj_reliefsun.jpg": {
-  "sha1": "45bd2fdd8ed8a64152c9a1b0ab88e9ac9e3f79d6",
-  "source": "downloads/beauty-point-04-06-src/boj_reliefsun.jpg",
-  "w": 2000,
-  "h": 2000,
-  "bytes": 67323
- },
- "assets/boj_reliefsun_2-1d256a.jpg": {
-  "sha1": "1d256a1cb0ea258f5be375d5df40f1068d4bd345",
-  "source": "downloads/beauty-point-cuts/boj_reliefsun_2.png",
-  "w": 1100,
-  "h": 1539,
-  "bytes": 94600
- },
- "assets/boj_reliefsun_2.jpg": {
-  "sha1": "e0b13aa8e2e9cdf68c7c32ab1cdd2c9f05590f09",
-  "source": "downloads/beauty-point-04-06-src/boj_reliefsun_2.jpg",
-  "w": 2000,
-  "h": 2000,
-  "bytes": 104413
- },
- "assets/bosa-illiyoon.jpg": {
-  "sha1": "1927e93a0cc1a395014f3baf1663c48d96265bca",
-  "source": "downloads/beauty-pick-01-src/bosa-illiyoon.jpg",
-  "w": 600,
-  "h": 900,
-  "bytes": 63695
- },
- "assets/building-portrait.jpg": {
-  "sha1": "58a17e5e3769b27df5fa00c5770fbc885478f44e",
-  "source": "downloads/beauty-pick-test-src/building-portrait.jpg",
-  "w": 735,
-  "h": 918,
-  "bytes": 211100
- },
- "assets/cerave_aesop_side.jpg": {
-  "sha1": "2b8f6e8c6d2f6516b8712115a5098aba15e6da43",
-  "source": "downloads/beauty-point-07-v2-src/cerave_aesop_side.png",
-  "w": 720,
-  "h": 860,
-  "bytes": 65197
- },
- "assets/cerave_cream_cutout.png": {
-  "sha1": "cd959e7e8ed48cbdddcb48bd8d8171c0579da84d",
-  "source": "downloads/beauty-point-07-v3-src/cerave_cream_cutout.png",
-  "w": 451,
-  "h": 477,
-  "bytes": 181543
- },
- "assets/cg_hongdae_store.jpg": {
-  "sha1": "610a6ac04822b25982cdf7744b626ea6fd64002b",
-  "source": "downloads/carousel-src/cg_hongdae_store.jpg",
-  "w": 1536,
-  "h": 1152,
-  "bytes": 264043
- },
- "assets/clio_logo.png": {
-  "sha1": "93f0234c58f93cd5ca41d12d775eddd7b87f5584",
-  "source": "downloads/beauty-point-logos/clio_logo.png",
-  "w": 366,
-  "h": 118,
-  "bytes": 3725
- },
- "assets/cosmax_bk.jpg": {
-  "sha1": "06075fa627a8a75484f405b90b87b55a196c0657",
-  "source": "downloads/beauty-point-07-src/cosmax_bk.jpg",
-  "w": 2448,
-  "h": 1180,
-  "bytes": 711572
- },
- "assets/cosmax_gz.jpg": {
-  "sha1": "f0a4f20d5ffc8bfb4e88ee7d013524f5f3a00b1f",
-  "source": "downloads/beauty-point-07-src/cosmax_gz.jpg",
-  "w": 2448,
-  "h": 1180,
-  "bytes": 1364747
- },
- "assets/cosmax_jk.jpg": {
-  "sha1": "ffbf8377b9cdbaae935ee66f76b9d0f3fd910fe0",
-  "source": "downloads/beauty-point-07-src/cosmax_jk.jpg",
-  "w": 2448,
-  "h": 1180,
-  "bytes": 554458
- },
- "assets/cosmax_korea.jpg": {
-  "sha1": "8db7a216673f94d6e67ecf15da8227b9f85489c8",
-  "source": "downloads/beauty-point-07-src/cosmax_korea.jpg",
-  "w": 2770,
-  "h": 1644,
-  "bytes": 3608647
- },
- "assets/cosmax_logo.png": {
-  "sha1": "4469b20d492012cc1d25b8af2a237697bc5558aa",
-  "source": "downloads/beauty-point-logos/cosmax_logo.png",
-  "w": 900,
-  "h": 236,
-  "bytes": 36566
- },
- "assets/cosmax_sh.jpg": {
-  "sha1": "0eefc88f1fd53b2c1d98675be6da38ffbc31a72a",
-  "source": "downloads/beauty-point-07-src/cosmax_sh.jpg",
-  "w": 4896,
-  "h": 2360,
-  "bytes": 1190371
- },
- "assets/cosmecca_logo.png": {
-  "sha1": "f3235fd3d9e09cc7a8c7185b19e3508a8821f21e",
-  "source": "downloads/beauty-point-logos/cosmecca_logo.png",
-  "w": 220,
-  "h": 62,
-  "bytes": 4756
- },
- "assets/cosrx_snail96_cutout.png": {
-  "sha1": "486a69b2041b0d60f4157c7e5576008bc05a6413",
-  "source": "downloads/beauty-point-07-v3-src/cosrx_snail96_cutout.png",
-  "w": 357,
-  "h": 752,
-  "bytes": 103477
- },
- "assets/cosrx_snail96_essence.jpg": {
-  "sha1": "5ea170cffe62b2d741cc9667d47087d1d9fdc4d2",
-  "source": "downloads/beauty-point-07-v2-src/cosrx_snail96_essence.jpg",
-  "w": 272,
-  "h": 706,
-  "bytes": 33951
- },
- "assets/cover_iope_retinol.jpg": {
-  "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
-  "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
-  "w": 1125,
-  "h": 753,
-  "bytes": 117882
- },
- "assets/cover_lineup_2400.jpg": {
-  "sha1": "2a51b51df473f5be4f79b3b0b49681ca77eddddb",
-  "source": "downloads/beauty-point-03-src/cover_lineup_2400.jpg",
-  "w": 2160,
-  "h": 1380,
-  "bytes": 295861
- },
- "assets/cover_visual.jpg": {
-  "sha1": "50f5eb1423f1b2a69d1f9f75ccca762a48f75a88",
-  "source": "downloads/beauty-tech-02-assets/cover_visual.png",
-  "w": 1254,
-  "h": 826,
-  "bytes": 165211
- },
- "assets/cover_zoom_lineup.jpg": {
-  "sha1": "ae3c2a9bae51cbb1c4adc03975e9dfe8625156e5",
-  "source": "downloads/beauty-point-03-src/cover_zoom_lineup.jpg",
-  "w": 1350,
-  "h": 1687,
-  "bytes": 423425
- },
- "assets/ctc0.jpg": {
-  "sha1": "f8846e798f269f3629f06fbc9fed761107ddbfb8",
-  "source": "downloads/beauty-point-04-06-src/ctc0.jpg",
-  "w": 1000,
-  "h": 1000,
-  "bytes": 34599
- },
- "assets/de_protini_cream.jpg": {
-  "sha1": "7be9083634beb782eb05edda52b731456b3cd861",
-  "source": "downloads/beauty-point-07-v2-src/de_protini_cream.jpg",
-  "w": 297,
-  "h": 320,
-  "bytes": 23373
- },
- "assets/de_protini_cutout.png": {
-  "sha1": "f12472dfcbf8e6a0c9bcdae02122c170445b23dc",
-  "source": "downloads/beauty-point-07-v3-src/de_protini_cutout.png",
-  "w": 301,
-  "h": 330,
-  "bytes": 132449
- },
- "assets/dvl.jpg": {
-  "sha1": "7c76e20083c5a1052d8cb82480f557a9767b95fa",
-  "source": "downloads/beauty-tech-02-assets/dvl.png",
-  "w": 860,
-  "h": 940,
-  "bytes": 49162
- },
- "assets/fc59e6c76ae344dbad0ffaacf15c514f.jpg": {
-  "sha1": "5da04a4683789d0620e9b2980a7b253e6db61047",
-  "source": "downloads/beauty-pick-test-src/fc59e6c76ae344dbad0ffaacf15c514f.jpg",
-  "w": 1811,
-  "h": 1358,
-  "bytes": 624604
- },
- "assets/gudai_logo.png": {
-  "sha1": "5b262acc59fbd5c4fdab3fdb8a67af18e3bec92e",
-  "source": "downloads/beauty-point-logos/gudai_logo.png",
-  "w": 900,
-  "h": 219,
-  "bytes": 20628
- },
- "assets/ill_capsule.jpg": {
-  "sha1": "7718071e7f69cb6bc44c73bb18c7fb92f02db3a0",
-  "source": "downloads/beauty-tech-src/ill_capsule.png",
-  "w": 1329,
-  "h": 1183,
-  "bytes": 164853
- },
- "assets/ill_skin.jpg": {
-  "sha1": "d1eb379de1d125d49ab627be5e391387f3c93f78",
-  "source": "downloads/beauty-tech-src/ill_skin.png",
-  "w": 1122,
-  "h": 1402,
-  "bytes": 184628
- },
- "assets/illiyoon_logo_white.png": {
-  "sha1": "74309fba51602d66e9c7cba13578933535ece7ab",
-  "source": "downloads/beauty-point-src/illiyoon_logo_white.png",
-  "w": 715,
-  "h": 116,
-  "bytes": 8682
- },
- "assets/innisfree_logo.png": {
-  "sha1": "4b9a8e768787469cf2f2f70e1060ce26182e763f",
-  "source": "downloads/brand-src/innisfree_logo.png",
-  "w": 600,
-  "h": 78,
-  "bytes": 10260
- },
- "assets/kda_chains.png": {
-  "sha1": "663ba389d2c4a86781379337139ac2d6e925d8cf",
-  "source": "downloads/beauty-point-02-v5-assets/kda_chains.png",
-  "w": 1792,
-  "h": 972,
-  "bytes": 80439
- },
- "assets/kolmar_logo.png": {
-  "sha1": "6fca9f7bec741d97c9c543521be96ebcc8365654",
-  "source": "downloads/beauty-point-logos/kolmar_logo.png",
-  "w": 196,
-  "h": 55,
-  "bytes": 1736
- },
- "assets/kolmar_sejong_exterior.jpg": {
-  "sha1": "c4dd19367b7aa1e45e570854ee2537ab3030ba4e",
-  "source": "downloads/beauty-point-04-06-src/kolmar_sejong_exterior.jpg",
-  "w": 1600,
-  "h": 882,
-  "bytes": 253247
- },
- "assets/kolmar_sejong_line.jpg": {
-  "sha1": "5ce6153d6eb21f24560623698d54bc1b1625b9dd",
-  "source": "downloads/beauty-point-04-06-src/kolmar_sejong_line.jpg",
-  "w": 1280,
-  "h": 597,
-  "bytes": 181983
- },
- "assets/logo-black.png": {
-  "sha1": "46f670933aac45a4abb3d095c6e5b3ffedafcb92",
-  "source": "scripts/fonts/logo-black.png",
-  "w": 316,
-  "h": 109,
-  "bytes": 4908
- },
- "assets/logo-white.png": {
-  "sha1": "a3433e1422672823f31b0e82317fbbc7d47a483e",
-  "source": "scripts/fonts/logo-white.png",
-  "w": 316,
-  "h": 109,
-  "bytes": 4951
- },
- "assets/loreal_logo.png": {
-  "sha1": "24491d8b8db231baf2d2f1d6ccf882ac43969245",
-  "source": "downloads/beauty-point-logos/loreal_logo.png",
-  "w": 900,
-  "h": 242,
-  "bytes": 15792
- },
- "assets/madecassol.png": {
-  "sha1": "01a8c86f1c3310031c31e680841f1b13a138c9a0",
-  "source": "downloads/beauty-point-02-v5-assets/madecassol.png",
-  "w": 90,
-  "h": 231,
-  "bytes": 32684
- },
- "assets/mc_3h.jpg": {
-  "sha1": "5c893c7805ff6d1f7ff0ead4ef121d88ff8a0156",
-  "source": "downloads/beauty-point-04-06-src/mc_3h.jpg",
-  "w": 2000,
-  "h": 2000,
-  "bytes": 137196
- },
- "assets/md_pair.jpg": {
-  "sha1": "aa7d830f1d84be3677922198ddc04df70d9d547a",
-  "source": "downloads/beauty-point-02-src/md_pair.png",
-  "w": 890,
-  "h": 614,
-  "bytes": 42571
- },
- "assets/md_tube_final.png": {
-  "sha1": "e94cfda2055ab5a589f0435533942560bc3b1ae1",
-  "source": "downloads/beauty-point-src/md_tube_final.png",
-  "w": 380,
-  "h": 805,
-  "bytes": 104290
- },
- "assets/medicube-capsule-cream.jpg": {
-  "sha1": "815d1138a23c9131712f062b2651776a99df93a5",
-  "source": "downloads/beauty-point-covers-src/medicube-capsule-cream.jpg",
-  "w": 2000,
-  "h": 2000,
-  "bytes": 142340
- },
- "assets/medicube-pink-serum.jpg": {
-  "sha1": "e67eb99313bde66c6a59fd020cd3f69645fa53b7",
-  "source": "downloads/beauty-point-covers-src/medicube-pink-serum.jpg",
-  "w": 1500,
-  "h": 400,
-  "bytes": 64513
- },
- "assets/medicube_3h-13ebd5.jpg": {
-  "sha1": "13ebd5802d0c1ec20aa5acecdef6e130f38fb800",
-  "source": "downloads/beauty-point-cuts/medicube_3h.png",
-  "w": 1100,
-  "h": 1371,
-  "bytes": 105125
- },
- "assets/medicube_logo.png": {
-  "sha1": "8de0f85a91518e679ae39f0d82f92c6b47a60d71",
-  "source": "downloads/beauty-point-logos/medicube_logo.png",
-  "w": 564,
-  "h": 158,
-  "bytes": 4557
- },
- "assets/monclos_logo.png": {
-  "sha1": "c0022c2f9dce7d411d47fc3a5163a501391e7fc7",
-  "source": "downloads/brand-src/monclos_logo.png",
-  "w": 1169,
-  "h": 169,
-  "bytes": 7692
- },
- "assets/oliveyoung_logo.png": {
-  "sha1": "8bd21375926c25e4613a24355a88325a0a86a96b",
-  "source": "downloads/brand-src/oliveyoung_logo.png",
-  "w": 1428,
-  "h": 160,
-  "bytes": 16656
- },
- "assets/ordinary-lab-tray.jpg": {
-  "sha1": "614040a0a47344ee334ec5c2c2e0be716b40b9ec",
-  "source": "downloads/beauty-point-covers-src/ordinary-lab-tray.jpg",
-  "w": 2284,
-  "h": 2320,
-  "bytes": 305271
- },
- "assets/ordinary_azelaic-f1ef62.jpg": {
-  "sha1": "f1ef6222b8d7be53a7ec7eb3b5d5577ee97b618a",
-  "source": "downloads/beauty-point-cuts/ordinary_azelaic.png",
-  "w": 589,
-  "h": 1054,
-  "bytes": 65060
- },
- "assets/ordinary_azelaic_ink_card.jpg": {
-  "sha1": "f329b20468bd21dafb7cff6603834597724dfa37",
-  "source": "downloads/beauty-point-07-v2-src/ordinary_azelaic_ink_card.png",
-  "w": 680,
-  "h": 840,
-  "bytes": 41462
- },
- "assets/ordinary_azelaic_tube.png": {
-  "sha1": "e410cb6124e9b4b64e812a5b3a05e694d974d422",
-  "source": "downloads/beauty-point-07-v3-src/ordinary_azelaic_tube.png",
-  "w": 513,
-  "h": 979,
-  "bytes": 325519
- },
- "assets/ordinary_azelaic_white.jpg": {
-  "sha1": "3b7f4c9c8ef010c4d8e5f16bfc631e48cf9ed2a9",
-  "source": "downloads/beauty-point-07-src/ordinary_azelaic_white.jpg",
-  "w": 1600,
-  "h": 1600,
-  "bytes": 122651
- },
- "assets/ordinary_logo.png": {
-  "sha1": "ab6db69782dfc36d1b152ac5d2973812077ce0b4",
-  "source": "downloads/beauty-point-logos/ordinary_logo.png",
-  "w": 900,
-  "h": 645,
-  "bytes": 76886
- },
- "assets/ordinary_wordmark.png": {
-  "sha1": "cc5fceee8b9285f79b9ac70fd3b6fd04a744cdde",
-  "source": "downloads/beauty-point-07-v2-src/ordinary_wordmark.png",
-  "w": 900,
-  "h": 324,
-  "bytes": 40703
- },
- "assets/panel-1f.jpg": {
-  "sha1": "cd721102dfbeb0aaedba36d207ce31ab5d73c362",
-  "source": "downloads/beauty-pick-test-src/panel-1f.jpg",
-  "w": 878,
-  "h": 562,
-  "bytes": 154259
- },
- "assets/panel-2f-portrait.jpg": {
-  "sha1": "39ce26d850775ef9bf6ee69d0aff66db99ea5895",
-  "source": "downloads/beauty-pick-test-src/panel-2f-portrait.jpg",
-  "w": 832,
-  "h": 2068,
-  "bytes": 242955
- },
- "assets/pharma_rejuderma.jpg": {
-  "sha1": "980d0a370e826858916c6f02ca851f7589f97ad9",
-  "source": "downloads/beauty-point-02-src/pharma_rejuderma.jpg",
-  "w": 1080,
-  "h": 720,
-  "bytes": 54906
- },
- "assets/prod_drf.png": {
-  "sha1": "b8a0f210ecc2af003057870492798c718bdf1d0a",
-  "source": "downloads/beauty-tech-02-assets/prod_drf.png",
-  "w": 269,
-  "h": 818,
-  "bytes": 129669
- },
- "assets/prod_innisfree.png": {
-  "sha1": "cfe604c43dd8f182cdabc84a50d313b5593ae282",
-  "source": "downloads/beauty-tech-src/prod_innisfree.png",
-  "w": 394,
-  "h": 556,
-  "bytes": 130087
- },
- "assets/prod_iope.png": {
-  "sha1": "139b39da9228b528a7469ed5f07849d7b5e4bcfd",
-  "source": "downloads/beauty-tech-src/prod_iope.png",
-  "w": 182,
-  "h": 516,
-  "bytes": 81338
- },
- "assets/prod_kiehls.jpg": {
-  "sha1": "8b488bcc78bcdf9827a335eb5aa0e224795cf329",
-  "source": "downloads/beauty-tech-src/prod_kiehls.png",
-  "w": 239,
-  "h": 914,
-  "bytes": 35854
- },
- "assets/prod_lrp.png": {
-  "sha1": "34740eb3ad970a05d5561ec1bb7e00b97eb7a97a",
-  "source": "downloads/beauty-tech-02-assets/prod_lrp.png",
-  "w": 499,
-  "h": 1018,
-  "bytes": 361362
- },
- "assets/rej_vis_rejuvenex.png": {
-  "sha1": "361e074de79e10f5a70211e10e795964efdb60ee",
-  "source": "downloads/beauty-point-02-src/rej_vis_rejuvenex.png",
-  "w": 784,
-  "h": 358,
-  "bytes": 262954
- },
- "assets/rejuderma.png": {
-  "sha1": "fc863f791d74bc40717fb36ada70a080105f6f2f",
-  "source": "downloads/beauty-point-02-v5-assets/rejuderma.png",
-  "w": 171,
-  "h": 465,
-  "bytes": 81631
- },
- "assets/rejuderma_md_tube.png": {
-  "sha1": "5180ab1a4acbeb14d68aeb9a6d07393a018fae36",
-  "source": "downloads/beauty-point-02-v4-src/rejuderma_md_tube.png",
-  "w": 127,
-  "h": 327,
-  "bytes": 52106
- },
- "assets/rejudex-be99eb.png": {
-  "sha1": "be99ebba662c2d72f1c2fcb2fbefeafbdf735214",
-  "source": "downloads/beauty-point-02-v5-assets/rejudex.png",
-  "w": 138,
-  "h": 685,
-  "bytes": 116515
- },
- "assets/rejudex_tall.jpg": {
-  "sha1": "3e0ec4164b53a0b69e47250210f94c5e8717a084",
-  "source": "downloads/beauty-point-02-src/rejudex_tall.png",
-  "w": 600,
-  "h": 680,
-  "bytes": 60214
- },
- "assets/rejuran.png": {
-  "sha1": "3225737142fce7ba83cbe528ef00ee39b88342d1",
-  "source": "downloads/beauty-point-02-v5-assets/rejuran.png",
-  "w": 131,
-  "h": 461,
-  "bytes": 33977
- },
- "assets/rejvnx_cream.png": {
-  "sha1": "7ee4f023c8654f110c145cd41257ff476791344d",
-  "source": "downloads/beauty-point-02-v5-assets/rejvnx_cream.png",
-  "w": 100,
-  "h": 363,
-  "bytes": 50198
- },
- "assets/rejvnx_inj.png": {
-  "sha1": "0965dda73b27e9540b5aa84bec369532d8007704",
-  "source": "downloads/beauty-point-02-v5-assets/rejvnx_inj.png",
-  "w": 89,
-  "h": 464,
-  "bytes": 56923
- },
- "assets/shiseido_logo.png": {
-  "sha1": "d05b03b1af9ffba10791034ccaf9c8a4d362d9d2",
-  "source": "downloads/beauty-point-logos/shiseido_logo.png",
-  "w": 900,
-  "h": 231,
-  "bytes": 25754
- },
- "assets/tirtir_logo.png": {
-  "sha1": "8ead4dc34ba366d533145ad06bd5d930862d04ef",
-  "source": "downloads/beauty-point-logos/tirtir_logo.png",
-  "w": 900,
-  "h": 247,
-  "bytes": 14834
- },
- "assets/twoedit_sticks.jpg": {
-  "sha1": "10d5f5f944daa4f9b4f6ec7beaa55e692afc935a",
-  "source": "downloads/beauty-point-03-src/twoedit_sticks.jpg",
-  "w": 1200,
-  "h": 1496,
-  "bytes": 240570
- },
- "assets/zeroid_wordmark_ink.png": {
-  "sha1": "e88eba94aad4e85db080d93c20314d6d4f55b07e",
-  "source": "downloads/beauty-point-src/zeroid_wordmark_ink.png",
-  "w": 300,
-  "h": 52,
-  "bytes": 3170
- }
+  "assets/aesop_serum_cutout.png": {
+    "sha1": "1b31b2f378a82b93e0817693679e9f6ff70fa50c",
+    "source": "downloads/beauty-point-07-v3-src/aesop_serum_cutout.png",
+    "w": 607,
+    "h": 1067,
+    "bytes": 404926
+  },
+  "assets/aestura365_tube.png": {
+    "sha1": "1b596a2d14923a34b402d794b75e80347385913d",
+    "source": "downloads/beauty-point-src/aestura365_tube.png",
+    "w": 560,
+    "h": 750,
+    "bytes": 125933
+  },
+  "assets/aesturamd_1002_7.webp": {
+    "sha1": "1203657fd4948062af1fdca67efc13f13cafe53a",
+    "source": "downloads/beauty-point-src/aesturamd_1002_7.webp",
+    "w": 2000,
+    "h": 1080,
+    "bytes": 28582
+  },
+  "assets/amore_beauty_park_osan.jpg": {
+    "sha1": "c38c0ba6f3781e6f934fea6fc0c1fa870fa8a7ff",
+    "source": "downloads/beauty-point-07-v14-src/amore_beauty_park_osan.jpg",
+    "w": 918,
+    "h": 612,
+    "bytes": 210775
+  },
+  "assets/amorepacific_logo.png": {
+    "sha1": "f8a9037577cee2fef297cb674d438d18aff489bc",
+    "source": "downloads/beauty-point-logos/amorepacific_logo.png",
+    "w": 900,
+    "h": 175,
+    "bytes": 29907
+  },
+  "assets/apr_logo.png": {
+    "sha1": "da12e108f3300372ef62e4a6b86456ead47074c7",
+    "source": "downloads/beauty-point-logos/apr_logo.png",
+    "w": 328,
+    "h": 470,
+    "bytes": 17216
+  },
+  "assets/band.jpg": {
+    "sha1": "04b8f4ed6156ac200f08f58567c92140c153d37a",
+    "source": "downloads/beauty-tech-02-assets/band.png",
+    "w": 1400,
+    "h": 933,
+    "bytes": 322435
+  },
+  "assets/beauty-point-02-v3-cover-art2.jpg": {
+    "sha1": "d71a1face3e7fb3a6d5e54b48398e37e8f019874",
+    "source": "downloads/beauty-point-02-v3-cover-art2.png",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 158671
+  },
+  "assets/beauty-tech-cover-visual.png": {
+    "sha1": "e6568d37d0903240567d52794c433c2a30a5e22c",
+    "source": "downloads/beauty-tech-cover-visual.png",
+    "w": 1269,
+    "h": 785,
+    "bytes": 875317
+  },
+  "assets/boj-rice-still.webp": {
+    "sha1": "c35f44ef6e2f7a77024aae7781153d1485e24f9d",
+    "source": "downloads/beauty-point-covers-src/boj-rice-still.webp",
+    "w": 1024,
+    "h": 1536,
+    "bytes": 97706
+  },
+  "assets/boj_logo-0c086b.png": {
+    "sha1": "0c086be2b7ebe6786f5f879711cf8959da22ed37",
+    "source": "downloads/brand-src/boj_logo.png",
+    "w": 2501,
+    "h": 236,
+    "bytes": 40707
+  },
+  "assets/boj_logo.png": {
+    "sha1": "c0cfb8f6a37b3d1adfa3b5e56bc69a4920c74cf5",
+    "source": "downloads/beauty-point-logos/boj_logo.png",
+    "w": 900,
+    "h": 172,
+    "bytes": 28795
+  },
+  "assets/boj_reliefsun.jpg": {
+    "sha1": "45bd2fdd8ed8a64152c9a1b0ab88e9ac9e3f79d6",
+    "source": "downloads/beauty-point-04-06-src/boj_reliefsun.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 67323
+  },
+  "assets/boj_reliefsun_2-1d256a.jpg": {
+    "sha1": "1d256a1cb0ea258f5be375d5df40f1068d4bd345",
+    "source": "downloads/beauty-point-cuts/boj_reliefsun_2.png",
+    "w": 1100,
+    "h": 1539,
+    "bytes": 94600
+  },
+  "assets/boj_reliefsun_2.jpg": {
+    "sha1": "e0b13aa8e2e9cdf68c7c32ab1cdd2c9f05590f09",
+    "source": "downloads/beauty-point-04-06-src/boj_reliefsun_2.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 104413
+  },
+  "assets/bosa-illiyoon.jpg": {
+    "sha1": "1927e93a0cc1a395014f3baf1663c48d96265bca",
+    "source": "downloads/beauty-pick-01-src/bosa-illiyoon.jpg",
+    "w": 600,
+    "h": 900,
+    "bytes": 63695
+  },
+  "assets/building-portrait.jpg": {
+    "sha1": "58a17e5e3769b27df5fa00c5770fbc885478f44e",
+    "source": "downloads/beauty-pick-test-src/building-portrait.jpg",
+    "w": 735,
+    "h": 918,
+    "bytes": 211100
+  },
+  "assets/cerave_aesop_side.jpg": {
+    "sha1": "2b8f6e8c6d2f6516b8712115a5098aba15e6da43",
+    "source": "downloads/beauty-point-07-v2-src/cerave_aesop_side.png",
+    "w": 720,
+    "h": 860,
+    "bytes": 65197
+  },
+  "assets/cerave_cream_cutout.png": {
+    "sha1": "cd959e7e8ed48cbdddcb48bd8d8171c0579da84d",
+    "source": "downloads/beauty-point-07-v3-src/cerave_cream_cutout.png",
+    "w": 451,
+    "h": 477,
+    "bytes": 181543
+  },
+  "assets/cg_hongdae_store.jpg": {
+    "sha1": "610a6ac04822b25982cdf7744b626ea6fd64002b",
+    "source": "downloads/carousel-src/cg_hongdae_store.jpg",
+    "w": 1536,
+    "h": 1152,
+    "bytes": 264043
+  },
+  "assets/clio_logo.png": {
+    "sha1": "93f0234c58f93cd5ca41d12d775eddd7b87f5584",
+    "source": "downloads/beauty-point-logos/clio_logo.png",
+    "w": 366,
+    "h": 118,
+    "bytes": 3725
+  },
+  "assets/cosmax_bk.jpg": {
+    "sha1": "06075fa627a8a75484f405b90b87b55a196c0657",
+    "source": "downloads/beauty-point-07-src/cosmax_bk.jpg",
+    "w": 2448,
+    "h": 1180,
+    "bytes": 711572
+  },
+  "assets/cosmax_gz.jpg": {
+    "sha1": "f0a4f20d5ffc8bfb4e88ee7d013524f5f3a00b1f",
+    "source": "downloads/beauty-point-07-src/cosmax_gz.jpg",
+    "w": 2448,
+    "h": 1180,
+    "bytes": 1364747
+  },
+  "assets/cosmax_jk.jpg": {
+    "sha1": "ffbf8377b9cdbaae935ee66f76b9d0f3fd910fe0",
+    "source": "downloads/beauty-point-07-src/cosmax_jk.jpg",
+    "w": 2448,
+    "h": 1180,
+    "bytes": 554458
+  },
+  "assets/cosmax_korea.jpg": {
+    "sha1": "8db7a216673f94d6e67ecf15da8227b9f85489c8",
+    "source": "downloads/beauty-point-07-src/cosmax_korea.jpg",
+    "w": 2770,
+    "h": 1644,
+    "bytes": 3608647
+  },
+  "assets/cosmax_logo.png": {
+    "sha1": "4469b20d492012cc1d25b8af2a237697bc5558aa",
+    "source": "downloads/beauty-point-logos/cosmax_logo.png",
+    "w": 900,
+    "h": 236,
+    "bytes": 36566
+  },
+  "assets/cosmax_sh.jpg": {
+    "sha1": "0eefc88f1fd53b2c1d98675be6da38ffbc31a72a",
+    "source": "downloads/beauty-point-07-src/cosmax_sh.jpg",
+    "w": 4896,
+    "h": 2360,
+    "bytes": 1190371
+  },
+  "assets/cosmecca_logo.png": {
+    "sha1": "f3235fd3d9e09cc7a8c7185b19e3508a8821f21e",
+    "source": "downloads/beauty-point-logos/cosmecca_logo.png",
+    "w": 220,
+    "h": 62,
+    "bytes": 4756
+  },
+  "assets/cosrx_snail96_cutout.png": {
+    "sha1": "486a69b2041b0d60f4157c7e5576008bc05a6413",
+    "source": "downloads/beauty-point-07-v3-src/cosrx_snail96_cutout.png",
+    "w": 357,
+    "h": 752,
+    "bytes": 103477
+  },
+  "assets/cosrx_snail96_essence.jpg": {
+    "sha1": "5ea170cffe62b2d741cc9667d47087d1d9fdc4d2",
+    "source": "downloads/beauty-point-07-v2-src/cosrx_snail96_essence.jpg",
+    "w": 272,
+    "h": 706,
+    "bytes": 33951
+  },
+  "assets/cover_iope_retinol.jpg": {
+    "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
+    "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
+    "w": 1125,
+    "h": 753,
+    "bytes": 117882
+  },
+  "assets/cover_lineup_2400.jpg": {
+    "sha1": "2a51b51df473f5be4f79b3b0b49681ca77eddddb",
+    "source": "downloads/beauty-point-03-src/cover_lineup_2400.jpg",
+    "w": 2160,
+    "h": 1380,
+    "bytes": 295861
+  },
+  "assets/cover_visual.jpg": {
+    "sha1": "50f5eb1423f1b2a69d1f9f75ccca762a48f75a88",
+    "source": "downloads/beauty-tech-02-assets/cover_visual.png",
+    "w": 1254,
+    "h": 826,
+    "bytes": 165211
+  },
+  "assets/cover_zoom_lineup.jpg": {
+    "sha1": "ae3c2a9bae51cbb1c4adc03975e9dfe8625156e5",
+    "source": "downloads/beauty-point-03-src/cover_zoom_lineup.jpg",
+    "w": 1350,
+    "h": 1687,
+    "bytes": 423425
+  },
+  "assets/ctc0.jpg": {
+    "sha1": "f8846e798f269f3629f06fbc9fed761107ddbfb8",
+    "source": "downloads/beauty-point-04-06-src/ctc0.jpg",
+    "w": 1000,
+    "h": 1000,
+    "bytes": 34599
+  },
+  "assets/de_protini_cream.jpg": {
+    "sha1": "7be9083634beb782eb05edda52b731456b3cd861",
+    "source": "downloads/beauty-point-07-v2-src/de_protini_cream.jpg",
+    "w": 297,
+    "h": 320,
+    "bytes": 23373
+  },
+  "assets/de_protini_cutout.png": {
+    "sha1": "f12472dfcbf8e6a0c9bcdae02122c170445b23dc",
+    "source": "downloads/beauty-point-07-v3-src/de_protini_cutout.png",
+    "w": 301,
+    "h": 330,
+    "bytes": 132449
+  },
+  "assets/dvl.jpg": {
+    "sha1": "7c76e20083c5a1052d8cb82480f557a9767b95fa",
+    "source": "downloads/beauty-tech-02-assets/dvl.png",
+    "w": 860,
+    "h": 940,
+    "bytes": 49162
+  },
+  "assets/fc59e6c76ae344dbad0ffaacf15c514f.jpg": {
+    "sha1": "5da04a4683789d0620e9b2980a7b253e6db61047",
+    "source": "downloads/beauty-pick-test-src/fc59e6c76ae344dbad0ffaacf15c514f.jpg",
+    "w": 1811,
+    "h": 1358,
+    "bytes": 624604
+  },
+  "assets/gudai_logo.png": {
+    "sha1": "5b262acc59fbd5c4fdab3fdb8a67af18e3bec92e",
+    "source": "downloads/beauty-point-logos/gudai_logo.png",
+    "w": 900,
+    "h": 219,
+    "bytes": 20628
+  },
+  "assets/ill_capsule.jpg": {
+    "sha1": "7718071e7f69cb6bc44c73bb18c7fb92f02db3a0",
+    "source": "downloads/beauty-tech-src/ill_capsule.png",
+    "w": 1329,
+    "h": 1183,
+    "bytes": 164853
+  },
+  "assets/ill_skin.jpg": {
+    "sha1": "d1eb379de1d125d49ab627be5e391387f3c93f78",
+    "source": "downloads/beauty-tech-src/ill_skin.png",
+    "w": 1122,
+    "h": 1402,
+    "bytes": 184628
+  },
+  "assets/illiyoon_logo_white.png": {
+    "sha1": "74309fba51602d66e9c7cba13578933535ece7ab",
+    "source": "downloads/beauty-point-src/illiyoon_logo_white.png",
+    "w": 715,
+    "h": 116,
+    "bytes": 8682
+  },
+  "assets/innisfree_logo.png": {
+    "sha1": "4b9a8e768787469cf2f2f70e1060ce26182e763f",
+    "source": "downloads/brand-src/innisfree_logo.png",
+    "w": 600,
+    "h": 78,
+    "bytes": 10260
+  },
+  "assets/kda_chains.png": {
+    "sha1": "663ba389d2c4a86781379337139ac2d6e925d8cf",
+    "source": "downloads/beauty-point-02-v5-assets/kda_chains.png",
+    "w": 1792,
+    "h": 972,
+    "bytes": 80439
+  },
+  "assets/kolmar_logo.png": {
+    "sha1": "6fca9f7bec741d97c9c543521be96ebcc8365654",
+    "source": "downloads/beauty-point-logos/kolmar_logo.png",
+    "w": 196,
+    "h": 55,
+    "bytes": 1736
+  },
+  "assets/kolmar_sejong_exterior.jpg": {
+    "sha1": "c4dd19367b7aa1e45e570854ee2537ab3030ba4e",
+    "source": "downloads/beauty-point-04-06-src/kolmar_sejong_exterior.jpg",
+    "w": 1600,
+    "h": 882,
+    "bytes": 253247
+  },
+  "assets/kolmar_sejong_line.jpg": {
+    "sha1": "5ce6153d6eb21f24560623698d54bc1b1625b9dd",
+    "source": "downloads/beauty-point-04-06-src/kolmar_sejong_line.jpg",
+    "w": 1280,
+    "h": 597,
+    "bytes": 181983
+  },
+  "assets/logo-black.png": {
+    "sha1": "46f670933aac45a4abb3d095c6e5b3ffedafcb92",
+    "source": "scripts/fonts/logo-black.png",
+    "w": 316,
+    "h": 109,
+    "bytes": 4908
+  },
+  "assets/logo-white.png": {
+    "sha1": "a3433e1422672823f31b0e82317fbbc7d47a483e",
+    "source": "scripts/fonts/logo-white.png",
+    "w": 316,
+    "h": 109,
+    "bytes": 4951
+  },
+  "assets/loreal_logo.png": {
+    "sha1": "24491d8b8db231baf2d2f1d6ccf882ac43969245",
+    "source": "downloads/beauty-point-logos/loreal_logo.png",
+    "w": 900,
+    "h": 242,
+    "bytes": 15792
+  },
+  "assets/madecassol.png": {
+    "sha1": "01a8c86f1c3310031c31e680841f1b13a138c9a0",
+    "source": "downloads/beauty-point-02-v5-assets/madecassol.png",
+    "w": 90,
+    "h": 231,
+    "bytes": 32684
+  },
+  "assets/mc_3h.jpg": {
+    "sha1": "5c893c7805ff6d1f7ff0ead4ef121d88ff8a0156",
+    "source": "downloads/beauty-point-04-06-src/mc_3h.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 137196
+  },
+  "assets/md_pair.jpg": {
+    "sha1": "aa7d830f1d84be3677922198ddc04df70d9d547a",
+    "source": "downloads/beauty-point-02-src/md_pair.png",
+    "w": 890,
+    "h": 614,
+    "bytes": 42571
+  },
+  "assets/md_tube_final.png": {
+    "sha1": "e94cfda2055ab5a589f0435533942560bc3b1ae1",
+    "source": "downloads/beauty-point-src/md_tube_final.png",
+    "w": 380,
+    "h": 805,
+    "bytes": 104290
+  },
+  "assets/medicube-capsule-cream.jpg": {
+    "sha1": "815d1138a23c9131712f062b2651776a99df93a5",
+    "source": "downloads/beauty-point-covers-src/medicube-capsule-cream.jpg",
+    "w": 2000,
+    "h": 2000,
+    "bytes": 142340
+  },
+  "assets/medicube-pink-serum.jpg": {
+    "sha1": "e67eb99313bde66c6a59fd020cd3f69645fa53b7",
+    "source": "downloads/beauty-point-covers-src/medicube-pink-serum.jpg",
+    "w": 1500,
+    "h": 400,
+    "bytes": 64513
+  },
+  "assets/medicube_3h-13ebd5.jpg": {
+    "sha1": "13ebd5802d0c1ec20aa5acecdef6e130f38fb800",
+    "source": "downloads/beauty-point-cuts/medicube_3h.png",
+    "w": 1100,
+    "h": 1371,
+    "bytes": 105125
+  },
+  "assets/medicube_logo.png": {
+    "sha1": "8de0f85a91518e679ae39f0d82f92c6b47a60d71",
+    "source": "downloads/beauty-point-logos/medicube_logo.png",
+    "w": 564,
+    "h": 158,
+    "bytes": 4557
+  },
+  "assets/monclos_logo.png": {
+    "sha1": "c0022c2f9dce7d411d47fc3a5163a501391e7fc7",
+    "source": "downloads/brand-src/monclos_logo.png",
+    "w": 1169,
+    "h": 169,
+    "bytes": 7692
+  },
+  "assets/oliveyoung_logo.png": {
+    "sha1": "8bd21375926c25e4613a24355a88325a0a86a96b",
+    "source": "downloads/brand-src/oliveyoung_logo.png",
+    "w": 1428,
+    "h": 160,
+    "bytes": 16656
+  },
+  "assets/ordinary-lab-tray.jpg": {
+    "sha1": "614040a0a47344ee334ec5c2c2e0be716b40b9ec",
+    "source": "downloads/beauty-point-covers-src/ordinary-lab-tray.jpg",
+    "w": 2284,
+    "h": 2320,
+    "bytes": 305271
+  },
+  "assets/ordinary_azelaic-f1ef62.jpg": {
+    "sha1": "f1ef6222b8d7be53a7ec7eb3b5d5577ee97b618a",
+    "source": "downloads/beauty-point-cuts/ordinary_azelaic.png",
+    "w": 589,
+    "h": 1054,
+    "bytes": 65060
+  },
+  "assets/ordinary_azelaic_ink_card.jpg": {
+    "sha1": "f329b20468bd21dafb7cff6603834597724dfa37",
+    "source": "downloads/beauty-point-07-v2-src/ordinary_azelaic_ink_card.png",
+    "w": 680,
+    "h": 840,
+    "bytes": 41462
+  },
+  "assets/ordinary_azelaic_tube.png": {
+    "sha1": "e410cb6124e9b4b64e812a5b3a05e694d974d422",
+    "source": "downloads/beauty-point-07-v3-src/ordinary_azelaic_tube.png",
+    "w": 513,
+    "h": 979,
+    "bytes": 325519
+  },
+  "assets/ordinary_azelaic_white.jpg": {
+    "sha1": "3b7f4c9c8ef010c4d8e5f16bfc631e48cf9ed2a9",
+    "source": "downloads/beauty-point-07-src/ordinary_azelaic_white.jpg",
+    "w": 1600,
+    "h": 1600,
+    "bytes": 122651
+  },
+  "assets/ordinary_logo.png": {
+    "sha1": "ab6db69782dfc36d1b152ac5d2973812077ce0b4",
+    "source": "downloads/beauty-point-logos/ordinary_logo.png",
+    "w": 900,
+    "h": 645,
+    "bytes": 76886
+  },
+  "assets/ordinary_wordmark.png": {
+    "sha1": "cc5fceee8b9285f79b9ac70fd3b6fd04a744cdde",
+    "source": "downloads/beauty-point-07-v2-src/ordinary_wordmark.png",
+    "w": 900,
+    "h": 324,
+    "bytes": 40703
+  },
+  "assets/panel-1f.jpg": {
+    "sha1": "cd721102dfbeb0aaedba36d207ce31ab5d73c362",
+    "source": "downloads/beauty-pick-test-src/panel-1f.jpg",
+    "w": 878,
+    "h": 562,
+    "bytes": 154259
+  },
+  "assets/panel-2f-portrait.jpg": {
+    "sha1": "39ce26d850775ef9bf6ee69d0aff66db99ea5895",
+    "source": "downloads/beauty-pick-test-src/panel-2f-portrait.jpg",
+    "w": 832,
+    "h": 2068,
+    "bytes": 242955
+  },
+  "assets/pharma_rejuderma.jpg": {
+    "sha1": "980d0a370e826858916c6f02ca851f7589f97ad9",
+    "source": "downloads/beauty-point-02-src/pharma_rejuderma.jpg",
+    "w": 1080,
+    "h": 720,
+    "bytes": 54906
+  },
+  "assets/prod_drf.png": {
+    "sha1": "b8a0f210ecc2af003057870492798c718bdf1d0a",
+    "source": "downloads/beauty-tech-02-assets/prod_drf.png",
+    "w": 269,
+    "h": 818,
+    "bytes": 129669
+  },
+  "assets/prod_innisfree.png": {
+    "sha1": "cfe604c43dd8f182cdabc84a50d313b5593ae282",
+    "source": "downloads/beauty-tech-src/prod_innisfree.png",
+    "w": 394,
+    "h": 556,
+    "bytes": 130087
+  },
+  "assets/prod_iope.png": {
+    "sha1": "139b39da9228b528a7469ed5f07849d7b5e4bcfd",
+    "source": "downloads/beauty-tech-src/prod_iope.png",
+    "w": 182,
+    "h": 516,
+    "bytes": 81338
+  },
+  "assets/prod_kiehls.jpg": {
+    "sha1": "8b488bcc78bcdf9827a335eb5aa0e224795cf329",
+    "source": "downloads/beauty-tech-src/prod_kiehls.png",
+    "w": 239,
+    "h": 914,
+    "bytes": 35854
+  },
+  "assets/prod_lrp.png": {
+    "sha1": "34740eb3ad970a05d5561ec1bb7e00b97eb7a97a",
+    "source": "downloads/beauty-tech-02-assets/prod_lrp.png",
+    "w": 499,
+    "h": 1018,
+    "bytes": 361362
+  },
+  "assets/rej_vis_rejuvenex.png": {
+    "sha1": "361e074de79e10f5a70211e10e795964efdb60ee",
+    "source": "downloads/beauty-point-02-src/rej_vis_rejuvenex.png",
+    "w": 784,
+    "h": 358,
+    "bytes": 262954
+  },
+  "assets/rejuderma.png": {
+    "sha1": "fc863f791d74bc40717fb36ada70a080105f6f2f",
+    "source": "downloads/beauty-point-02-v5-assets/rejuderma.png",
+    "w": 171,
+    "h": 465,
+    "bytes": 81631
+  },
+  "assets/rejuderma_md_tube.png": {
+    "sha1": "5180ab1a4acbeb14d68aeb9a6d07393a018fae36",
+    "source": "downloads/beauty-point-02-v4-src/rejuderma_md_tube.png",
+    "w": 127,
+    "h": 327,
+    "bytes": 52106
+  },
+  "assets/rejudex-be99eb.png": {
+    "sha1": "be99ebba662c2d72f1c2fcb2fbefeafbdf735214",
+    "source": "downloads/beauty-point-02-v5-assets/rejudex.png",
+    "w": 138,
+    "h": 685,
+    "bytes": 116515
+  },
+  "assets/rejudex.png": {
+    "sha1": "5c21d9ee0db0c2603b7d9e2c84c83d84a0da56f1",
+    "source": "downloads/beauty-point-02-v5-assets/rejudex.png",
+    "w": 133,
+    "h": 564,
+    "bytes": 80732
+  },
+  "assets/rejudex_tall.jpg": {
+    "sha1": "3e0ec4164b53a0b69e47250210f94c5e8717a084",
+    "source": "downloads/beauty-point-02-src/rejudex_tall.png",
+    "w": 600,
+    "h": 680,
+    "bytes": 60214
+  },
+  "assets/rejuran.png": {
+    "sha1": "3225737142fce7ba83cbe528ef00ee39b88342d1",
+    "source": "downloads/beauty-point-02-v5-assets/rejuran.png",
+    "w": 131,
+    "h": 461,
+    "bytes": 33977
+  },
+  "assets/rejvnx_cream.png": {
+    "sha1": "7ee4f023c8654f110c145cd41257ff476791344d",
+    "source": "downloads/beauty-point-02-v5-assets/rejvnx_cream.png",
+    "w": 100,
+    "h": 363,
+    "bytes": 50198
+  },
+  "assets/rejvnx_inj.png": {
+    "sha1": "0965dda73b27e9540b5aa84bec369532d8007704",
+    "source": "downloads/beauty-point-02-v5-assets/rejvnx_inj.png",
+    "w": 89,
+    "h": 464,
+    "bytes": 56923
+  },
+  "assets/shiseido_logo.png": {
+    "sha1": "d05b03b1af9ffba10791034ccaf9c8a4d362d9d2",
+    "source": "downloads/beauty-point-logos/shiseido_logo.png",
+    "w": 900,
+    "h": 231,
+    "bytes": 25754
+  },
+  "assets/tirtir_logo.png": {
+    "sha1": "8ead4dc34ba366d533145ad06bd5d930862d04ef",
+    "source": "downloads/beauty-point-logos/tirtir_logo.png",
+    "w": 900,
+    "h": 247,
+    "bytes": 14834
+  },
+  "assets/twoedit_sticks.jpg": {
+    "sha1": "10d5f5f944daa4f9b4f6ec7beaa55e692afc935a",
+    "source": "downloads/beauty-point-03-src/twoedit_sticks.jpg",
+    "w": 1200,
+    "h": 1496,
+    "bytes": 240570
+  },
+  "assets/zeroid_wordmark_ink.png": {
+    "sha1": "e88eba94aad4e85db080d93c20314d6d4f55b07e",
+    "source": "downloads/beauty-point-src/zeroid_wordmark_ink.png",
+    "w": 300,
+    "h": 52,
+    "bytes": 3170
+  }
 }

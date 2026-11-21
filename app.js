@@ -1442,9 +1442,15 @@ function pLineup(s, headLast) {
   items.forEach(function (it, k) {
     var cx = MX + colW * (k + 0.5);
     if (it.family) drawText(it.family, cx, famY, famSize, 'bold', KEY_TEXT, 'ms');
-    var f = cutoutFit(it.image, Math.round(colW - 34), imgH, null);
+    /* 제품마다 좌우 여백(gap)·높이(height, px)·배율(scale)을 따로 줄 수 있다(파이썬 make_lineup 과 같은 규칙) */
+    var gap = it.gap === undefined ? 34 : (Number(it.gap) || 0);
+    var maxW = Math.round(colW - gap);
+    var wantH = it.height === undefined ? null : Math.min(Number(it.height) || imgH, imgH);
+    var f = wantH ? cutoutFit(it.image, maxW, wantH, wantH) : cutoutFit(it.image, maxW, imgH, null);
+    var sc = it.scale === undefined ? 1 : (Number(it.scale) || 1);
+    if (sc !== 1) { f.w = Math.max(1, Math.round(f.w * sc)); f.h = Math.max(1, Math.round(f.h * sc)); }
     if (imgOk(f.im)) _ctx.drawImage(f.im, cx - f.w / 2, base - 8 - f.h, f.w, f.h);
-    else placeholder(it.image, cx - (colW - 34) / 2, base - 8 - imgH, colW - 34, imgH);
+    else placeholder(it.image, cx - maxW / 2, base - 8 - imgH, maxW, imgH);
   });
   _ctx.fillStyle = INK; _ctx.fillRect(MX, base, CR - MX, 1);
   var ny = base + 30;

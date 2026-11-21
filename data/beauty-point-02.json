@@ -167,31 +167,36 @@
           "family": "PN",
           "name": "리쥬란",
           "class": "의료기기 4등급",
-          "image": "assets/rejuran.png"
+          "image": "assets/rejuran.png",
+          "height": 575
         },
         {
           "family": "PDRN",
           "name": "리쥬더마 아토 크림 MD",
           "class": "의료기기 2등급",
-          "image": "assets/rejuderma.png"
+          "image": "assets/rejuderma.png",
+          "height": 396
         },
         {
           "family": "PDRN",
           "name": "리쥬비넥스주",
           "class": "전문의약품",
-          "image": "assets/rejvnx_inj.png"
+          "image": "assets/rejvnx_inj.png",
+          "height": 530
         },
         {
           "family": "PDRN",
           "name": "리쥬비넥스크림",
           "class": "일반의약품",
-          "image": "assets/rejvnx_cream.png"
+          "image": "assets/rejvnx_cream.png",
+          "height": 430
         },
         {
           "family": "c-PDRN",
           "name": "리쥬덱스",
           "class": "코스메틱",
-          "image": "assets/rejudex-be99eb.png"
+          "image": "assets/rejudex.png",
+          "height": 540
         }
       ],
       "source": "식약처 의료기기 전자민원창구 · 의약품안전나라 · 파마리서치 · 올리브영"
@@ -201,10 +206,10 @@
       "label": "05 · 채널",
       "headline": [
         [
-          "약국에서 파는 것이"
+          "약국도 병원도 올리브영도"
         ],
         [
-          "모두 일반의약품은 아닙니다"
+          "허가 분류는 따로입니다"
         ]
       ],
       "body_size": 22,
