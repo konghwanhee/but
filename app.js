@@ -1514,6 +1514,9 @@ function pLineupTable(s, headLast) {
   var headSize = Number(s.head_row_size === undefined ? 14 : s.head_row_size);
   var nameDy = Number(s.name_dy === undefined ? 54 : s.name_dy), lineGap = Number(s.line_gap === undefined ? 26 : s.line_gap);
   var featGap = Number(s.feature_gap === undefined ? 28 : s.feature_gap), tint = s.zebra || '';
+  var specRows = Number(s.spec_rows === undefined ? 4 : s.spec_rows);
+  var specDy = Number(s.spec_dy === undefined ? nameDy : s.spec_dy);
+  var specGap = Number(s.spec_gap === undefined ? featGap : s.spec_gap);
   var xSw = MX, xName = xSw + swW + gapA, xSpec = xName + nameW + gapB, xFeat = xSpec + specW + gapB;
   var featW = CR - xFeat;
 
@@ -1555,8 +1558,9 @@ function pLineupTable(s, headLast) {
     var meta = [it.family, it.class].filter(function (v) { return !!v; }).join(' · ');
     if (meta)
       drawText(meta, xName, y0 + nameDy + (nameLines.length - 1) * lineGap + lineGap, clsSize, 'bold', KEY_TEXT, 'ls');
-    (it.spec || []).slice(0, 2).forEach(function (sp, j) {
-      var by = y0 + nameDy + j * featGap;
+    /* 포장 / 사용 / 구매처 / 사용대상 — `제형` 은 오른쪽 제형 특징 열이 맡는다 */
+    (it.spec || []).filter(function (sp) { return String(sp.label || '') !== '제형'; }).slice(0, specRows).forEach(function (sp, j) {
+      var by = y0 + specDy + j * specGap;
       if (sp.label) drawText(sp.label, xSpec, by, labelSize, 'bold', KEY, 'ls');
       drawText(sp.value || '', xSpec + labelW, by, specSize, 'medium', INK, 'ls');
     });
@@ -3994,7 +3998,7 @@ function slideSpec(s, i) {
         { t: 'text', path: ['family'], label: '성분 계열', rows: 1 },
         { t: 'text', path: ['name'], label: '제품명', rows: 2 },
         { t: 'text', path: ['class'], label: '허가 분류', rows: 1 },
-        { t: 'arr', path: ['spec'], kicker: '포장 · 사용 · 제형', titleFn: function (it) { return it.label || ''; }, nodes: [
+        { t: 'arr', path: ['spec'], kicker: '포장 · 사용 · 구매처 · 사용대상 · 제형', titleFn: function (it) { return it.label || ''; }, nodes: [
           { t: 'text', path: ['label'], label: '표기', rows: 1 },
           { t: 'text', path: ['value'], label: '내용', rows: 2 }
         ] }
