@@ -307,6 +307,13 @@
     "h": 78,
     "bytes": 10260
   },
+  "assets/kda_chains.png": {
+    "sha1": "663ba389d2c4a86781379337139ac2d6e925d8cf",
+    "source": "downloads/beauty-point-02-v5-assets/kda_chains.png",
+    "w": 1792,
+    "h": 972,
+    "bytes": 80439
+  },
   "assets/kolmar_logo.png": {
     "sha1": "6fca9f7bec741d97c9c543521be96ebcc8365654",
     "source": "downloads/beauty-point-logos/kolmar_logo.png",
@@ -348,6 +355,13 @@
     "w": 900,
     "h": 242,
     "bytes": 15792
+  },
+  "assets/madecassol.png": {
+    "sha1": "01a8c86f1c3310031c31e680841f1b13a138c9a0",
+    "source": "downloads/beauty-point-02-v5-assets/madecassol.png",
+    "w": 90,
+    "h": 231,
+    "bytes": 32684
   },
   "assets/mc_3h.jpg": {
     "sha1": "5c893c7805ff6d1f7ff0ead4ef121d88ff8a0156",
@@ -524,6 +538,13 @@
     "h": 358,
     "bytes": 262954
   },
+  "assets/rejuderma.png": {
+    "sha1": "fc863f791d74bc40717fb36ada70a080105f6f2f",
+    "source": "downloads/beauty-point-02-v5-assets/rejuderma.png",
+    "w": 171,
+    "h": 465,
+    "bytes": 81631
+  },
   "assets/rejuderma_md_tube.png": {
     "sha1": "5180ab1a4acbeb14d68aeb9a6d07393a018fae36",
     "source": "downloads/beauty-point-02-v4-src/rejuderma_md_tube.png",
@@ -531,12 +552,40 @@
     "h": 327,
     "bytes": 52106
   },
+  "assets/rejudex.png": {
+    "sha1": "59c1e830a0b9781729469e562ee382f869fe95d6",
+    "source": "downloads/beauty-point-02-v5-assets/rejudex.png",
+    "w": 138,
+    "h": 685,
+    "bytes": 117459
+  },
   "assets/rejudex_tall.jpg": {
     "sha1": "3e0ec4164b53a0b69e47250210f94c5e8717a084",
     "source": "downloads/beauty-point-02-src/rejudex_tall.png",
     "w": 600,
     "h": 680,
     "bytes": 60214
+  },
+  "assets/rejuran.png": {
+    "sha1": "3225737142fce7ba83cbe528ef00ee39b88342d1",
+    "source": "downloads/beauty-point-02-v5-assets/rejuran.png",
+    "w": 131,
+    "h": 461,
+    "bytes": 33977
+  },
+  "assets/rejvnx_cream.png": {
+    "sha1": "7ee4f023c8654f110c145cd41257ff476791344d",
+    "source": "downloads/beauty-point-02-v5-assets/rejvnx_cream.png",
+    "w": 100,
+    "h": 363,
+    "bytes": 50198
+  },
+  "assets/rejvnx_inj.png": {
+    "sha1": "0965dda73b27e9540b5aa84bec369532d8007704",
+    "source": "downloads/beauty-point-02-v5-assets/rejvnx_inj.png",
+    "w": 89,
+    "h": 464,
+    "bytes": 56923
   },
   "assets/shiseido_logo.png": {
     "sha1": "d05b03b1af9ffba10791034ccaf9c8a4d362d9d2",

@@ -123,34 +123,10 @@
         ]
       },
       "takeaway": "어느 법으로 허가받았는지가 제품의 성격과 할 수 있는 말을 정합니다.",
-      "source": "의료기기법 · 약사법 · 화장품법 · 식약처 의료기기 정보포털",
-      "visual": {
-        "mode": "panel",
-        "cutout": true,
-        "w": 350,
-        "h": 440,
-        "top": 150,
-        "gap": 40,
-        "images": [
-          {
-            "image": "assets/rejuderma_md_tube.png",
-            "height": 330
-          },
-          {
-            "image": "assets/rej_vis_rejuvenex.png",
-            "height": 196
-          }
-        ],
-        "labels": [
-          "리쥬더마 아토 크림 MD",
-          "리쥬비넥스 크림"
-        ],
-        "label_size": 15,
-        "gap_after": 38
-      }
+      "source": "의료기기법 · 약사법 · 화장품법 · 식약처 의료기기 정보포털"
     },
     {
-      "kind": "table",
+      "kind": "figure",
       "label": "03 · 성분",
       "headline": [
         [
@@ -162,57 +138,67 @@
       ],
       "body": "셋 다 연어 DNA에서 출발했지만, 사슬을 얼마나 길게 남기고 어떻게 정제했는지가 다릅니다. 원료 규격이 다르므로 효과가 같다고 볼 수는 없습니다.",
       "body_size": 22,
-      "table": {
-        "columns": [
-          "원료",
-          "사슬 길이",
-          "국내 허가",
-          "라벨 표기"
-        ],
-        "widths": [
-          12,
-          24,
-          26,
-          38
-        ],
-        "rows": [
-          [
-            "PN",
-            "1,500kDa 이상 (제안)",
-            "의료기기 4등급\n조직수복용 생체재료",
-            "폴리뉴클레오티드나트륨"
-          ],
-          [
-            "PDRN",
-            "50~1,500kDa",
-            "전문의약품 주사제 등",
-            "폴리데옥시리보뉴클레오티드\n나트륨"
-          ],
-          [
-            "c-PDRN",
-            "가수분해한 저분자",
-            "화장품",
-            "하이드롤라이즈드디엔에이"
-          ]
-        ],
-        "key_cells": [
-          [
-            0,
-            1
-          ],
-          [
-            2,
-            1
-          ]
-        ]
+      "figure": {
+        "image": "assets/kda_chains.png",
+        "h": 486
       },
       "takeaway": "1,500kDa 기준은 학계가 제안한 구분선이며, 규제상 공식 기준은 아닙니다.",
       "takeaway_label": "NOTE",
       "source": "국제 종설(Biomolecules, 2025) · 식약처 의약품안전나라 · 파마리서치"
     },
     {
+      "kind": "lineup",
+      "label": "04 · 제품 5종",
+      "headline": [
+        [
+          "연어 DNA 제품은"
+        ],
+        [
+          "다섯 가지로 나뉩니다"
+        ]
+      ],
+      "body": "성분 계열과 허가 분류가 제품마다 다릅니다. 같은 PDRN이라도 주사제는 전문의약품, 크림은 일반의약품입니다.",
+      "body_size": 21,
+      "family_size": 15,
+      "name_size": 19,
+      "class_size": 15,
+      "products": [
+        {
+          "family": "PN",
+          "name": "리쥬란",
+          "class": "의료기기 4등급",
+          "image": "assets/rejuran.png"
+        },
+        {
+          "family": "PDRN",
+          "name": "리쥬더마 아토 크림 MD",
+          "class": "의료기기 2등급",
+          "image": "assets/rejuderma.png"
+        },
+        {
+          "family": "PDRN",
+          "name": "리쥬비넥스주",
+          "class": "전문의약품",
+          "image": "assets/rejvnx_inj.png"
+        },
+        {
+          "family": "PDRN",
+          "name": "리쥬비넥스크림",
+          "class": "일반의약품",
+          "image": "assets/rejvnx_cream.png"
+        },
+        {
+          "family": "c-PDRN",
+          "name": "리쥬덱스",
+          "class": "코스메틱",
+          "image": "assets/rejudex.png"
+        }
+      ],
+      "source": "식약처 의료기기 전자민원창구 · 의약품안전나라 · 파마리서치 · 올리브영"
+    },
+    {
       "kind": "list",
-      "label": "04 · 채널",
+      "label": "05 · 채널",
       "headline": [
         [
           "약국에서 파는 것이"
@@ -241,7 +227,7 @@
     },
     {
       "kind": "table",
-      "label": "05 · 다른 성분",
+      "label": "06 · 다른 성분",
       "headline": [
         [
           "마데카솔도 비판텐도,"
@@ -252,6 +238,15 @@
       ],
       "body": "성분이 비슷해도 허가 분류가 다르면 파는 곳과 쓸 수 있는 목적이 달라집니다. 마데카솔은 이름이 같아도 제품마다 성분과 분류가 다르며, 식약처는 마데카솔이 화장품이 아니라고 안내했습니다.",
       "body_size": 21,
+      "visual": {
+        "mode": "side",
+        "cutout": true,
+        "w": 300,
+        "h": 268,
+        "top": 150,
+        "image": "assets/madecassol.png",
+        "gap_after": 28
+      },
       "table": {
         "columns": [
           "제품",
@@ -318,7 +313,7 @@
     },
     {
       "kind": "cards",
-      "label": "06 · 주의",
+      "label": "07 · 주의",
       "headline": [
         [
           "치료 이외의 목적으로"
@@ -358,7 +353,7 @@
     },
     {
       "kind": "table",
-      "label": "07 · 정리",
+      "label": "08 · 정리",
       "headline": [
         [
           "라벨에서 확인할 것은"

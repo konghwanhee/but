@@ -1421,6 +1421,67 @@ function pList(s, headLast) {
   return lim;
 }
 
+/* 제품 한 줄 비교 — 성분 계열 · 제품 누끼 · 허가 분류 (파이썬 make_lineup 과 같은 좌표) */
+function pLineup(s, headLast) {
+  var items = s.products || [], n = Math.max(1, items.length);
+  var lim = s.__limit || CTM;
+  var bandH = s.takeaway ? 112 : 0;
+  var famY = Math.max(headLast + Number(s.gap_after_head === undefined ? 34 : s.gap_after_head), 0) + 30;
+  var base = lim - bandH - (bandH ? 150 : 112);
+  var imgH = base - (famY + 30);
+  var colW = (CR - MX) / n;
+  var famSize = Number(s.family_size || 15), nameSize = Number(s.name_size || 19), clsSize = Number(s.class_size || 15);
+  var i = 0;
+  while (i < n) {
+    var fam = items[i].family || '', j = i;
+    while (j + 1 < n && (items[j + 1].family || '') === fam) j++;
+    _ctx.fillStyle = KEY;
+    _ctx.fillRect(MX + colW * i + 10, famY - 26, colW * (j - i + 1) - 20, 2);
+    i = j + 1;
+  }
+  items.forEach(function (it, k) {
+    var cx = MX + colW * (k + 0.5);
+    if (it.family) drawText(it.family, cx, famY, famSize, 'bold', KEY_TEXT, 'ms');
+    var f = cutoutFit(it.image, Math.round(colW - 34), imgH, null);
+    if (imgOk(f.im)) _ctx.drawImage(f.im, cx - f.w / 2, base - 8 - f.h, f.w, f.h);
+    else placeholder(it.image, cx - (colW - 34) / 2, base - 8 - imgH, colW - 34, imgH);
+  });
+  _ctx.fillStyle = INK; _ctx.fillRect(MX, base, CR - MX, 1);
+  var ny = base + 30;
+  items.forEach(function (it, k) {
+    var cx = MX + colW * (k + 0.5);
+    var lines = wrapText(it.name || '', nameSize, 'bold', Math.round(colW - 18)).slice(0, 2);
+    for (var li = 0; li < lines.length; li++)
+      drawText(lines[li], cx, ny + li * Math.round(nameSize * 1.22), nameSize, 'bold', INK, 'ms');
+    if (it.class) drawText(it.class, cx, ny + Math.round(nameSize * 1.22) * 2 + 6, clsSize, 'bold', KEY_TEXT, 'ms');
+  });
+  var bottom = ny + Math.round(nameSize * 1.22) * 2 + clsSize + 12;
+  if (s.takeaway) takeaway(s.takeaway, bandH, s.takeaway_label || 'POINT', lim);
+  return bottom;
+}
+
+/* 직접 만든 도해 이미지 한 장 — 사슬 길이·입자 비교 (파이썬 make_figure 와 같은 좌표) */
+function pFigure(s, headLast) {
+  var fig = s.figure || {};
+  var lim = s.__limit || CTM;
+  var bandH = s.takeaway ? 112 : 0;
+  var top = headLast + Number(s.gap_after_head === undefined ? 40 : s.gap_after_head);
+  var availH = lim - bandH - (bandH ? 30 : 0) - top;
+  var h = Number(fig.h || availH), w = CR - MX;
+  var im = getImage(fig.image), bottom = top + h;
+  if (imgOk(im)) {
+    var r = Math.min(w / im.naturalWidth, h / im.naturalHeight);
+    var nw = im.naturalWidth * r, nh = im.naturalHeight * r;
+    _ctx.drawImage(im, MX + (w - nw) / 2, top + (h - nh) / 2, nw, nh);
+    bottom = top + Math.max(h, nh);
+  } else {
+    placeholder(fig.image, MX, top, w, h);
+  }
+  if (s.caption) { drawText(String(s.caption), MX, bottom + 22, 16, 'medium', INK, 'ls'); bottom += 22; }
+  if (s.takeaway) takeaway(s.takeaway, bandH, s.takeaway_label || 'POINT', lim);
+  return bottom;
+}
+
 function pReasons(s, headLast) {
   var top = contentTopPoint(s, headLast, 52);
   var items = s.items || [], note = s.note || '', noteH = 0;
@@ -2600,7 +2661,7 @@ function pickClosing(s, page, total) {
 }
 
 /* ---------------------------------------------------------------- 9. 장표 렌더 */
-var POINT_KINDS = { table: pTable, cards: pCards, brand_pair: pBrandPair, brand_wide: pBrandWide, list: pList, reasons: pReasons, bars: pBars };
+var POINT_KINDS = { table: pTable, cards: pCards, brand_pair: pBrandPair, brand_wide: pBrandWide, list: pList, reasons: pReasons, bars: pBars, lineup: pLineup, figure: pFigure };
 var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, compare: tCompare, products: tProducts, quad: tQuad, steps: tSteps, lineage: tLineage, closing: tClosing };
 
 function renderSlidePage(s, idx, total, family) {
@@ -3814,6 +3875,14 @@ function slideSpec(s, i) {
         { t: 'arr', path: ['items'], kicker: '막대', titleFn: function (it) { return it.label || ''; }, nodes: [{ t: 'text', path: ['label'], label: '이름', rows: 1 }, { t: 'text', path: ['display'], label: '표시 값', rows: 1 }] },
         { t: 'text', path: ['note'], label: '도표 노트', rows: 2 }
       ] });
+    } else if (kind === 'lineup') {
+      push({ t: 'arr', path: ['products'], kicker: '제품', titleFn: function (it) { return it.name || ''; }, nodes: [
+        { t: 'text', path: ['family'], label: '성분 계열', rows: 1 },
+        { t: 'text', path: ['name'], label: '제품명', rows: 2 },
+        { t: 'text', path: ['class'], label: '허가 분류', rows: 1 }
+      ] });
+    } else if (kind === 'figure') {
+      if (s.caption !== undefined) push({ t: 'text', path: ['caption'], label: '그림 캐션', rows: 1 });
     }
   }
   if (s.takeaway !== undefined) {
@@ -3831,6 +3900,7 @@ function kindName(kind, fam) {
   var names = {
     table: '표', cards: '카드', brand_pair: '이미지 + 표', brand_wide: '이미지 + 블록', list: '번호 목록',
     reasons: '이유 목록', bars: '막대 도표', points: '포인트', band: '사진 띠', split: '사진 + 블록',
+    lineup: '제품 5종', figure: '도해',
     compare: '비교 패널', products: '제품', quad: '4칸 카드', steps: '단계', lineage: '계보', closing: '마무리', brief: '도표'
   };
   return names[kind] || '내용';
