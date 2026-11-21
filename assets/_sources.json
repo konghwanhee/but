@@ -538,6 +538,13 @@
     "h": 358,
     "bytes": 262954
   },
+  "assets/rejuderma-456aab.png": {
+    "sha1": "456aab5e75fad7c992881fe7bce75bd2e440304b",
+    "source": "downloads/beauty-point-02-v5-assets/rejuderma.png",
+    "w": 307,
+    "h": 811,
+    "bytes": 159284
+  },
   "assets/rejuderma.png": {
     "sha1": "fc863f791d74bc40717fb36ada70a080105f6f2f",
     "source": "downloads/beauty-point-02-v5-assets/rejuderma.png",
@@ -551,6 +558,13 @@
     "w": 127,
     "h": 327,
     "bytes": 52106
+  },
+  "assets/rejudex-5afffe.png": {
+    "sha1": "5afffe86d6220b788e59dfefd0a2a178a8863b2d",
+    "source": "downloads/beauty-point-02-v5-assets/rejudex.png",
+    "w": 135,
+    "h": 535,
+    "bytes": 63114
   },
   "assets/rejudex-be99eb.png": {
     "sha1": "be99ebba662c2d72f1c2fcb2fbefeafbdf735214",
@@ -573,6 +587,13 @@
     "h": 680,
     "bytes": 60214
   },
+  "assets/rejuran-5fe89e.png": {
+    "sha1": "5fe89e36633856622b3d338927f5e1d80d4b2788",
+    "source": "downloads/beauty-point-02-v5-assets/rejuran.png",
+    "w": 167,
+    "h": 463,
+    "bytes": 29671
+  },
   "assets/rejuran.png": {
     "sha1": "3225737142fce7ba83cbe528ef00ee39b88342d1",
     "source": "downloads/beauty-point-02-v5-assets/rejuran.png",
@@ -580,12 +601,26 @@
     "h": 461,
     "bytes": 33977
   },
+  "assets/rejvnx_cream-e04b3f.png": {
+    "sha1": "e04b3f0b818f37d0a28d5159fe7d8c44bfde9648",
+    "source": "downloads/beauty-point-02-v5-assets/rejvnx_cream.png",
+    "w": 141,
+    "h": 488,
+    "bytes": 65645
+  },
   "assets/rejvnx_cream.png": {
     "sha1": "7ee4f023c8654f110c145cd41257ff476791344d",
     "source": "downloads/beauty-point-02-v5-assets/rejvnx_cream.png",
     "w": 100,
     "h": 363,
     "bytes": 50198
+  },
+  "assets/rejvnx_inj-bb0bb5.png": {
+    "sha1": "bb0bb54dd8b0a03bd62bcad53cb1b8134a640d77",
+    "source": "downloads/beauty-point-02-v5-assets/rejvnx_inj.png",
+    "w": 91,
+    "h": 466,
+    "bytes": 48789
   },
   "assets/rejvnx_inj.png": {
     "sha1": "0965dda73b27e9540b5aa84bec369532d8007704",
