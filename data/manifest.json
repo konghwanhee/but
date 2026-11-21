@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-21T08:34:12+09:00",
+  "generatedAt": "2026-11-21T09:00:58+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -25,7 +25,7 @@
       "subtitle": "올리브영 화장품 · 병원 의료기기 · 약국 일반의약품",
       "coverThumb": "covers/beauty-point-02-cover.png",
       "jsonPath": "data/beauty-point-02.json",
-      "updatedAt": "2026-11-21T08:34:06+09:00"
+      "updatedAt": "2026-11-21T09:00:57+09:00"
     },
     {
       "id": "beauty-point-03",
