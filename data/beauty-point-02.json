@@ -183,10 +183,6 @@
             {
               "label": "사용대상",
               "value": "의사만 직접 주입"
-            },
-            {
-              "label": "제형",
-              "value": "무색 투명한 고점도 젤"
             }
           ]
         },
@@ -211,10 +207,6 @@
             {
               "label": "사용대상",
               "value": "의료인 안내 후 직접 도포"
-            },
-            {
-              "label": "제형",
-              "value": "피부에 막을 만드는 고보습 크림"
             }
           ],
           "scale": 0.94
@@ -240,10 +232,6 @@
             {
               "label": "사용대상",
               "value": "의료인만 투여"
-            },
-            {
-              "label": "제형",
-              "value": "무색 투명한 묽은 액"
             }
           ]
         },
@@ -268,10 +256,6 @@
             {
               "label": "사용대상",
               "value": "약사 안내 후 직접 도포"
-            },
-            {
-              "label": "제형",
-              "value": "흰색의 균질한 크림"
             }
           ]
         },
@@ -296,38 +280,31 @@
             {
               "label": "사용대상",
               "value": "누구나 직접 사용"
-            },
-            {
-              "label": "제형",
-              "value": "부드럽게 펴 발리는 크림"
             }
           ]
         }
       ],
       "source": "식약처 의료기기 전자민원창구 · 의약품안전나라 · 파마리서치 · 올리브영",
-      "swatch_w": 170,
-      "swatch_h": 100,
-      "name_w": 200,
-      "spec_w": 266,
+      "swatch_w": 168,
+      "swatch_h": 96,
+      "name_w": 196,
+      "spec_w": 250,
       "gap_a": 12,
-      "gap_b": 14,
+      "gap_b": 20,
       "name_size": 21,
       "class_size": 14,
       "spec_size": 17,
       "spec_label_size": 14,
       "spec_label_w": 56,
-      "feature_size": 17,
       "head_row_size": 15,
-      "name_dy": 31,
-      "line_gap": 26,
-      "feature_gap": 26,
+      "line_gap": 32,
       "zebra": "#F4F7F6",
       "head_style": "band",
       "head_row_h": 54,
       "head_band_size": 21,
-      "col_pack": "포장 · 사용 · 구매처 · 대상",
-      "spec_dy": 31,
-      "spec_gap": 25
+      "col_pack": "포장 · 사용",
+      "gap_c": 14,
+      "col_buy": "구매처 · 사용대상"
     },
     {
       "kind": "list",

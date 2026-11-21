@@ -1498,30 +1498,27 @@ function pLineupRows(s, headLast) {
   return top + rowH * n;
 }
 
-/* 제품 5종 비교 표 — 제형 / 제품·허가 / 포장·사용 / 제형 특징 (파이썬 make_lineup_table 과 같은 좌표) */
+/* 제품 5종 비교 표 — 제형 / 제품·허가 / 포장·사용 / 구매처·사용대상 (파이썬 make_lineup_table 과 같은 좌표) */
 function pLineupTable(s, headLast) {
   var items = s.products || [], n = Math.max(1, items.length);
   var lim = s.__limit || CTM;
   var bandH = s.takeaway ? 112 : 0;
   var top = Math.max(headLast + Number(s.gap_after_head === undefined ? 20 : s.gap_after_head), 0);
-  var headH = Number(s.head_row_h === undefined ? 34 : s.head_row_h);
-  var swW = Number(s.swatch_w === undefined ? 178 : s.swatch_w), swH = Number(s.swatch_h === undefined ? 100 : s.swatch_h);
-  var nameW = Number(s.name_w === undefined ? 206 : s.name_w), specW = Number(s.spec_w === undefined ? 272 : s.spec_w);
-  var gapA = Number(s.gap_a === undefined ? 0 : s.gap_a), gapB = Number(s.gap_b === undefined ? 14 : s.gap_b);
+  var headH = Number(s.head_row_h === undefined ? 54 : s.head_row_h);
+  var swW = Number(s.swatch_w === undefined ? 168 : s.swatch_w), swH = Number(s.swatch_h === undefined ? 96 : s.swatch_h);
+  var gapA = Number(s.gap_a === undefined ? 12 : s.gap_a), nameW = Number(s.name_w === undefined ? 196 : s.name_w);
+  var gapB = Number(s.gap_b === undefined ? 20 : s.gap_b), specW = Number(s.spec_w === undefined ? 250 : s.spec_w);
+  var gapC = Number(s.gap_c === undefined ? 14 : s.gap_c);
   var nameSize = Number(s.name_size === undefined ? 21 : s.name_size), clsSize = Number(s.class_size === undefined ? 14 : s.class_size);
-  var specSize = Number(s.spec_size === undefined ? 17 : s.spec_size), labelSize = Number(s.spec_label_size === undefined ? 13 : s.spec_label_size);
-  var labelW = Number(s.spec_label_w === undefined ? 44 : s.spec_label_w), featSize = Number(s.feature_size === undefined ? 17 : s.feature_size);
-  var headSize = Number(s.head_row_size === undefined ? 14 : s.head_row_size);
-  var nameDy = Number(s.name_dy === undefined ? 54 : s.name_dy), lineGap = Number(s.line_gap === undefined ? 26 : s.line_gap);
-  var featGap = Number(s.feature_gap === undefined ? 28 : s.feature_gap), tint = s.zebra || '';
-  var specRows = Number(s.spec_rows === undefined ? 4 : s.spec_rows);
-  var specDy = Number(s.spec_dy === undefined ? nameDy : s.spec_dy);
-  var specGap = Number(s.spec_gap === undefined ? featGap : s.spec_gap);
-  var xSw = MX, xName = xSw + swW + gapA, xSpec = xName + nameW + gapB, xFeat = xSpec + specW + gapB;
-  var featW = CR - xFeat;
+  var specSize = Number(s.spec_size === undefined ? 17 : s.spec_size), labelSize = Number(s.spec_label_size === undefined ? 14 : s.spec_label_size);
+  var labelW = Number(s.spec_label_w === undefined ? 56 : s.spec_label_w);
+  var headSize = Number(s.head_row_size === undefined ? 15 : s.head_row_size);
+  var lineGap = Number(s.line_gap === undefined ? 32 : s.line_gap), tint = s.zebra || '';
+  var specRows = Number(s.spec_rows === undefined ? 2 : s.spec_rows);   /* 열마다 두 줄 */
+  var xSw = MX, xName = xSw + swW + gapA, xSpec = xName + nameW + gapB, xSpec2 = xSpec + specW + gapC;
 
   var heads = [[s.col_swatch || '제형', xSw], [s.col_product || '제품 · 허가', xName],
-               [s.col_pack || '포장 · 사용', xSpec], [s.col_feature || '제형 특징', xFeat]];
+               [s.col_pack || '포장 · 사용', xSpec], [s.col_buy || '구매처 · 사용대상', xSpec2]];
   var rowsTop;
   if (String(s.head_style || 'rule') === 'band') {
     var bandTop = top + Number(s.head_band_y || 0);
@@ -1545,6 +1542,9 @@ function pLineupTable(s, headLast) {
     }
   }
 
+  /* 두 줄짜리 행의 세로 기준 — 스와치와 같은 가운데에 글자 블록을 앉힌다 (파이썬과 같은 식) */
+  var asc1 = Math.round(nameSize * 0.95), desc2 = Math.round(Math.max(specSize, clsSize) * 0.26);
+
   items.forEach(function (it, k) {
     var y0 = rowsTop + rowH * k;
     if (it.image) {
@@ -1553,23 +1553,23 @@ function pLineupTable(s, headLast) {
       drawContain(it.image, xSw + (swW - boxW) / 2, y0 + (rowH - boxH) / 2, boxW, boxH, false);
     }
     var nameLines = wrapText(it.name || '', nameSize, 'bold', nameW).slice(0, 2);
+    var nLines = nameLines.length > 1 ? Math.max(2, nameLines.length + 1) : 2;
+    var blockH = asc1 + lineGap * (nLines - 1) + desc2;
+    var b1 = y0 + (rowH - blockH) / 2 + asc1;
     for (var li = 0; li < nameLines.length; li++)
-      drawText(nameLines[li], xName, y0 + nameDy + li * lineGap, nameSize, 'bold', INK, 'ls');
+      drawText(nameLines[li], xName, b1 + li * lineGap, nameSize, 'bold', INK, 'ls');
     var meta = [it.family, it.class].filter(function (v) { return !!v; }).join(' · ');
     if (meta)
-      drawText(meta, xName, y0 + nameDy + (nameLines.length - 1) * lineGap + lineGap, clsSize, 'bold', KEY_TEXT, 'ls');
-    /* 포장 / 사용 / 구매처 / 사용대상 — `제형` 은 오른쪽 제형 특징 열이 맡는다 */
-    (it.spec || []).filter(function (sp) { return String(sp.label || '') !== '제형'; }).slice(0, specRows).forEach(function (sp, j) {
-      var by = y0 + specDy + j * specGap;
-      if (sp.label) drawText(sp.label, xSpec, by, labelSize, 'bold', KEY, 'ls');
-      drawText(sp.value || '', xSpec + labelW, by, specSize, 'medium', INK, 'ls');
+      drawText(meta, xName, b1 + nameLines.length * lineGap, clsSize, 'bold', KEY_TEXT, 'ls');
+    /* 포장·사용 은 왼쪽 열, 구매처·사용대상 은 오른쪽 열 — `제형` 은 왼쪽 스와치가 맡는다 */
+    var specs = (it.spec || []).filter(function (sp) { return String(sp.label || '') !== '제형'; });
+    [[xSpec, specs.slice(0, specRows)], [xSpec2, specs.slice(specRows, specRows * 2)]].forEach(function (col) {
+      col[1].forEach(function (sp, j) {
+        var by = b1 + j * lineGap;
+        if (sp.label) drawText(sp.label, col[0], by, labelSize, 'bold', KEY, 'ls');
+        drawText(sp.value || '', col[0] + labelW, by, specSize, 'medium', INK, 'ls');
+      });
     });
-    var feat = '';
-    (it.spec || []).forEach(function (sp) { if (String(sp.label || '') === '제형' && !feat) feat = String(sp.value || ''); });
-    if (!feat) feat = String(it.feature || '');
-    var fLines = wrapText(feat, featSize, 'medium', featW).slice(0, 2);
-    for (var fi = 0; fi < fLines.length; fi++)
-      drawText(fLines[fi], xFeat, y0 + nameDy + fi * featGap, featSize, 'medium', INK, 'ls');
   });
 
   _ctx.fillStyle = INK;
@@ -3998,7 +3998,7 @@ function slideSpec(s, i) {
         { t: 'text', path: ['family'], label: '성분 계열', rows: 1 },
         { t: 'text', path: ['name'], label: '제품명', rows: 2 },
         { t: 'text', path: ['class'], label: '허가 분류', rows: 1 },
-        { t: 'arr', path: ['spec'], kicker: '포장 · 사용 · 구매처 · 사용대상 · 제형', titleFn: function (it) { return it.label || ''; }, nodes: [
+        { t: 'arr', path: ['spec'], kicker: '포장 · 사용 · 구매처 · 사용대상', titleFn: function (it) { return it.label || ''; }, nodes: [
           { t: 'text', path: ['label'], label: '표기', rows: 1 },
           { t: 'text', path: ['value'], label: '내용', rows: 2 }
         ] }
