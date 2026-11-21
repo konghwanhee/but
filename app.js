@@ -910,8 +910,11 @@ function drawSidePoint(s) {
   if (cutout && v.images && v.images.length) {
     // 누끼 2~3개를 같은 바닥선에 맞춰 나란히(카드·테두리 없음)
     var specs = v.images, gap = Number(v.gap === undefined ? 30 : v.gap);
+    // labels: 누끼 아래 제품명만 작은 글자로 (상자·테두리 없음)
+    var labels = v.labels || [], lsize = Number(v.label_size || 17);
+    var labelH = labels.length ? lsize + 14 : 0;
     var sizes = specs.map(function (sp) {
-      return cutoutFit(sp.image, w, h, Math.min(Number(sp.height || h), h));
+      return cutoutFit(sp.image, w, h - labelH, Math.min(Number(sp.height || h), h - labelH));
     });
     var total = sizes.reduce(function (a, q) { return a + q.w; }, 0) + gap * (sizes.length - 1);
     if (total > w) {
@@ -919,9 +922,10 @@ function drawSidePoint(s) {
       sizes = sizes.map(function (q) { return { w: Math.max(1, Math.round(q.w * f)), h: Math.max(1, Math.round(q.h * f)), im: q.im }; });
       total = sizes.reduce(function (a, q) { return a + q.w; }, 0) + gap * (sizes.length - 1);
     }
-    var cx = x0 + (w - total) / 2, base = y0 + h;
-    sizes.forEach(function (q) {
+    var cx = x0 + (w - total) / 2, base = y0 + h - labelH;
+    sizes.forEach(function (q, i) {
       if (imgOk(q.im)) _ctx.drawImage(q.im, cx, base - q.h, q.w, q.h);
+      if (labels[i]) drawText(labels[i], cx + q.w / 2, base + labelH - 6, lsize, 'medium', INK, 'ms');
       cx += q.w + gap;
     });
     return { x: x0, y: y0, w: w, h: h };
