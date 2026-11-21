@@ -9,10 +9,10 @@
     "num_color": "#111111",
     "num_size": 200,
     "num_top": 150,
-    "image": "assets/beauty-point-02-v3-cover-art2.jpg",
-    "focus": 0.0,
-    "focus_y": 0.32,
-    "zoom": 1.35,
+    "image": "assets/pharma_rejuderma.jpg",
+    "focus": 0.5,
+    "focus_y": 1.0,
+    "zoom": 1.0,
     "tone": false,
     "headline": [
       [
@@ -123,7 +123,31 @@
         ]
       },
       "takeaway": "어느 법으로 허가받았는지가 제품의 성격과 할 수 있는 말을 정합니다.",
-      "source": "의료기기법 · 약사법 · 화장품법 · 식약처 의료기기 정보포털"
+      "source": "의료기기법 · 약사법 · 화장품법 · 식약처 의료기기 정보포털",
+      "visual": {
+        "mode": "panel",
+        "cutout": true,
+        "w": 350,
+        "h": 440,
+        "top": 150,
+        "gap": 40,
+        "images": [
+          {
+            "image": "assets/rejuderma_md_tube.png",
+            "height": 330
+          },
+          {
+            "image": "assets/rej_vis_rejuvenex.png",
+            "height": 196
+          }
+        ],
+        "labels": [
+          "리쥬더마 아토 크림 MD",
+          "리쥬비넥스 크림"
+        ],
+        "label_size": 15,
+        "gap_after": 38
+      }
     },
     {
       "kind": "table",
