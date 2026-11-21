@@ -1424,6 +1424,7 @@ function pList(s, headLast) {
 /* 제품 한 줄 비교 — 성분 계열 · 제품 누끼 · 허가 분류 (파이썬 make_lineup 과 같은 좌표) */
 function pLineup(s, headLast) {
   if (s.layout === 'rows') return pLineupRows(s, headLast);
+  if (s.layout === 'table') return pLineupTable(s, headLast);
   var items = s.products || [], n = Math.max(1, items.length);
   var lim = s.__limit || CTM;
   var bandH = s.takeaway ? 112 : 0;
@@ -1495,6 +1496,82 @@ function pLineupRows(s, headLast) {
     });
   });
   return top + rowH * n;
+}
+
+/* 제품 5종 비교 표 — 제형 / 제품·허가 / 포장·사용 / 제형 특징 (파이썬 make_lineup_table 과 같은 좌표) */
+function pLineupTable(s, headLast) {
+  var items = s.products || [], n = Math.max(1, items.length);
+  var lim = s.__limit || CTM;
+  var bandH = s.takeaway ? 112 : 0;
+  var top = Math.max(headLast + Number(s.gap_after_head === undefined ? 20 : s.gap_after_head), 0);
+  var headH = Number(s.head_row_h === undefined ? 34 : s.head_row_h);
+  var swW = Number(s.swatch_w === undefined ? 178 : s.swatch_w), swH = Number(s.swatch_h === undefined ? 100 : s.swatch_h);
+  var nameW = Number(s.name_w === undefined ? 206 : s.name_w), specW = Number(s.spec_w === undefined ? 272 : s.spec_w);
+  var gapA = Number(s.gap_a === undefined ? 0 : s.gap_a), gapB = Number(s.gap_b === undefined ? 14 : s.gap_b);
+  var nameSize = Number(s.name_size === undefined ? 21 : s.name_size), clsSize = Number(s.class_size === undefined ? 14 : s.class_size);
+  var specSize = Number(s.spec_size === undefined ? 17 : s.spec_size), labelSize = Number(s.spec_label_size === undefined ? 13 : s.spec_label_size);
+  var labelW = Number(s.spec_label_w === undefined ? 44 : s.spec_label_w), featSize = Number(s.feature_size === undefined ? 17 : s.feature_size);
+  var headSize = Number(s.head_row_size === undefined ? 14 : s.head_row_size);
+  var nameDy = Number(s.name_dy === undefined ? 54 : s.name_dy), lineGap = Number(s.line_gap === undefined ? 26 : s.line_gap);
+  var featGap = Number(s.feature_gap === undefined ? 28 : s.feature_gap), tint = s.zebra || '';
+  var xSw = MX, xName = xSw + swW + gapA, xSpec = xName + nameW + gapB, xFeat = xSpec + specW + gapB;
+  var featW = CR - xFeat;
+
+  var heads = [[s.col_swatch || '제형', xSw], [s.col_product || '제품 · 허가', xName],
+               [s.col_pack || '포장 · 사용', xSpec], [s.col_feature || '제형 특징', xFeat]];
+  var rowsTop;
+  if (String(s.head_style || 'rule') === 'band') {
+    var bandTop = top + Number(s.head_band_y || 0);
+    _ctx.fillStyle = INK; _ctx.fillRect(MX, bandTop, CR - MX, headH);
+    var bandSize = Number(s.head_band_size === undefined ? 21 : s.head_band_size);
+    var pad = Number(s.head_band_pad === undefined ? 20 : s.head_band_pad);
+    heads.forEach(function (h, i) {
+      drawText(String(h[0]), h[1] + (i === 0 ? pad : 0), bandTop + headH / 2, bandSize, 'bold', WHITE, 'lm');
+    });
+    rowsTop = bandTop + headH;
+  } else {
+    heads.forEach(function (h) { tracked(String(h[0]), h[1], top + 15, headSize, 'bold', KEY_TEXT, 0.8); });
+    _ctx.fillStyle = INK; _ctx.fillRect(MX, top + 25, CR - MX, 1);
+    rowsTop = top + headH;
+  }
+  var rowH = (lim - bandH - (bandH ? 26 : 0) - rowsTop) / n;
+  for (var k = 0; k < n; k++) {
+    if (tint && k % 2 === 1) {
+      _ctx.fillStyle = tint;
+      _ctx.fillRect(MX, Math.round(rowsTop + rowH * k), CR - MX, Math.round(rowH));
+    }
+  }
+
+  items.forEach(function (it, k) {
+    var y0 = rowsTop + rowH * k;
+    if (it.image) {
+      var sc = it.scale === undefined ? 1 : (Number(it.scale) || 1);
+      var boxW = swW * sc, boxH = swH * sc;
+      drawContain(it.image, xSw + (swW - boxW) / 2, y0 + (rowH - boxH) / 2, boxW, boxH, false);
+    }
+    var nameLines = wrapText(it.name || '', nameSize, 'bold', nameW).slice(0, 2);
+    for (var li = 0; li < nameLines.length; li++)
+      drawText(nameLines[li], xName, y0 + nameDy + li * lineGap, nameSize, 'bold', INK, 'ls');
+    var meta = [it.family, it.class].filter(function (v) { return !!v; }).join(' · ');
+    if (meta)
+      drawText(meta, xName, y0 + nameDy + (nameLines.length - 1) * lineGap + lineGap, clsSize, 'bold', KEY_TEXT, 'ls');
+    (it.spec || []).slice(0, 2).forEach(function (sp, j) {
+      var by = y0 + nameDy + j * featGap;
+      if (sp.label) drawText(sp.label, xSpec, by, labelSize, 'bold', KEY, 'ls');
+      drawText(sp.value || '', xSpec + labelW, by, specSize, 'medium', INK, 'ls');
+    });
+    var feat = '';
+    (it.spec || []).forEach(function (sp) { if (String(sp.label || '') === '제형' && !feat) feat = String(sp.value || ''); });
+    if (!feat) feat = String(it.feature || '');
+    var fLines = wrapText(feat, featSize, 'medium', featW).slice(0, 2);
+    for (var fi = 0; fi < fLines.length; fi++)
+      drawText(fLines[fi], xFeat, y0 + nameDy + fi * featGap, featSize, 'medium', INK, 'ls');
+  });
+
+  _ctx.fillStyle = INK;
+  _ctx.fillRect(MX, Math.round(rowsTop + rowH * n), CR - MX, 1);
+  if (s.takeaway) takeaway(s.takeaway, bandH, s.takeaway_label || 'POINT', lim);
+  return rowsTop + rowH * n;
 }
 
 /* 직접 만든 도해 이미지 한 장 — 사슬 길이·입자 비교 (파이썬 make_figure 와 같은 좌표) */

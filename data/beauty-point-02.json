@@ -148,7 +148,7 @@
     },
     {
       "kind": "lineup",
-      "layout": "rows",
+      "layout": "table",
       "label": "04 · 제품 5종",
       "headline": [
         [
@@ -160,7 +160,7 @@
       ],
       "body": "같은 PDRN이라도 포장과 쓰임, 제형이 제품마다 다릅니다.",
       "body_size": 21,
-      "gap_after_head": 30,
+      "gap_after_head": 20,
       "products": [
         {
           "family": "PN",
@@ -186,7 +186,7 @@
           "family": "PDRN",
           "name": "리쥬더마 아토 크림 MD",
           "class": "의료기기 2등급",
-          "image": "assets/tex-02-rejuderma-b.png",
+          "image": "assets/tex-02-rejuderma-fluid.png",
           "spec": [
             {
               "label": "포장",
@@ -200,7 +200,8 @@
               "label": "제형",
               "value": "피부에 막을 만드는 고보습 크림"
             }
-          ]
+          ],
+          "scale": 0.94
         },
         {
           "family": "PDRN",
@@ -264,15 +265,26 @@
         }
       ],
       "source": "식약처 의료기기 전자민원창구 · 의약품안전나라 · 파마리서치 · 올리브영",
-      "swatch_w": 176,
-      "swatch_h": 112,
-      "name_size": 26,
-      "spec_size": 18,
-      "spec_label_size": 14,
-      "spec_label_w": 56,
-      "spec_top": 78,
-      "spec_gap": 24,
-      "name_top": 44
+      "swatch_w": 170,
+      "swatch_h": 100,
+      "name_w": 200,
+      "spec_w": 266,
+      "gap_a": 12,
+      "gap_b": 14,
+      "name_size": 21,
+      "class_size": 14,
+      "spec_size": 17,
+      "spec_label_size": 13,
+      "spec_label_w": 44,
+      "feature_size": 17,
+      "head_row_size": 15,
+      "name_dy": 56,
+      "line_gap": 26,
+      "feature_gap": 28,
+      "zebra": "#F4F7F6",
+      "head_style": "band",
+      "head_row_h": 54,
+      "head_band_size": 21
     },
     {
       "kind": "list",
