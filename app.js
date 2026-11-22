@@ -3067,6 +3067,39 @@ function ghWrite(path, text, message, token, sha) {
     });
   });
 }
+/* 표지 헤드라인(줄바꿈 포함)을 목록 제목 한 줄로 만든다.
+   네 챕터(포인트·테크·브리프·픽) 모두 cover.headline = [[줄], [줄]] 구조를 쓴다. */
+function coverTitle(cov) {
+  var t = headlineText((cov && cov.headline) || []);
+  return String(t || '').replace(/\s+/g, ' ').trim();
+}
+/* 저장할 때 함께 넘길 목록(manifest) 필드 — 표지 헤드라인이 바뀌면 제목도 같이 맞춘다. */
+function manifestFieldsFromDeck(deckJson, meta) {
+  var fields = {};
+  var title = coverTitle((deckJson && deckJson.cover) || (D && D.cover));
+  if (title && title !== ((meta && meta.title) || '')) fields.title = title;
+  return fields;
+}
+/* 저장한 제목을 목록·상세 화면에 바로 반영한다(새로고침 없이). */
+function applyDeckMetaLocal(id, fields) {
+  var meta = DECK[id];
+  if (!meta || !fields) return;
+  Object.keys(fields).forEach(function (k) {
+    if (fields[k] !== undefined && fields[k] !== null) meta[k] = fields[k];
+  });
+  (MANIFEST.decks || []).forEach(function (d) {
+    if (d.id !== id) return;
+    Object.keys(fields).forEach(function (k) {
+      if (fields[k] !== undefined && fields[k] !== null) d[k] = fields[k];
+    });
+  });
+  if (state.presetId === id) {
+    var h = document.getElementById('deckTitle');
+    if (h) h.textContent = meta.title || meta.id;
+    document.title = (meta.title || meta.id) + ' · 카드뉴스 허브';
+  }
+  renderGallery();
+}
 function ghSave() {
   var token = lsGet(LS_PAT);
   if (!token) { openPat('GitHub에 저장하려면 먼저 토큰을 연결해 주세요.'); return; }
@@ -3076,7 +3109,8 @@ function ghSave() {
   btn.disabled = true;
   toast('GitHub에 저장하는 중…');
   var path = 'data/' + id + '.json';
-  var title = (DECK[id] && DECK[id].title) || id;
+  var fields = manifestFieldsFromDeck(D, DECK[id]);
+  var title = fields.title || (DECK[id] && DECK[id].title) || id;
   var text = JSON.stringify(D, null, 2) + '\n';
   ghRead(path, token)
     .then(function (cur) {
@@ -3089,14 +3123,16 @@ function ghSave() {
       markDirty(false);
       var sha = res && res.commit && res.commit.sha ? String(res.commit.sha).slice(0, 7) : '';
       toast('GitHub에 저장했습니다\n' + path + (sha ? ' · 커밋 ' + sha : ''));
-      return touchManifest(id, token).catch(function () { return null; });
+      return touchManifest(id, token, fields).catch(function () { return null; });
     })
     .catch(function (err) {
       toast('GitHub 저장 실패 · ' + err.message);
     })
     .then(function () { btn.disabled = false; });
 }
-function touchManifest(id, token) {
+/* 목록(manifest.json)의 해당 항목을 갱신한다.
+   fields 를 넘기면 표지 헤드라인에서 뽑은 제목(title) 등도 함께 커밋한다. */
+function touchManifest(id, token, fields) {
   return ghRead('data/manifest.json', token).then(function (cur) {
     if (!cur) return null;
     var json;
@@ -3105,11 +3141,21 @@ function touchManifest(id, token) {
       json = JSON.parse(decodeURIComponent(escape(raw)));
     } catch (e) { return null; }
     var stamp = new Date().toISOString();
-    (json.decks || []).forEach(function (d) { if (d.id === id) d.updatedAt = stamp; });
+    (json.decks || []).forEach(function (d) {
+      if (d.id !== id) return;
+      if (fields) Object.keys(fields).forEach(function (k) {
+        if (fields[k] !== undefined && fields[k] !== null) d[k] = fields[k];
+      });
+      d.updatedAt = stamp;
+    });
     json.generatedAt = stamp;
     if (DECK[id]) { DECK[id].updatedAt = stamp; (MANIFEST.decks || []).forEach(function (d) { if (d.id === id) d.updatedAt = stamp; }); }
-    return ghWrite('data/manifest.json', JSON.stringify(json, null, 2) + '\n',
-      '카드뉴스 목록 갱신: ' + id, token, cur.sha);
+    var msg = '카드뉴스 목록 갱신: ' + id + (fields && fields.title ? ' · 제목 동기화' : '');
+    return ghWrite('data/manifest.json', JSON.stringify(json, null, 2) + '\n', msg, token, cur.sha)
+      .then(function (res) {
+        applyDeckMetaLocal(id, fields);   // 목록·상세 제목을 새로고침 없이 바로 반영
+        return res;
+      });
   });
 }
 

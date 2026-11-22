@@ -48,6 +48,15 @@ python3 scripts/sync_to_github.py
 워크스페이스(`scripts/content/`)로 먼저 가져오기 → 표지 썸네일 렌더 → 이미지 중복 제거·용량 최적화 →
 `data/*.json`·`data/manifest.json` 갱신 → `commit && push`.
 
+## 목록 제목 = 표지 헤드라인
+
+홈 갤러리 카드와 상세 화면 상단의 제목은 `data/manifest.json` 의 `title` 입니다.
+편집 화면에서 **표지 헤드라인**(`cover.headline`)을 고쳐 `GitHub에 저장`하면
+`data/{id}.json` 과 함께 `data/manifest.json` 의 `title` 도 표지 헤드라인 한 줄
+(줄바꿈은 공백)로 바뀌어 커밋되고, 목록·상세 화면에 바로 반영됩니다.
+`scripts/sync_to_github.py` 도 원격에서 가져온 표지 헤드라인을 `scripts/cardnews-decks.json` 의
+`title` 에 맞춰 두므로, 다음 동기화가 옛 제목을 다시 쓰지 않습니다.
+
 ## 저장용 토큰(PAT)
 
 GitHub → Settings → Developer settings → **Fine-grained tokens** 에서
