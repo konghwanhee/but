@@ -55,12 +55,26 @@
     "h": 933,
     "bytes": 322435
   },
+  "assets/band_pore2.jpg": {
+    "sha1": "3a3c17049cdd379ff5ba648688e8b2089b9be563",
+    "source": "downloads/beauty-tech-04-assets/band_pore2.jpg",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 1767234
+  },
   "assets/band_prep2.jpg": {
     "sha1": "6b4f605ace53e39abb75bd50065741476e6786d9",
     "source": "downloads/beauty-tech-03-assets/band_prep2.png",
     "w": 1080,
     "h": 420,
     "bytes": 116725
+  },
+  "assets/band_uv.jpg": {
+    "sha1": "2d37869c24af44c08bfa2ee5087b34ca4649057b",
+    "source": "downloads/beauty-tech-04-assets/band_uv.jpg",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 2410137
   },
   "assets/beauty-point-02-v3-cover-art2.jpg": {
     "sha1": "d71a1face3e7fb3a6d5e54b48398e37e8f019874",
@@ -257,6 +271,13 @@
     "w": 1536,
     "h": 1024,
     "bytes": 158163
+  },
+  "assets/cover_fit.jpg": {
+    "sha1": "e5aa940985a40084edcbbdee0e43e6ab8fc46ab2",
+    "source": "downloads/beauty-tech-04-assets/cover_fit.jpg",
+    "w": 1080,
+    "h": 742,
+    "bytes": 194783
   },
   "assets/cover_iope_retinol.jpg": {
     "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
