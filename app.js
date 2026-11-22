@@ -1792,21 +1792,44 @@ function tBand(s, headLast) {
   return CTM;
 }
 
+function calloutDot(mx, my, r, text) {
+  _ctx.fillStyle = WHITE;
+  _ctx.beginPath(); _ctx.arc(mx, my, r, 0, Math.PI * 2); _ctx.fill();
+  drawText(text, mx, my + 1, Math.round(r * 0.92), 'extrabold', KEY, 'mm');
+}
+
 function tSplit(s, headLast) {
   var top;
   if (s.lead) {
-    drawText(s.lead, MX, headLast + 44, Number(s.lead_size || 21), 'medium', INK, 'ls');
-    top = headLast + 44 + 26;
+    var ls = Number(s.lead_size || 21);
+    var leadLines = wrapText(s.lead, ls, 'medium', CR - MX);
+    var lhg = Math.round(ls * 1.55);
+    for (var li = 0; li < leadLines.length; li++) drawText(leadLines[li], MX, headLast + 44 + li * lhg, ls, 'medium', INK, 'ls');
+    top = headLast + 44 + lhg * (leadLines.length - 1) + 26;
   } else top = headLast + Number(s.gap_after_head === undefined ? 40 : s.gap_after_head);
   var spec = s.image || {};
   var iw = Number(s.image_width || 430), ih = Number(s.image_height || 470);
-  var ix = s.bleed_left ? 0 : MX;
-  bandPhoto(spec, ix, top, iw + (MX - ix), ih, Number(spec.zoom || 1), Number(spec.focus_y === undefined ? 0.5 : spec.focus_y));
-  iw = iw + (MX - ix);
+  var right = s.image_side === 'right';
+  var ix = right ? (CR - iw) : (s.bleed_left ? 0 : MX);
+  var geo = bandPhoto(spec, ix, top, iw + ((!right && ix === 0) ? MX : 0), ih,
+                      Number(spec.zoom || 1), Number(spec.focus_y === undefined ? 0.5 : spec.focus_y));
   if (s.frame) {
     _ctx.strokeStyle = INK; _ctx.lineWidth = 1; _ctx.strokeRect(ix + 0.5, top + 0.5, iw - 1, ih - 1);
   }
-  var colX = MX + iw + 48, colW = CR - colX, y = top;
+  (s.markers || []).forEach(function (mk) {
+    var mx = ix + (Number(mk.x) * geo.k - geo.left) * geo.scale;
+    var my = top + (Number(mk.y) * geo.k - geo.top) * geo.scale;
+    calloutDot(mx, my, Number(mk.r || 17) * Number(mk.scale || 1), mk.num);
+  });
+  if (s.image_caption) {
+    var cf = Number(s.caption_size || 15);
+    var capLines = wrapText(s.image_caption, cf, 'medium', iw);
+    for (var ci = 0; ci < capLines.length; ci++) drawText(capLines[ci], ix, top + ih + 30 + ci * 24, cf, 'medium', INK, 'ls');
+  }
+  var colX, colW;
+  if (right) { colX = MX; colW = CR - iw - 48 - MX; }
+  else { colX = MX + iw + 48; colW = CR - colX; }
+  var y = top;
   var limit = CTM - (s.takeaway ? 120 : 0);
   var blocks = s.blocks || [];
   var measured = blocks.map(function (block) {
@@ -1825,6 +1848,55 @@ function tSplit(s, headLast) {
     for (var k = 0; k < m.lines.length; k++) drawText(m.lines[k], colX, y + 52 + k * m.gap, m.size, 'medium', INK, 'ls');
     y = y + m.h + baseGap + add;
   });
+  if (s.note) {
+    var nf = Number(s.note_size || 18);
+    var ny = y + Number(s.note_gap === undefined ? 16 : s.note_gap);
+    _ctx.fillStyle = INK; _ctx.fillRect(colX, ny - 22, colW, 1);
+    var nlines = wrapText(s.note, nf, 'medium', colW - 6);
+    for (var ni = 0; ni < nlines.length; ni++) drawText(nlines[ni], colX, ny + ni * 27, nf, 'medium', INK, 'ls');
+  }
+  if (s.takeaway) { takeaway(s.takeaway, 104, s.takeaway_label || 'POINT'); return CTM; }
+  return CTM;
+}
+
+function tDuo(s, headLast) {
+  var top;
+  if (s.lead) {
+    var ls = Number(s.lead_size || 21);
+    var leadLines = wrapText(s.lead, ls, 'medium', CR - MX);
+    var lhg = Math.round(ls * 1.55);
+    for (var li = 0; li < leadLines.length; li++) drawText(leadLines[li], MX, headLast + 44 + li * lhg, ls, 'medium', INK, 'ls');
+    top = headLast + 44 + lhg * (leadLines.length - 1) + 30;
+  } else top = headLast + Number(s.gap_after_head === undefined ? 34 : s.gap_after_head);
+  var panels = s.panels || [], n = panels.length;
+  var gap = Number(s.gap === undefined ? 16 : s.gap);
+  var pw = (CR - MX - gap * (n - 1)) / n, ih = Number(s.image_height || 340);
+  var size = Number(s.text_size || 17), lhg2 = Math.round(size * 1.52);
+  var maxBottom = top + ih + 34;
+  panels.forEach(function (p, i) {
+    var x = MX + i * (pw + gap);
+    var spec = p.image || {};
+    var geo = bandPhoto(spec, x, top, Math.round(pw), ih, Number(spec.zoom || 1),
+                        Number(spec.focus_y === undefined ? 0.5 : spec.focus_y));
+    (p.markers || []).forEach(function (mk) {
+      var mx = x + (Number(mk.x) * geo.k - geo.left) * geo.scale;
+      var my = top + (Number(mk.y) * geo.k - geo.top) * geo.scale;
+      calloutDot(mx, my, Number(mk.r || 17) * Number(mk.scale || 1), mk.num);
+    });
+    calloutDot(x + 26, top + 26, Number(s.badge_r || 18), p.num || pad2(i + 1));
+    var cy = top + ih + 34;
+    drawText(p.title || '', x, cy, Number(p.title_size || 27), 'extrabold', INK, 'ls');
+    if (p.tag) tracked(p.tag, x, cy + 28, 13, 'bold', KEY, 2);
+    var lines = wrapText(p.text || '', size, 'medium', Math.round(pw));
+    for (var k = 0; k < lines.length; k++) drawText(lines[k], x, cy + 62 + k * lhg2, size, 'medium', INK, 'ls');
+    maxBottom = Math.max(maxBottom, cy + 62 + lhg2 * (lines.length - 1));
+  });
+  if (s.note) {
+    var y = maxBottom + Number(s.note_gap === undefined ? 34 : s.note_gap);
+    _ctx.fillStyle = INK; _ctx.fillRect(MX, y - 24, CR - MX, 1);
+    var nl = wrapText(s.note, 19, 'medium', CR - MX - 8);
+    for (var ni = 0; ni < nl.length; ni++) drawText(nl[ni], MX, y + ni * 29, 19, 'medium', INK, 'ls');
+  }
   if (s.takeaway) { takeaway(s.takeaway, 104, s.takeaway_label || 'POINT'); return CTM; }
   return CTM;
 }
@@ -2789,7 +2861,7 @@ function pickClosing(s, page, total) {
 
 /* ---------------------------------------------------------------- 9. 장표 렌더 */
 var POINT_KINDS = { table: pTable, cards: pCards, brand_pair: pBrandPair, brand_wide: pBrandWide, list: pList, reasons: pReasons, bars: pBars, lineup: pLineup, figure: pFigure };
-var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, compare: tCompare, products: tProducts, quad: tQuad, steps: tSteps, lineage: tLineage, closing: tClosing };
+var TECH_KINDS = { points: tPoints, band: tBand, split: tSplit, table: tTable, compare: tCompare, products: tProducts, quad: tQuad, steps: tSteps, lineage: tLineage, closing: tClosing, duo: tDuo };
 
 function renderSlidePage(s, idx, total, family) {
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
@@ -4163,7 +4235,14 @@ function slideSpec(s, i) {
       if (s.lead !== undefined) push({ t: 'text', path: ['lead'], label: '리드 문구', rows: 2 });
       push({ t: 'arr', path: ['legend'], kicker: '범례', titleFn: function (it) { return (it.num ? it.num + ' ' : '') + (it.title || ''); }, nodes: [{ t: 'text', path: ['num'], label: '번호', rows: 1 }, { t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'text', path: ['desc'], label: '설명', rows: 3 }] });
     } else if (kind === 'split') {
+      if (s.lead !== undefined) push({ t: 'text', path: ['lead'], label: '리드 문구', rows: 2 });
       push({ t: 'arr', path: ['blocks'], kicker: '블록', titleFn: function (it) { return it.label || '블록'; }, nodes: [{ t: 'text', path: ['label'], label: '소제목', rows: 1 }, { t: 'text', path: ['text'], label: '본문', rows: 3 }] });
+      if (s.image_caption !== undefined) push({ t: 'text', path: ['image_caption'], label: '사진 캡션', rows: 1 });
+      if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '노트', rows: 2 });
+    } else if (kind === 'duo') {
+      if (s.lead !== undefined) push({ t: 'text', path: ['lead'], label: '리드 문구', rows: 2 });
+      push({ t: 'arr', path: ['panels'], kicker: '패널', titleFn: function (it) { return it.title || ''; }, nodes: [{ t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'text', path: ['tag'], label: '작은 태그', rows: 1 }, { t: 'text', path: ['text'], label: '본문', rows: 3 }] });
+      if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '노트', rows: 2 });
     } else if (kind === 'table') {
       push({ t: 'table', colsPath: ['table', 'columns'], rowsPath: ['table', 'rows'], label: '칸 고치기' });
       if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '표 아래 노트', rows: 2 });
