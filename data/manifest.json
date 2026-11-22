@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T23:21:35+09:00",
+  "generatedAt": "2026-11-22T23:21:52+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -153,11 +153,11 @@
       "seriesLabel": "뷰티 테크",
       "issueNo": 2,
       "date": "2026-11-20",
-      "title": "레티놀과 헷갈리는 판테놀, 뭐가 다를까?",
+      "title": "레티놀과 헷갈리기 쉬운 판테놀, 뭐가 다를까?",
       "subtitle": "이름은 비슷해도 역할은 다릅니다",
       "coverThumb": "covers/beauty-tech-02-cover.png",
       "jsonPath": "data/beauty-tech-02.json",
-      "updatedAt": "2026-11-22T23:21:31+09:00"
+      "updatedAt": "2026-11-22T23:21:49+09:00"
     },
     {
       "id": "beauty-tech-03",
@@ -166,10 +166,10 @@
       "issueNo": 3,
       "date": "2026-11-22",
       "title": "장벽 크림마다 들어있는 세라마이드, 정체가 뭘까?",
-      "subtitle": "이름은 같아도, 전성분표에 적힌 이름은 다릅니다",
+      "subtitle": "같은 세라마이드라도, 전성분표에 적힌 이름은 다릅니다",
       "coverThumb": "covers/beauty-tech-03-cover.png",
       "jsonPath": "data/beauty-tech-03.json",
-      "updatedAt": "2026-11-22T23:21:31+09:00"
+      "updatedAt": "2026-11-22T23:21:49+09:00"
     },
     {
       "id": "beauty-tech-04",
