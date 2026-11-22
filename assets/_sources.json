@@ -55,6 +55,13 @@
     "h": 933,
     "bytes": 322435
   },
+  "assets/band_prep2.jpg": {
+    "sha1": "6b4f605ace53e39abb75bd50065741476e6786d9",
+    "source": "downloads/beauty-tech-03-assets/band_prep2.png",
+    "w": 1080,
+    "h": 420,
+    "bytes": 116725
+  },
   "assets/beauty-point-02-v3-cover-art2.jpg": {
     "sha1": "d71a1face3e7fb3a6d5e54b48398e37e8f019874",
     "source": "downloads/beauty-point-02-v3-cover-art2.png",
@@ -264,6 +271,13 @@
     "w": 2160,
     "h": 1380,
     "bytes": 295861
+  },
+  "assets/cover_visual-de687a.jpg": {
+    "sha1": "de687a2c5bad74fb438eeefe59b4ec7431899b33",
+    "source": "downloads/beauty-tech-03-assets/cover_visual.png",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 156329
   },
   "assets/cover_visual.jpg": {
     "sha1": "50f5eb1423f1b2a69d1f9f75ccca762a48f75a88",
@@ -587,6 +601,13 @@
     "h": 818,
     "bytes": 129669
   },
+  "assets/prod_illiyoon.png": {
+    "sha1": "b891ea62e743295ac8e4f9297385e2f8a46b6304",
+    "source": "downloads/beauty-tech-03-assets/prod_illiyoon.png",
+    "w": 511,
+    "h": 550,
+    "bytes": 169871
+  },
   "assets/prod_innisfree.png": {
     "sha1": "cfe604c43dd8f182cdabc84a50d313b5593ae282",
     "source": "downloads/beauty-tech-src/prod_innisfree.png",
@@ -614,6 +635,13 @@
     "w": 499,
     "h": 1018,
     "bytes": 361362
+  },
+  "assets/prod_realbarrier.png": {
+    "sha1": "53e12e0a1189568f4bf394cef0b80db16a708212",
+    "source": "downloads/beauty-tech-03-assets/prod_realbarrier.png",
+    "w": 279,
+    "h": 578,
+    "bytes": 100005
   },
   "assets/rej_vis_rejuvenex.png": {
     "sha1": "361e074de79e10f5a70211e10e795964efdb60ee",
@@ -719,6 +747,13 @@
     "w": 900,
     "h": 231,
     "bytes": 25754
+  },
+  "assets/split.jpg": {
+    "sha1": "0d07023cfc7d7fdf5f461aaee4ba7f08295475f6",
+    "source": "downloads/beauty-tech-03-assets/split.png",
+    "w": 1402,
+    "h": 1122,
+    "bytes": 223408
   },
   "assets/tex-01-rejuran.png": {
     "sha1": "e6199758da222df999ac1707471670f64ebfaf14",
