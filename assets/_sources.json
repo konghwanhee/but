@@ -118,6 +118,27 @@
     "h": 900,
     "bytes": 63695
   },
+  "assets/bp08-cover-tube.jpg": {
+    "sha1": "00d2a313aca1c51a38aea767f814b6d7db9fa2d9",
+    "source": "downloads/beauty-point-08-src/bp08-cover-tube.png",
+    "w": 1402,
+    "h": 1122,
+    "bytes": 208618
+  },
+  "assets/bp08-label-mock.png": {
+    "sha1": "2779304d85431ad8d7caa9937d6c0b59bc63d37b",
+    "source": "downloads/beauty-point-08-src/bp08-label-mock.png",
+    "w": 1792,
+    "h": 680,
+    "bytes": 67986
+  },
+  "assets/bp08-patch-test.jpg": {
+    "sha1": "a7ea5cbd802676c008a3a55da8a355ad0ae4d4d7",
+    "source": "downloads/beauty-point-08-src/bp08-patch-test.png",
+    "w": 1402,
+    "h": 1122,
+    "bytes": 257585
+  },
   "assets/building-portrait.jpg": {
     "sha1": "58a17e5e3769b27df5fa00c5770fbc885478f44e",
     "source": "downloads/beauty-pick-test-src/building-portrait.jpg",
