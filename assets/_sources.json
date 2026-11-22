@@ -776,6 +776,27 @@
     "h": 1122,
     "bytes": 223408
   },
+  "assets/sun-activity-band.jpg": {
+    "sha1": "0591ebe7cafb68935d95f12265af5d311f5af510",
+    "source": "downloads/beauty-point-09-src/sun-activity-band.png",
+    "w": 1915,
+    "h": 821,
+    "bytes": 280765
+  },
+  "assets/sun-cover-shade.jpg": {
+    "sha1": "dedb2aaba99e1a03e8cfca28dc9f6061480b2f41",
+    "source": "downloads/beauty-point-09-src/sun-cover-shade.png",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 258924
+  },
+  "assets/sun-parasol-band-corner.jpg": {
+    "sha1": "0529d03c29c04fba6b6d97a684f101a636f92605",
+    "source": "downloads/beauty-point-09-src/sun-parasol-band-corner.png",
+    "w": 1915,
+    "h": 821,
+    "bytes": 201010
+  },
   "assets/tex-01-rejuran.png": {
     "sha1": "e6199758da222df999ac1707471670f64ebfaf14",
     "source": "downloads/beauty-point-02-v8-assets/tex-01-rejuran.png",
