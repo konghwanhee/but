@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T22:59:59+09:00",
+  "generatedAt": "2026-11-22T23:00:33+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -133,7 +133,7 @@
       "subtitle": "크림도 로션도, 뒷면을 읽는 규칙은 같습니다",
       "coverThumb": "covers/beauty-point-10-cover.png",
       "jsonPath": "data/beauty-point-10.json",
-      "updatedAt": "2026-11-22T22:59:58+09:00"
+      "updatedAt": "2026-11-22T23:00:32+09:00"
     },
     {
       "id": "beauty-tech-01",
