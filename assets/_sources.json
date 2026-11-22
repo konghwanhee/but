@@ -48,6 +48,13 @@
     "h": 684,
     "bytes": 98870
   },
+  "assets/band-cream-1080x470.jpg": {
+    "sha1": "fe0a0b48da13f6b29ec780b6b6b166d52051cc3a",
+    "source": "downloads/beauty-point-10-src/band-cream-1080x470.png",
+    "w": 1080,
+    "h": 470,
+    "bytes": 93776
+  },
   "assets/band.jpg": {
     "sha1": "04b8f4ed6156ac200f08f58567c92140c153d37a",
     "source": "downloads/beauty-tech-02-assets/band.png",
@@ -377,12 +384,26 @@
     "h": 800,
     "bytes": 81850
   },
+  "assets/fig_label_02x-2464e6.png": {
+    "sha1": "2464e67d4b1a3ebe54ea12d85518069c29f07e00",
+    "source": "downloads/beauty-point-10-src/fig_label_02x.png",
+    "w": 1792,
+    "h": 1040,
+    "bytes": 85052
+  },
   "assets/fig_label_02x.png": {
     "sha1": "47eade3b082dcfe67f261900b05577165177197c",
     "source": "downloads/beauty-point-10-src/fig_label_02x.png",
     "w": 1792,
     "h": 1040,
     "bytes": 80712
+  },
+  "assets/fig_order_02x-9d2376.png": {
+    "sha1": "9d2376b2513cff6acf99620a7842630fe6be46db",
+    "source": "downloads/beauty-point-10-src/fig_order_02x.png",
+    "w": 1792,
+    "h": 1200,
+    "bytes": 88072
   },
   "assets/fig_order_02x.png": {
     "sha1": "243e83bcd87fc48a92f5330567d6199a23416def",
