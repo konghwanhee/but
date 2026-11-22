@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T22:39:42+09:00",
+  "generatedAt": "2026-11-22T22:42:32+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -121,7 +121,7 @@
       "subtitle": "SPF와 PA, 앞면의 숫자와 기호를 읽는 법",
       "coverThumb": "covers/beauty-point-09-cover.png",
       "jsonPath": "data/beauty-point-09.json",
-      "updatedAt": "2026-11-22T22:39:40+09:00"
+      "updatedAt": "2026-11-22T22:42:31+09:00"
     },
     {
       "id": "beauty-point-10",
