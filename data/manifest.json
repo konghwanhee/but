@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T23:32:22+09:00",
+  "generatedAt": "2026-11-23T07:34:40+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -181,7 +181,7 @@
       "subtitle": "AHA · BHA · PHA, 고르는 기준",
       "coverThumb": "covers/beauty-tech-04-cover.png",
       "jsonPath": "data/beauty-tech-04.json",
-      "updatedAt": "2026-11-22T23:32:22+09:00"
+      "updatedAt": "2026-11-23T07:34:40+09:00"
     },
     {
       "id": "beauty-brief-test",
