@@ -1811,7 +1811,8 @@ function tSplit(s, headLast) {
   var iw = Number(s.image_width || 430), ih = Number(s.image_height || 470);
   var right = s.image_side === 'right';
   var ix = right ? (CR - iw) : (s.bleed_left ? 0 : MX);
-  var geo = bandPhoto(spec, ix, top, iw + ((!right && ix === 0) ? MX : 0), ih,
+  var iwFull = iw + ((!right && ix === 0) ? MX : 0);
+  var geo = bandPhoto(spec, ix, top, iwFull, ih,
                       Number(spec.zoom || 1), Number(spec.focus_y === undefined ? 0.5 : spec.focus_y));
   if (s.frame) {
     _ctx.strokeStyle = INK; _ctx.lineWidth = 1; _ctx.strokeRect(ix + 0.5, top + 0.5, iw - 1, ih - 1);
@@ -1828,7 +1829,7 @@ function tSplit(s, headLast) {
   }
   var colX, colW;
   if (right) { colX = MX; colW = CR - iw - 48 - MX; }
-  else { colX = MX + iw + 48; colW = CR - colX; }
+  else { colX = MX + iwFull + 48; colW = CR - colX; }
   var y = top;
   var limit = CTM - (s.takeaway ? 120 : 0);
   var blocks = s.blocks || [];
