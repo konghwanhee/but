@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-23T07:35:07+09:00",
+  "generatedAt": "2026-11-23T08:08:00+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -13,11 +13,14 @@
       "subtitle": "올리브영 화장품 vs 피부과 2등급 의료기기",
       "coverThumb": "covers/beauty-point-01-cover.png",
       "jsonPath": "data/beauty-point-01.json",
-      "updatedAt": "2026-11-22T23:05:36+09:00",
+      "updatedAt": "2026-11-23T08:08:00+09:00",
       "approved": true,
-      "publishedAt": null,
+      "publishedAt": "2026-11-23T08:06:00+09:00",
       "approvedAt": "2026-11-22T11:05:44.732Z",
-      "scheduledUploadAt": "2026-11-23T08:00:00+09:00"
+      "scheduledUploadAt": "2026-11-23T08:00:00+09:00",
+      "uploaded": true,
+      "uploadedAt": "2026-11-23T08:06:00+09:00",
+      "instagramUrl": "https://www.instagram.com/p/DgD8lw6E3PE/"
     },
     {
       "id": "beauty-point-02",
