@@ -216,6 +216,13 @@
     "h": 706,
     "bytes": 33951
   },
+  "assets/cover-label-raw2.jpg": {
+    "sha1": "c19954dd7583d090a721052b65a74ee3c5078f99",
+    "source": "downloads/beauty-point-10-src/cover-label-raw2.png",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 470714
+  },
   "assets/cover_iope_retinol.jpg": {
     "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
     "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
@@ -278,6 +285,20 @@
     "w": 1811,
     "h": 1358,
     "bytes": 624604
+  },
+  "assets/fig_label_02x.png": {
+    "sha1": "47eade3b082dcfe67f261900b05577165177197c",
+    "source": "downloads/beauty-point-10-src/fig_label_02x.png",
+    "w": 1792,
+    "h": 1040,
+    "bytes": 80712
+  },
+  "assets/fig_order_02x.png": {
+    "sha1": "243e83bcd87fc48a92f5330567d6199a23416def",
+    "source": "downloads/beauty-point-10-src/fig_order_02x.png",
+    "w": 1792,
+    "h": 1200,
+    "bytes": 84929
   },
   "assets/gudai_logo.png": {
     "sha1": "5b262acc59fbd5c4fdab3fdb8a67af18e3bec92e",

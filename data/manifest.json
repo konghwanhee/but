@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T12:56:36.907Z",
+  "generatedAt": "2026-11-22T22:30:59+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -98,6 +98,18 @@
       "coverThumb": "covers/beauty-point-07-cover.png",
       "jsonPath": "data/beauty-point-07.json",
       "updatedAt": "2026-11-21T08:34:06+09:00"
+    },
+    {
+      "id": "beauty-point-10",
+      "series": "point",
+      "seriesLabel": "뷰티 포인트",
+      "issueNo": 10,
+      "date": "2026-11-22",
+      "title": "선크림 뒷면의 빽빽한 성분표, 어디부터 읽을까?",
+      "subtitle": "전성분표, 이 순서만 알면 읽힌다",
+      "coverThumb": "covers/beauty-point-10-cover.png",
+      "jsonPath": "data/beauty-point-10.json",
+      "updatedAt": "2026-11-22T22:30:58+09:00"
     },
     {
       "id": "beauty-tech-01",
