@@ -1262,13 +1262,22 @@ function pBrandPair(s, headLast) {
   } else {
     images.forEach(function (spec, i) {
       var x = MX + i * (cell + gap);
-      if (spec.framed) drawContain(spec.image, x, top, cell, ih, true);
+      var tagX = x;
+      if (spec.cutout) {
+        // 사진이 아니라 투명 누끼(RGBA)면 알파 그대로 얹는다 — 사각 바탕·회색 면이 남지 않는다.
+        // `height` 로 제품마다 기준선에 맞춘 높이를 따로 줄 수 있고, 태그는 누끼의 왼쪽 끝에 맞춘다.
+        var ch2 = Math.min(Number(spec.height || ih), ih);
+        var q2 = cutoutFit(spec.image, cell, ih, ch2);
+        if (imgOk(q2.im)) _ctx.drawImage(q2.im, x + (cell - q2.w) / 2, top + ih - q2.h, q2.w, q2.h);
+        tagX = x + (cell - q2.w) / 2;
+        _ctx.fillStyle = INK; _ctx.fillRect(x, top + ih + 2, cell, 2);
+      } else if (spec.framed) drawContain(spec.image, x, top, cell, ih, true);
       else {
         drawContainPlain(spec.image, x, top, cell, ih);
         _ctx.fillStyle = INK; _ctx.fillRect(x, top + ih + 2, cell, 2);
       }
       if (spec.caption) drawText(spec.caption, x, top + ih + 30, 19, 'bold', INK, 'ls');
-      if (spec.tag) tagAt(x, spec.tag);
+      if (spec.tag) tagAt(tagX, spec.tag);
     });
   }
   var cap = images[0] && images[0].caption;
