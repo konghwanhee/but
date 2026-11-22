@@ -1780,8 +1780,7 @@ function tBand(s, headLast) {
   });
   _ctx.fillStyle = KEY; _ctx.fillRect(0, top, W, 4); _ctx.fillRect(0, top + bandH - 4, W, 4);
   var legend = s.legend || [], ly = top + bandH + 30;
-  var legendBottom = CTM - (s.takeaway ? 120 : 0);
-  var rowH = Math.min(92, (legendBottom + 4 - ly) / Math.max(1, legend.length));
+  var rowH = Math.min(92, (CTM + 4 - ly) / Math.max(1, legend.length));
   legend.forEach(function (item, i) {
     var y = ly + rowH * i;
     drawText(item.num || pad2(i + 1), MX, y + 20, 17, 'bold', KEY, 'ls');
@@ -1790,7 +1789,6 @@ function tBand(s, headLast) {
     for (var k = 0; k < lines.length; k++) drawText(lines[k], MX + 44, y + 52 + k * 25, 17, 'medium', INK, 'ls');
     _ctx.fillStyle = INK; _ctx.fillRect(MX, y + rowH - 8, CR - MX, 1);
   });
-  if (s.takeaway) { takeaway(s.takeaway, 104, s.takeaway_label || 'POINT'); return CTM; }
   return CTM;
 }
 
