@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T22:53:57+09:00",
+  "generatedAt": "2026-11-22T22:57:04+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -105,11 +105,11 @@
       "seriesLabel": "뷰티 포인트",
       "issueNo": 8,
       "date": "2026-11-22",
-      "title": "앞면의 '무첨가', 그대로 믿어도 될까?",
+      "title": "무첨가·저자극, 뭐가 없다는 걸까?",
       "subtitle": "앞면 문구가 말하는 것과 말하지 않는 것",
       "coverThumb": "covers/beauty-point-08-cover.png",
       "jsonPath": "data/beauty-point-08.json",
-      "updatedAt": "2026-11-22T22:53:41+09:00"
+      "updatedAt": "2026-11-22T22:57:03+09:00"
     },
     {
       "id": "beauty-point-09",
