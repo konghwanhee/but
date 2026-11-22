@@ -300,6 +300,13 @@
     "h": 1380,
     "bytes": 295861
   },
+  "assets/cover_v2.jpg": {
+    "sha1": "b9cc5bf7cecba346166b2055b8cd086ad9bd71af",
+    "source": "downloads/beauty-tech-04-assets/cover_v2.png",
+    "w": 1080,
+    "h": 745,
+    "bytes": 53784
+  },
   "assets/cover_visual-de687a.jpg": {
     "sha1": "de687a2c5bad74fb438eeefe59b4ec7431899b33",
     "source": "downloads/beauty-tech-03-assets/cover_visual.png",
@@ -887,6 +894,48 @@
     "w": 1200,
     "h": 1496,
     "bytes": 240570
+  },
+  "assets/v2_acid.jpg": {
+    "sha1": "37424ddbac1f9be630e70b45885a448aea936346",
+    "source": "downloads/beauty-tech-04-assets/v2_acid.jpg",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 385397
+  },
+  "assets/v2_aha.jpg": {
+    "sha1": "f418e504aa6fc843ddd9b259bc098632a7f6bec8",
+    "source": "downloads/beauty-tech-04-assets/v2_aha.jpg",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 328194
+  },
+  "assets/v2_bha.jpg": {
+    "sha1": "7c817229189ea9995735b3b6d3f25d2fbf8d134f",
+    "source": "downloads/beauty-tech-04-assets/v2_bha.jpg",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 425595
+  },
+  "assets/v2_pha.jpg": {
+    "sha1": "da141c336066a59dcfce74700755b17882907de9",
+    "source": "downloads/beauty-tech-04-assets/v2_pha.jpg",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 360898
+  },
+  "assets/v2_scrub.jpg": {
+    "sha1": "29b1a09cb6d34bbce8df51944b8faf05290f24ea",
+    "source": "downloads/beauty-tech-04-assets/v2_scrub.jpg",
+    "w": 1402,
+    "h": 1122,
+    "bytes": 509699
+  },
+  "assets/v2_uv.jpg": {
+    "sha1": "6ef58228f3530c06b5fa7ef099f77f031c2aee59",
+    "source": "downloads/beauty-tech-04-assets/v2_uv.jpg",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 470527
   },
   "assets/zeroid_wordmark_ink.png": {
     "sha1": "e88eba94aad4e85db080d93c20314d6d4f55b07e",
