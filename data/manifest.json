@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T22:43:53+09:00",
+  "generatedAt": "2026-11-22T13:44:20.874Z",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -145,7 +145,7 @@
       "subtitle": "레티놀을 처음 쓰는 사람에게",
       "coverThumb": "covers/beauty-tech-01-cover.png",
       "jsonPath": "data/beauty-tech-01.json",
-      "updatedAt": "2026-11-20T19:40:16+09:00"
+      "updatedAt": "2026-11-22T13:44:20.874Z"
     },
     {
       "id": "beauty-tech-02",
