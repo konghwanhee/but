@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T22:30:59+09:00",
+  "generatedAt": "2026-11-22T22:33:41+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -109,7 +109,7 @@
       "subtitle": "전성분표, 이 순서만 알면 읽힌다",
       "coverThumb": "covers/beauty-point-10-cover.png",
       "jsonPath": "data/beauty-point-10.json",
-      "updatedAt": "2026-11-22T22:30:58+09:00"
+      "updatedAt": "2026-11-22T22:33:40+09:00"
     },
     {
       "id": "beauty-tech-01",
