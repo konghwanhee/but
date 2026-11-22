@@ -244,6 +244,13 @@
     "h": 1024,
     "bytes": 470714
   },
+  "assets/cover-tube-amber.jpg": {
+    "sha1": "1a69fe09b0abb07621915e9f4d70a9601eba6206",
+    "source": "downloads/beauty-point-09-src/cover-tube-amber.png",
+    "w": 1536,
+    "h": 1024,
+    "bytes": 158163
+  },
   "assets/cover_iope_retinol.jpg": {
     "sha1": "9d552382b67c4474dbb6b9f9e990afaefc4631e1",
     "source": "downloads/beauty-tech-src/cover_iope_retinol.jpg",
@@ -306,6 +313,34 @@
     "w": 1811,
     "h": 1358,
     "bytes": 624604
+  },
+  "assets/fig-front-label.png": {
+    "sha1": "1137fa03178419aa942f91ff85ec78e832365f81",
+    "source": "downloads/beauty-point-09-src/fig-front-label.png",
+    "w": 1800,
+    "h": 1000,
+    "bytes": 2250555
+  },
+  "assets/fig-ingredients.png": {
+    "sha1": "ec997858950d3a196bd0f4aeba384ecb022d8427",
+    "source": "downloads/beauty-point-09-src/fig-ingredients.png",
+    "w": 1600,
+    "h": 720,
+    "bytes": 69432
+  },
+  "assets/fig-pa.png": {
+    "sha1": "a67053c97896f44ad903fc489a679737d1830271",
+    "source": "downloads/beauty-point-09-src/fig-pa.png",
+    "w": 1800,
+    "h": 900,
+    "bytes": 18571
+  },
+  "assets/fig-uv.png": {
+    "sha1": "ddf7c636c1d0c409bd23dec1046ff94bbb4636f4",
+    "source": "downloads/beauty-point-09-src/fig-uv.png",
+    "w": 1800,
+    "h": 800,
+    "bytes": 81850
   },
   "assets/fig_label_02x.png": {
     "sha1": "47eade3b082dcfe67f261900b05577165177197c",
