@@ -3187,9 +3187,186 @@ function kstWall(now) {
   var t = new Date(now.getTime() + 9 * 3600 * 1000);
   return { y: t.getUTCFullYear(), m: t.getUTCMonth() + 1, d: t.getUTCDate(), h: t.getUTCHours() };
 }
-/* 결재 시점 기준 업로드 예정 시각(KST).
+/* ---------------------------------------------------------------- 10d-1. 업로드 순번과 예정 시각 */
+/* 같은 챕터의 미업로드 정식 호는 호수(issueNo) 오름차순으로 한 슬롯에 한 편씩 올라간다(앞 회차 먼저).
+   그래서 뒤 회차의 예정 시각은 앞 회차들이 차지한 슬롯의 다음 칸이다.
+     · 포인트: 월·수·금 08:00. 4부작 주차의 4번째 호는 그 주 토요일 08:00.
+     · 테크: 토요일 08:00. 포인트 4부작 주차가 가져간 토요일은 건너뛴다(그 주 테크는 쉼).
+     · 브리프: 매일 18:00. · 픽: 결재한 시각의 다음 정각.
+   새 4부작 주차가 생기면 POINT_4PART_GROUPS 에 [시작호, 끝호] 한 줄을 더한다. */
+var POINT_4PART_GROUPS = [[4, 7]];      /* 제조 모델 1~4편 = 04~07호 (11/30주: 월·수·금·토) */
+
+function kstDay(now) {                 /* 오늘(KST) 00:00 을 UTC 필드에 담아 돌려준다 */
+  var k = kstWall(now || new Date());
+  return new Date(Date.UTC(k.y, k.m - 1, k.d));
+}
+function addDays(day, n) {
+  return new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate() + n));
+}
+function dayKeyOf(day) {
+  return day.getUTCFullYear() + '-' + p2n(day.getUTCMonth() + 1) + '-' + p2n(day.getUTCDate());
+}
+function slotIso(day, hour) {
+  return dayKeyOf(day) + 'T' + p2n(hour) + ':00:00+09:00';
+}
+function slotMs(day, hour) {           /* 슬롯(KST)의 실제 UTC 밀리초 */
+  return Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), hour - 9);
+}
+function isMWF(day) { var w = day.getUTCDay(); return w === 1 || w === 3 || w === 5; }
+function mondayOf(day) { return addDays(day, -((day.getUTCDay() + 6) % 7)); }
+function numIssue(d) {
+  var n = Number(d && d.issueNo);
+  return (d && d.issueNo !== null && d.issueNo !== undefined && d.issueNo !== '' && !isNaN(n)) ? n : 9999;
+}
+/* 아직 업로드되지 않은 정식 호를 호수 오름차순으로 (테스트 항목 제외) */
+function uploadQueueOf(series) {
+  return (MANIFEST.decks || []).filter(function (d) {
+    return d && d.series === series && !deckIsTest(d) && !d.publishedAt;
+  }).sort(function (a, b) { return numIssue(a) - numIssue(b); });
+}
+/* 이 호가 속한 4부작 주차의 첫 호수 (4부작이 아니면 null) */
+function fourPartGroupStart(issueNo) {
+  var n = Number(issueNo);
+  if (isNaN(n)) return null;
+  for (var i = 0; i < POINT_4PART_GROUPS.length; i++) {
+    var g = POINT_4PART_GROUPS[i];
+    if (g.length === 2 && g[1] - g[0] === 3 && n >= g[0] && n <= g[1]) return g[0];
+  }
+  return null;
+}
+/* 포인트 발행 슬롯(월·수·금 + 각 주 토요일 후보)을 시간순으로. 지난 슬롯은 뺀다.
+   토요일은 후보로만 넣고, 실제 배정은 assignPointQueue 가 4부작 주차일 때만 한다. */
+function pointSlotPlan(now, count) {
+  var t = now || new Date();
+  var today = kstDay(t);
+  var startDay = today;
+  if (slotMs(today, 8) <= t.getTime()) startDay = addDays(today, 1);      /* 오늘 08:00 이 이미 지났으면 내일부터 */
+  var mon = mondayOf(startDay);
+  var out = [];
+  for (var w = 0; w < 80 && out.length < count; w++) {
+    var m = addDays(mon, 7 * w);
+    var days = [addDays(m, 0), addDays(m, 2), addDays(m, 4), addDays(m, 5)];   /* 월·수·금·토 */
+    for (var i = 0; i < days.length; i++) {
+      if (slotMs(days[i], 8) < slotMs(startDay, 8)) continue;
+      out.push({ iso: slotIso(days[i], 8), key: dayKeyOf(days[i]), day: days[i], sat: i === 3 });
+    }
+  }
+  return out;
+}
+/* 4부작 그룹의 마지막 호 차례인데 앞 3편이 이미 업로드됐다면, 그 3편이 올라간 주의 월요일 key 를 돌려준다.
+   (그 주 토요일이 이 4부작 주차의 마지막 자리다) */
+function pointTailWeekKey(queue, i) {
+  var gs = fourPartGroupStart(queue[i].issueNo);
+  if (gs === null || numIssue(queue[i]) !== gs + 3) return null;
+  for (var j = 0; j < queue.length; j++) {
+    var n = numIssue(queue[j]);
+    if (n >= gs && n < gs + 3) return null;         /* 앞 3편이 아직 대기 중 */
+  }
+  var last = null;
+  (MANIFEST.decks || []).forEach(function (d) {
+    if (d.series !== 'point' || deckIsTest(d)) return;
+    if (numIssue(d) === gs + 2 && d.publishedAt) last = d.publishedAt;
+  });
+  if (!last) return null;
+  var s = String(last);
+  var p = new Date(s.length <= 10 ? s + 'T00:00:00+09:00' : s);
+  if (isNaN(p.getTime())) return null;
+  return dayKeyOf(mondayOf(kstDay(p)));
+}
+/* 포인트 대기열을 슬롯에 차례로 배정. 토요일은 그 주에 4부작 앞 3편이 들어가고 마지막 호가 다음 차례일 때만 쓴다. */
+function assignPointQueue(now, queue) {
+  var plan = pointSlotPlan(now, queue.length + 9);
+  var slots = {}, claimedSat = [];
+  var i = 0, weekKey = '', weekIds = [];
+  for (var pi = 0; pi < plan.length && i < queue.length; pi++) {
+    var s = plan[pi];
+    var wk = dayKeyOf(mondayOf(s.day));
+    if (s.sat) {
+      var gs = fourPartGroupStart(queue[i].issueNo);
+      var take = false;
+      if (gs !== null && numIssue(queue[i]) === gs + 3) {
+        take = weekIds.length === 3 && weekIds.every(function (d) {
+          var n = numIssue(d); return n >= gs && n < gs + 3;
+        });
+        if (!take) take = (pointTailWeekKey(queue, i) === wk);
+      }
+      if (take) {
+        slots[queue[i].id] = s.iso;
+        claimedSat.push(s.key);
+        weekIds.push(queue[i]);
+        i++;
+      }
+      continue;
+    }
+    if (wk !== weekKey) { weekKey = wk; weekIds = []; }
+    slots[queue[i].id] = s.iso;
+    weekIds.push(queue[i]);
+    i++;
+  }
+  return { slots: slots, claimedSat: claimedSat };
+}
+/* 포인트 4부작 주차가 가져간 토요일 (테크는 이 주 쉰다) */
+function pointClaimedSaturdays(now) {
+  var res = assignPointQueue(now, uploadQueueOf('point'));
+  var map = {};
+  res.claimedSat.forEach(function (k) { map[k] = true; });
+  return map;
+}
+/* 테크: 토요일 08:00 슬롯을 차례로, 포인트가 차지한 토요일은 건너뛴다. */
+function assignTechQueue(now, queue) {
+  var t = now || new Date();
+  var today = kstDay(t);
+  var day = today;
+  if (slotMs(today, 8) <= t.getTime()) day = addDays(today, 1);
+  while (day.getUTCDay() !== 6) day = addDays(day, 1);
+  var claimed = pointClaimedSaturdays(t);
+  var slots = {};
+  for (var n = 0, i = 0; n < 80 && i < queue.length; n++) {
+    if (!claimed[dayKeyOf(day)]) { slots[queue[i].id] = slotIso(day, 8); i++; }
+    day = addDays(day, 7);
+  }
+  return slots;
+}
+/* 브리프: 매일 18:00 (하루 한 편) */
+function assignBriefQueue(now, queue) {
+  var t = now || new Date();
+  var day = kstDay(t);
+  if (slotMs(day, 18) <= t.getTime()) day = addDays(day, 1);
+  var slots = {};
+  for (var i = 0; i < queue.length; i++) {
+    slots[queue[i].id] = slotIso(day, 18);
+    day = addDays(day, 1);
+  }
+  return slots;
+}
+/* 챕터별 id→예정 시각 표 (1분 단위로만 다시 계산) */
+var _slotCache = { key: '', map: {} };
+function queuedSlotMap(series) {
+  var bucket = String(Math.floor(Date.now() / 60000));
+  if (_slotCache.key !== bucket) _slotCache = { key: bucket, map: {} };
+  if (!_slotCache.map[series]) {
+    var q = uploadQueueOf(series);
+    var m2 = {};
+    if (series === 'point') m2 = assignPointQueue(new Date(), q).slots;
+    else if (series === 'tech') m2 = assignTechQueue(new Date(), q);
+    else if (series === 'briefing') m2 = assignBriefQueue(new Date(), q);
+    _slotCache.map[series] = m2;
+  }
+  return _slotCache.map[series];
+}
+/* 이 호가 실제로 올라갈 예정 시각. 픽은 결재 시각 기준 정각이라 저장값을 그대로 쓴다. */
+function slotForDeck(d, now) {
+  if (!d || !APPROVE_SERIES[d.series]) return null;
+  if (deckIsTest(d) || d.publishedAt) return null;
+  if (d.series === 'pick') return d.scheduledUploadAt || null;
+  var map = queuedSlotMap(d.series);
+  var iso = map[d.id];
+  if (iso) return iso;
+  return d.scheduledUploadAt || null;
+}
+/* 결재 시점 기준 업로드 예정 시각(KST). id 를 주면 그 호의 대기열 순번으로 계산한다.
    브리프 18:00 · 포인트/테크 08:00 · 픽은 결재한 순간(비정기, 당일 업로드). */
-function nextUploadSlot(now, series) {
+function nextUploadSlot(now, series, id) {
   var when = now || new Date();
   var k = kstWall(when);
   var y = k.y, m = k.m, d = k.d;
@@ -3197,12 +3374,18 @@ function nextUploadSlot(now, series) {
     var t = new Date(when.getTime() + 9 * 3600 * 1000);
     return y + '-' + p2n(m) + '-' + p2n(d) + 'T' + p2n(k.h) + ':' + p2n(t.getUTCMinutes()) + ':00+09:00';
   }
-  var hour = series === 'briefing' ? 18 : 8;
-  if (k.h >= hour) {
-    var nx = new Date(Date.UTC(y, m - 1, d + 1));
-    y = nx.getUTCFullYear(); m = nx.getUTCMonth() + 1; d = nx.getUTCDate();
+  if (id && DECK[id]) {
+    var iso = slotForDeck(DECK[id], when);
+    if (iso) return iso;
   }
-  return y + '-' + p2n(m) + '-' + p2n(d) + 'T' + p2n(hour) + ':00:00+09:00';
+  /* 대체값: 같은 챕터의 대기열을 못 읽었을 때 쓰는 바로 다음 슬롯 */
+  var hour = series === 'briefing' ? 18 : 8;
+  var day = kstDay(when);
+  if (slotMs(day, hour) <= when.getTime()) day = addDays(day, 1);
+  if (series === 'point' || series === 'tech') {
+    while (series === 'tech' ? day.getUTCDay() !== 6 : !isMWF(day)) day = addDays(day, 1);
+  }
+  return slotIso(day, hour);
 }
 /* ISO 시각(UTC 'Z' 포함)은 KST 로 바꾸고, 'YYYY-MM-DD 18:00' 같은 표기는 그대로 읽는다. */
 function fmtUploadAt(v, full) {
@@ -3239,7 +3422,8 @@ function deckStatus(d) {
   if (!APPROVE_SERIES[d.series]) return null;
   if (d.publishedAt) return { kind: 'done', text: '업로드 완료 · ' + fmtUploadAt(d.publishedAt, true).split(' ')[0] };
   if (d.approved) {
-    var when = d.scheduledUploadAt ? fmtUploadAt(d.scheduledUploadAt) : '';
+    var iso = slotForDeck(d) || d.scheduledUploadAt || '';
+    var when = iso ? fmtUploadAt(iso) : '';
     var tail = d.series === 'pick'
       ? (when ? ' · ' + when + ' 업로드' : ' · 업로드 예정')
       : (when ? ' · 예정 ' + when : ' · 업로드 예정');
@@ -3251,7 +3435,8 @@ function statusTip(d) {
   if (!d) return '';
   var bits = [];
   if (d.approvedAt) bits.push('결재 ' + fmtUploadAt(d.approvedAt, true));
-  if (d.scheduledUploadAt) bits.push('업로드 예정 ' + fmtUploadAt(d.scheduledUploadAt, true));
+  var iso = slotForDeck(d) || d.scheduledUploadAt;
+  if (iso) bits.push('업로드 예정 ' + fmtUploadAt(iso, true));
   if (d.publishedAt) bits.push('업로드 완료 ' + fmtUploadAt(d.publishedAt, true));
   return bits.join(' · ');
 }
@@ -3325,7 +3510,7 @@ function commitApproval(next, token) {
   var fields, manFields, dataFields;
   var prevDate = D.date;
   if (next) {
-    var sched = nextUploadSlot(new Date(), series);
+    var sched = nextUploadSlot(new Date(), series, id);
     fields = {
       approved: true,
       approvedAt: new Date().toISOString(),
@@ -3431,14 +3616,12 @@ function approveToggle() {
   var before = approvalOf(state.presetId);
   var next = !before;
   var series = (DECK[state.presetId] || {}).series || 'point';
-  var schedule = series === 'briefing' ? '오늘/내일 18:00'
-    : series === 'pick' ? '결재한 날짜 (당일 업로드)'
-      : '오늘/내일 08:00';
+  var schedule = fmtUploadAt(nextUploadSlot(new Date(), series, state.presetId), true);
   askConfirm(next ? {
     title: '결재',
     body: series === 'pick'
       ? '이 카드뉴스를 결재할까요? 결재하면 GitHub에 저장되고, 하단 날짜가 결재일(' + isoToDotted(nextUploadSlot(new Date(), 'pick').slice(0, 10)) + ')로 바뀌어 함께 커밋됩니다.'
-      : '이 카드뉴스를 결재할까요? 결재 시 GitHub에 저장되고 ' + schedule + ' 업로드 예정으로 기록됩니다.',
+      : '이 카드뉴스를 결재할까요? 결재하면 GitHub에 저장되고, 업로드 예정 시각은 ' + schedule + '입니다.',
     ok: '결재 확정'
   } : {
     title: '결재 취소',
