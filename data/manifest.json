@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-22T22:37:01+09:00",
+  "generatedAt": "2026-11-22T22:37:57+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -109,7 +109,7 @@
       "subtitle": "무첨가 · 저자극 · 테스트 완료, 문구가 말하는 범위",
       "coverThumb": "covers/beauty-point-08-cover.png",
       "jsonPath": "data/beauty-point-08.json",
-      "updatedAt": "2026-11-22T22:35:27+09:00"
+      "updatedAt": "2026-11-22T22:37:56+09:00"
     },
     {
       "id": "beauty-point-10",
