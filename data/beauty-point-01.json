@@ -225,11 +225,11 @@
           "contain": true
         },
         {
-          "image": "assets/md_tube_final.png",
+          "image": "assets/atobarrier_md_cutout.png",
           "tag": "피부과",
           "caption": "아토베리어 크림 MD 160g",
-          "focus": 0.5,
-          "contain": true
+          "cutout": true,
+          "height": 300
         }
       ],
       "table": {

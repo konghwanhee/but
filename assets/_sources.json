@@ -41,6 +41,13 @@
     "h": 470,
     "bytes": 17216
   },
+  "assets/atobarrier_md_cutout.png": {
+    "sha1": "6adceb83df1006ece55ea9656f3e3c96b0a623ab",
+    "source": "downloads/beauty-point-src/atobarrier_md_cutout.png",
+    "w": 316,
+    "h": 684,
+    "bytes": 98870
+  },
   "assets/band.jpg": {
     "sha1": "04b8f4ed6156ac200f08f58567c92140c153d37a",
     "source": "downloads/beauty-tech-02-assets/band.png",
