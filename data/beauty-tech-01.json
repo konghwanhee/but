@@ -56,7 +56,11 @@
         }
       ],
       "takeaway": "레티놀은 각질을 벗기는 성분이 아니라, 피부가 스스로 하게 만드는 신호입니다.",
-      "source": "Milosheska & Roškar, Adv Ther 2022 · 「기능성화장품 심사에 관한 규정」"
+      "source": "Milosheska & Roškar, Adv Ther 2022 · 「기능성화장품 심사에 관한 규정」",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0
     },
     {
       "kind": "band",
@@ -71,19 +75,19 @@
       ],
       "head_size": 58,
       "gap_after_head": 34,
-      "lead": "바르면 결이 먼저 정돈되고, 몇 주 뒤 탄력이 따라옵니다. 원리는 한 줄, 세포 안 스위치에 붙어 피부가 하던 일을 다시 시작하게 하는 것입니다.",
+      "lead": "바르면 결이 먼저 정돈되고, 몇 주 뒤 탄력이 살아납니다. 세포 안 스위치에 붙어 피부가 하던 일을 다시 시작하게 하는 것입니다.",
       "lead_size": 21,
       "image": {
         "image": "assets/ill_skin.jpg",
         "focus_y": 0.28,
-        "zoom": 1.0
+        "zoom": 1
       },
       "band_height": 400,
       "legend": [
         {
           "num": "01",
           "title": "각질이 제때 떨어집니다",
-          "desc": "오래된 각질이 밀려나 결이 고르게 정돈됩니다. 모공 입구가 맑아 보이는 것도 이 때문입니다."
+          "desc": "오래된 각질이 밀려나 결이 고르게 정돈되고, 모공 입구가 맑아 보입니다."
         },
         {
           "num": "02",
@@ -113,7 +117,11 @@
           "y": 580
         }
       ],
-      "source": "Fisher & Voorhees, FASEB J 1996 · Beckenbach et al., Eur J Dermatol 2015"
+      "source": "Fisher & Voorhees, FASEB J 1996 · Beckenbach et al., Eur J Dermatol 2015",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0
     },
     {
       "kind": "points",
@@ -217,7 +225,7 @@
         "image": "assets/ill_capsule.jpg",
         "focus": 0.5,
         "focus_y": 0.5,
-        "zoom": 1.0
+        "zoom": 1
       },
       "image_width": 460,
       "image_height": 470,
