@@ -487,7 +487,7 @@
         "focus": 0.55,
         "focus_y": 0.5
       },
-      "band_height": 300,
+      "band_height": 360,
       "focus_y": 0.5,
       "legend": [
         {
@@ -506,7 +506,6 @@
           "desc": "사용을 멈추면 일주일 안에 원래대로 돌아왔습니다."
         }
       ],
-      "takeaway": "자외선 차단은 산 루틴의 마지막 단계가 아니라, 같은 루틴의 일부입니다.",
       "source": "FDA, Alpha Hydroxy Acids · Kornhauser et al. 2010 · 식약처 별표 1"
     },
     {
