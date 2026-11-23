@@ -1,4 +1,11 @@
 {
+  "assets/aekyung_logo.png": {
+    "sha1": "b5b83686815f74092f74c0e29d40b4bc4a70f14e",
+    "source": "downloads/brand-src/aekyung_logo.png",
+    "w": 91,
+    "h": 24,
+    "bytes": 1077
+  },
   "assets/aesop_serum_cutout.png": {
     "sha1": "1b31b2f378a82b93e0817693679e9f6ff70fa50c",
     "source": "downloads/beauty-point-07-v3-src/aesop_serum_cutout.png",
@@ -104,13 +111,6 @@
     "h": 1536,
     "bytes": 97706
   },
-  "assets/boj_logo-0c086b.png": {
-    "sha1": "0c086be2b7ebe6786f5f879711cf8959da22ed37",
-    "source": "downloads/brand-src/boj_logo.png",
-    "w": 2501,
-    "h": 236,
-    "bytes": 40707
-  },
   "assets/boj_logo.png": {
     "sha1": "c0cfb8f6a37b3d1adfa3b5e56bc69a4920c74cf5",
     "source": "downloads/beauty-point-logos/boj_logo.png",
@@ -187,13 +187,6 @@
     "w": 451,
     "h": 477,
     "bytes": 181543
-  },
-  "assets/cg_hongdae_store.jpg": {
-    "sha1": "610a6ac04822b25982cdf7744b626ea6fd64002b",
-    "source": "downloads/carousel-src/cg_hongdae_store.jpg",
-    "w": 1536,
-    "h": 1152,
-    "bytes": 264043
   },
   "assets/clio_logo.png": {
     "sha1": "93f0234c58f93cd5ca41d12d775eddd7b87f5584",
@@ -447,13 +440,6 @@
     "h": 116,
     "bytes": 8682
   },
-  "assets/innisfree_logo.png": {
-    "sha1": "4b9a8e768787469cf2f2f70e1060ce26182e763f",
-    "source": "downloads/brand-src/innisfree_logo.png",
-    "w": 600,
-    "h": 78,
-    "bytes": 10260
-  },
   "assets/kda_chains.png": {
     "sha1": "663ba389d2c4a86781379337139ac2d6e925d8cf",
     "source": "downloads/beauty-point-02-v5-assets/kda_chains.png",
@@ -558,13 +544,6 @@
     "w": 564,
     "h": 158,
     "bytes": 4557
-  },
-  "assets/monclos_logo.png": {
-    "sha1": "c0022c2f9dce7d411d47fc3a5163a501391e7fc7",
-    "source": "downloads/brand-src/monclos_logo.png",
-    "w": 1169,
-    "h": 169,
-    "bytes": 7692
   },
   "assets/oliveyoung_logo.png": {
     "sha1": "8bd21375926c25e4613a24355a88325a0a86a96b",
