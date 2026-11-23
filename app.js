@@ -2669,7 +2669,10 @@ function pickCover() {
   for (var j = 0; j < hl.length; j++) {
     drawText(hl[j], P_MX, headTop + j * headLh + headSize * 0.82, headSize, 'extrabold', WHITE, 'ls');
   }
-  tracked(c.lead || '', P_MX + 30, leadTop + 26, 26, 'bold', 'rgba(255,255,255,0.91)', 1.6);
+  // 리드는 한 줄 고정 — 길어지면 글자 크기만 줄여 890px 안에 맞춘다.
+  var leadSize = 26;
+  while (leadSize > 17 && trackedW(c.lead || '', leadSize, 'bold', 1.6) > 890) leadSize -= 1;
+  tracked(c.lead || '', P_MX + 30, leadTop + 26, leadSize, 'bold', 'rgba(255,255,255,0.91)', 1.6);
   pHLine(P_MX + 3, bodyTop - 2, P_MX + 3, tagsY - 50, 'rgba(255,255,255,0.27)', 2);
   for (var k = 0; k < bodyLines.length; k++) {
     drawText(bodyLines[k], P_MX + 30, bodyTop + k * bodyLh + 30, 25, 'regular', 'rgba(255,255,255,0.85)', 'ls');
@@ -3213,7 +3216,10 @@ function pickClosing(s, page, total) {
   y = pPara(s.body, P_MX, y, 24, 39, 906, 'rgba(255,255,255,0.82)');
   if (s.cta) {
     _ctx.fillStyle = pKey(); _ctx.fillRect(P_MX, y + 34, 4, 26);
-    drawText(s.cta, P_MX + 22, y + 58, 22, 'bold', 'rgba(255,255,255,0.93)', 'ls');
+    // 유도 문구는 한 줄이다. 길어지면 글자만 줄여 오른쪽 여백 안에 넣는다.
+    var ctaSize = 22;
+    while (ctaSize > 15 && measure(s.cta, ctaSize, 'bold') > P_CW - 30) ctaSize -= 1;
+    drawText(s.cta, P_MX + 22, y + 58, ctaSize, 'bold', 'rgba(255,255,255,0.93)', 'ls');
     y += 82;
   }
   var sy = Math.max(y + 26, 896);
