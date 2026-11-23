@@ -545,6 +545,13 @@
     "h": 158,
     "bytes": 4557
   },
+  "assets/motie-incheon-newport.jpg": {
+    "sha1": "e3b49a314b8efdc8db5b37549d08f88e72fa9d7f",
+    "source": "downloads/brief-01-src/motie-incheon-newport.jpg",
+    "w": 4812,
+    "h": 3447,
+    "bytes": 249538
+  },
   "assets/oliveyoung_logo.png": {
     "sha1": "8bd21375926c25e4613a24355a88325a0a86a96b",
     "source": "downloads/brand-src/oliveyoung_logo.png",
