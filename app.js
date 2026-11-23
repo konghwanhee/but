@@ -2598,10 +2598,17 @@ function pTags(tags, y, dark) {
 }
 
 function pCallout(text, x, y, fill, size, tilt, padX, padY, shadow) {
-  // 사진·종이 위에 살짝 기울여 붙인 스티커형 네모 박스
+  // 사진·종이 위에 살짝 기울여 붙인 스티커형 네모 박스.
+  // 위치·크기·기울기는 편집 화면에서 글자로 들어올 수 있으므로 숫자로 맞춰 읽는다.
   padX = padX === undefined ? 30 : padX;
   padY = padY === undefined ? 19 : padY;
+  x = Number(x) || 0; y = Number(y) || 0;
+  size = Number(size) || 32;
+  tilt = Number(tilt) || 0;
+  text = text === undefined || text === null ? '' : String(text);
   var tw = measure(text, size, 'bold');
+  // 문구가 길어져 캔버스 밖으로 넘치면 글자 크기를 줄여 오른쪽 여백 안에 넣는다.
+  while (size > 15 && x + tw + padX * 2 > W - 24) { size -= 1; tw = measure(text, size, 'bold'); }
   var bw = tw + padX * 2, bh = size + padY * 2;
   _ctx.save();
   _ctx.translate(x + bw / 2, y + bh / 2);
@@ -2819,7 +2826,9 @@ function pickTable(s, page, total) {
   pHead(page, s.label, false);
   var y = pHeadText(s.headline, 258, 72, P_INK);
   var top = Math.max(y + 40, 480);
-  var widths = s.widths || [];
+  var widths = s.widths || [36, 30, 22, 12];
+  if (widths.length !== 4) widths = [36, 30, 22, 12];
+  widths = widths.map(function (w2) { return Number(w2) || 0; });
   var xs = [P_MX];
   for (var i = 0; i < widths.length - 1; i++) xs.push(xs[xs.length - 1] + P_CW * widths[i] / 100);
   pHLine(P_MX, top, P_RIGHT, top, pA(P_INK, 0.75), 2);
@@ -2878,37 +2887,45 @@ function pProductShape(x, y, w, h, fill) {
   _ctx.fillStyle = pMix(fill, P_INK, 0.28);
   _ctx.fillRect(x + (w - cw) / 2, y - chh, cw, chh + 2);
 }
-function pBrandWall(x, y, w, h) {
-  var names = ['브랜드 A', '브랜드 B', '브랜드 C'];
+function pBrandWall(x, y, w, h, names) {
+  // 이름표는 panel.names 로 고칠 수 있다. 비어 있으면 기본 브랜드 A~C.
+  names = (names && names.length) ? names : ['브랜드 A', '브랜드 B', '브랜드 C'];
   var tones = [['#F5D2E2', '#EBB6CD', '#FBE3EE'],
                ['#E2D8F1', '#CDBCE6', '#EFE8F8'],
                ['#DDEBDE', '#C1D9C4', '#EBF4EC']];
-  var gap = 12, cw = (w - gap * 2) / 3;
-  for (var i = 0; i < 3; i++) {
-    var cx = x + i * (cw + gap);
+  var n = names.length, gap = 12, cw = (w - gap * (n - 1)) / n;
+  for (var i = 0; i < n; i++) {
+    var cx = x + i * (cw + gap), tone = tones[i % tones.length];
     pRound(cx, y, cw, h, 6); _ctx.fillStyle = '#FBF8F5'; _ctx.fill();
     _ctx.strokeStyle = pA(P_INK, 0.16); _ctx.lineWidth = 1; _ctx.stroke();
-    drawText(names[i], cx + cw / 2, y + 26, 15, 'bold', pA(P_INK, 0.62), 'mm');
+    var nm = String(names[i] === undefined || names[i] === null ? '' : names[i]);
+    var fs = 15;
+    while (fs > 9 && measure(nm, fs, 'bold') > cw - 12) fs -= 1;
+    drawText(nm, cx + cw / 2, y + 26, fs, 'bold', pA(P_INK, 0.62), 'mm');
     var sh = (h - 58) / 4, top = y + 44;
     for (var k = 0; k < 4; k++) {
       var baseY = top + (k + 1) * sh - 10;
       pHLine(cx + 8, baseY, cx + cw - 8, baseY, pA(P_INK, 0.16), 1);
       for (var j = 0; j < 3; j++) {
         var pw = (cw - 36) / 3, ph = 30 + (k + j) % 3 * 7;
-        pProductShape(cx + 12 + j * (pw + 6), baseY - ph, pw, ph, tones[i][j % 3]);
+        pProductShape(cx + 12 + j * (pw + 6), baseY - ph, pw, ph, tone[j % 3]);
       }
     }
   }
 }
-function pTypeWall(x, y, w, h) {
-  var labels = ['베이스·쿠션', '립', '아이', '블러셔'];
+function pTypeWall(x, y, w, h, labels) {
+  // 종류 이름표는 panel.labels 로 고칠 수 있다. 비어 있으면 기본 네 가지.
+  labels = (labels && labels.length) ? labels : ['베이스·쿠션', '립', '아이', '블러셔'];
   var palette = ['#F5D2E2', '#E2D8F1', '#DDEBDE', '#FBEFD2', '#D8E5F2', '#F6E2D6'];
-  var gap = 10, rh = (h - gap * 3) / 4;
-  for (var i = 0; i < 4; i++) {
+  var n = labels.length, gap = 10, rh = (h - gap * (n - 1)) / n;
+  for (var i = 0; i < n; i++) {
     var ry = y + i * (rh + gap);
     pRound(x, ry, w, rh, 6); _ctx.fillStyle = '#FBF8F5'; _ctx.fill();
     _ctx.strokeStyle = pA(P_INK, 0.16); _ctx.lineWidth = 1; _ctx.stroke();
-    drawText(labels[i], x + 14, ry + rh / 2 + 1, 15, 'bold', pA(P_INK, 0.66), 'lm');
+    var lab = String(labels[i] === undefined || labels[i] === null ? '' : labels[i]);
+    var fs = 15;
+    while (fs > 9 && measure(lab, fs, 'bold') > 126) fs -= 1;
+    drawText(lab, x + 14, ry + rh / 2 + 1, fs, 'bold', pA(P_INK, 0.66), 'lm');
     var px0 = x + 148, pw = (w - 166) / 5, baseY = ry + rh - 14;
     for (var j = 0; j < 5; j++) {
       var ph = 30 + (i + j) % 3 * 8;
@@ -2922,7 +2939,8 @@ function pComparePanel(panel, x, y, w, h) {
   drawText(panel.title, x + 26, y + 44, 28, 'extrabold', P_INK, 'ls');
   tracked(panel.sub || '', x + 26, y + 72, 15, 'medium', pA(P_INK, 0.45), 4);
   var ax = x + 26, ay = y + 96, aw = w - 52, ah = h - 96 - 62;
-  if (panel.type === 'brand') pBrandWall(ax, ay, aw, ah); else pTypeWall(ax, ay, aw, ah);
+  if (panel.type === 'brand') pBrandWall(ax, ay, aw, ah, panel.names);
+  else pTypeWall(ax, ay, aw, ah, panel.labels);
   drawText(panel.caption || '', x + 26, y + h - 20, 18, 'regular', pA(P_INK, 0.6), 'ls');
 }
 function pickHow(s, page, total) {
@@ -2990,12 +3008,16 @@ function pickFloor(s, page, total) {
     drawText(lead[i], P_MX + 28, ansTop + i * lh + 27 * 0.8, 27, 'bold', P_INK, 'ls');
   }
   var top = ansTop + 84;
+  // 표는 3열 고정(층 · 무엇이 있나 · 대표 체험·공간). 폭 배열이나 열 이름이 어긋나도 기본값으로 그린다.
   var widths = s.widths || [11, 34, 55];
+  if (widths.length !== 3) widths = [11, 34, 55];
+  widths = widths.map(function (w2) { return Number(w2) || 0; });
   var xs = [P_MX], colW = [];
   for (var q = 0; q < widths.length; q++) colW.push(P_CW * widths[q] / 100);
   for (var k = 0; k < widths.length - 1; k++) xs.push(xs[xs.length - 1] + colW[k]);
   pHLine(P_MX, top, P_RIGHT, top, pA(P_INK, 0.75), 2);
   (s.columns || []).forEach(function (col, j) {
+    if (xs[j] === undefined) return;
     tracked(col, xs[j], top + 34, 17, 'medium', pA(P_INK, 0.55), 3);
   });
   var rowTop = top + 58;
@@ -3078,16 +3100,25 @@ function pickAge(s, page, total) {
     var ty = y2 + 48;
     pHLine(P_MX, ty, P_RIGHT, ty, pA(P_INK, 0.22), 1);
     tracked(mini.head || '', P_MX, ty + 32, 16, 'medium', pA(P_INK, 0.55), 2);
-    var colx = [P_MX, P_MX + 380, P_MX + 640];
-    (mini.cols || []).forEach(function (c, i) {
+    var colx = [];
+    var mcols = mini.cols || [];
+    // 첫 열은 항목 이름, 나머지는 오른쪽으로 펼친다(3열일 때는 기존 자리 그대로).
+    for (var ci = 0; ci < mcols.length; ci++) {
+      colx.push(ci === 0 ? P_MX : ci === 1 ? P_MX + 380 : P_MX + 640 + (ci - 2) * 140);
+    }
+    mcols.forEach(function (c, i) {
+      if (colx[i] === undefined) return;
       tracked(c, colx[i], ty + 66, 16, 'medium', pA(P_INK, 0.5), 2);
     });
     var ry = ty + 84;
     (mini.rows || []).forEach(function (row) {
       pHLine(P_MX, ry, P_RIGHT, ry, pA(P_INK, 0.14), 1);
-      drawText(row[0], P_MX, ry + 34, 19, 'regular', pA(P_INK, 0.66), 'ls');
-      drawText(row[1], colx[1], ry + 35, 21, 'bold', P_INK, 'ls');
-      drawText(row[2], colx[2], ry + 35, 21, 'bold', P_INK, 'ls');
+      for (var cj = 0; cj < mcols.length; cj++) {
+        var cell = row[cj] === undefined || row[cj] === null ? '' : String(row[cj]);
+        if (!cell || colx[cj] === undefined) continue;
+        if (cj === 0) drawText(cell, colx[cj], ry + 34, 19, 'regular', pA(P_INK, 0.66), 'ls');
+        else drawText(cell, colx[cj], ry + 35, 21, 'bold', P_INK, 'ls');
+      }
       ry += 58;
     });
     pHLine(P_MX, ry, P_RIGHT, ry, pA(P_INK, 0.14), 1);
@@ -3129,6 +3160,8 @@ function pickCheck(s, page, total) {
     drawText(pad2(idx + 1), P_MX, cy + 48, 20, 'extrabold', pMix(P_INK, pKey(), 0.6), 'ls');
     drawText(item.title, P_MX + 56, cy + 50, 29, 'extrabold', P_INK, 'ls');
     var yy = cy + 94, route = item.route, lines;
+    // 동선 줄은 출발지·도착지·운영 시간 중 하나라도 적혀 있을 때만 그린다.
+    if (route && !(route.from || route.to || route.hours || route.walk)) route = null;
     if (route) {
       pPinIcon(P_MX + 74, yy + 8, 30, pKey());
       drawText(route.from, P_MX + 96, yy + 20, 24, 'bold', P_INK, 'ls');
@@ -3184,7 +3217,7 @@ function pickClosing(s, page, total) {
     y += 82;
   }
   var sy = Math.max(y + 26, 896);
-  tracked('SOURCES', P_MX, sy, 14, 'medium', 'rgba(255,255,255,0.43)', 4);
+  tracked(s.sources_label || 'SOURCES', P_MX, sy, 14, 'medium', 'rgba(255,255,255,0.43)', 4);
   pHLine(P_MX, sy + 11, P_MX + 38, sy + 11, 'rgba(255,255,255,0.31)', 1);
   var yy = sy + 26;
   (s.sources || []).forEach(function (src) {
@@ -4172,7 +4205,7 @@ function autoGrow(t) {
   t.style.height = 'auto';
   t.style.height = Math.max(t.classList.contains('tall') ? 64 : t.classList.contains('mid') ? 48 : 34, t.scrollHeight) + 'px';
 }
-function textField(path, label, rows, hint) {
+function textField(path, label, rows, hint, rebuild) {
   var wrap = el('div', 'fld');
   var lb = el('label');
   lb.appendChild(document.createTextNode(label));
@@ -4183,7 +4216,11 @@ function textField(path, label, rows, hint) {
   if (rows === 2) ta.className = 'mid'; if (rows >= 3) ta.className = 'tall';
   var v = getPath(path);
   ta.value = v === undefined || v === null ? '' : String(v);
-  ta.addEventListener('input', function () { setPath(path, ta.value); autoGrow(ta); commit(); });
+  ta.addEventListener('input', function () {
+    setPath(path, ta.value); autoGrow(ta); commit();
+    // 값에 따라 아래 칸 구성이 바뀌는 입력(예: 도해 종류)만 폼을 다시 그린다.
+    if (rebuild) buildPanel();
+  });
   wrap.appendChild(ta);
   setTimeout(function () { autoGrow(ta); }, 0);
   return wrap;
@@ -4350,9 +4387,17 @@ function nodePath(nd, basePath, sub) {
   if (nd.abs) return (nd.path || []).concat(sub || []);
   return basePath.concat(nd.path || [], sub || []);
 }
+function seedIfEmpty(nd, basePath) {
+  var p = nodePath(nd, basePath), cur = getPath(p);
+  var empty = cur === undefined || cur === null || cur === '' || (Array.isArray(cur) && !cur.length);
+  if (empty) setPath(p, clone(nd.seed));
+}
 function renderNodes(nodes, basePath, container) {
   nodes.forEach(function (nd) {
-    if (nd.t === 'text') container.appendChild(textField(nodePath(nd, basePath), nd.label, nd.rows, nd.hint));
+    // 기본값 폴백으로만 그려지던 칸(예: 도해 이름표)은 폼을 열 때 기본값을 데이터에 심어
+    // 화면과 편집칸이 같은 값을 보게 한다.
+    if (nd.seed !== undefined) seedIfEmpty(nd, basePath);
+    if (nd.t === 'text') container.appendChild(textField(nodePath(nd, basePath), nd.label, nd.rows, nd.hint, nd.rebuild));
     else if (nd.t === 'lines') container.appendChild(headlineField(nodePath(nd, basePath), nd.label));
     else if (nd.t === 'strarr') container.appendChild(strArrField(nodePath(nd, basePath), nd.label, nd.hint));
     else if (nd.t === 'note') container.appendChild(el('p', 'subnote', nd.text || ''));
@@ -4368,7 +4413,9 @@ function renderNodes(nodes, basePath, container) {
       if (nd.hint) container.appendChild(el('p', 'subnote', nd.hint));
       arr.forEach(function (item, i) {
         var box2 = itemBox(nd.titleFn ? nd.titleFn(item || {}, i) : (i + 1) + '번', nd.kicker);
-        renderNodes(nd.nodes || [], arrPath.concat([i]), box2);
+        // nodes 를 함수로 주면 항목(매대 종류 등)마다 다른 칸을 보여줄 수 있다.
+        var subNodes = typeof nd.nodes === 'function' ? nd.nodes(item || {}, i) : (nd.nodes || []);
+        renderNodes(subNodes, arrPath.concat([i]), box2);
         container.appendChild(box2);
       });
       if (nd.addable) {
@@ -4396,7 +4443,10 @@ function coverSpec() {
       { t: 'lines', path: ['headline'], label: '표지 헤드라인' },
       { t: 'text', path: ['lead'], label: '리드 (굵은 한 줄)', rows: 1 },
       { t: 'text', path: ['body'], label: '본문', rows: 3 },
-      { t: 'strarr', path: ['tags'], label: '태그 (네모 박스)' }
+      { t: 'strarr', path: ['tags'], label: '태그 (네모 박스)' },
+      { t: 'text', path: ['page'], label: '좌상단 쪽 번호', rows: 1, seed: '01' },
+      { t: 'text', path: ['label'], label: '좌상단 라벨', rows: 1, seed: 'PICK' },
+      { t: 'text', path: ['photo_source'], label: '사진 출처 크레딧', rows: 1 }
     ]));
     return g;
   }
@@ -4520,11 +4570,83 @@ function slideSpec(s, i) {
     } else if (kind === 'checks') {
       push({ t: 'arr', path: ['items'], kicker: '항목', titleFn: function (it, k) { return pad2(k + 1) + ' · ' + (it.title || ''); }, nodes: [{ t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'text', path: ['body'], label: '본문', rows: 3 }] });
     } else if (kind === 'notes') {
-      push({ t: 'arr', path: ['callouts'], kicker: '스티커', titleFn: function (it) { return it.text || '문구'; }, nodes: [{ t: 'text', path: ['text'], label: '문구', rows: 1 }] });
+      push({ t: 'arr', path: ['callouts'], kicker: '스티커', titleFn: function (it) { return it.text || '문구'; }, nodes: [
+        { t: 'text', path: ['text'], label: '문구', rows: 2 },
+        { t: 'text', path: ['x'], label: '가로 위치 (0~1080)', rows: 1 },
+        { t: 'text', path: ['y'], label: '세로 위치 (0~1000)', rows: 1 },
+        { t: 'text', path: ['size'], label: '글자 크기', rows: 1 },
+        { t: 'text', path: ['tilt'], label: '기울기 (도)', rows: 1 },
+        { t: 'text', path: ['fill'], label: '바탕색 (#FFFFFF)', rows: 1 }
+      ] });
+    } else if (kind === 'how') {
+      push({ t: 'text', path: ['intro'], label: '도입 본문', rows: 3 });
+      push({ t: 'text', path: ['banner'], label: '오른쪽 배지 문구', rows: 1 });
+      push({ t: 'arr', path: ['panels'], kicker: '매대', titleFn: function (it) { return it.title || '매대'; }, nodes: function (panel) {
+        var common = [
+          { t: 'text', path: ['type'], label: '도해 종류 (brand / type)', rows: 1, hint: 'brand = 브랜드별 벽 · type = 종류별 선반', rebuild: true },
+          { t: 'text', path: ['title'], label: '제목', rows: 1 },
+          { t: 'text', path: ['sub'], label: '영문 라벨', rows: 1 },
+          { t: 'text', path: ['caption'], label: '하단 캡션', rows: 2 }
+        ];
+        if (panel && panel.type === 'brand') {
+          common.push({ t: 'strarr', path: ['names'], label: '브랜드 이름표', hint: '왼쪽부터 · 비우면 브랜드 A~C', seed: ['브랜드 A', '브랜드 B', '브랜드 C'] });
+        } else {
+          common.push({ t: 'strarr', path: ['labels'], label: '종류 이름표', hint: '위에서부터 · 비우면 베이스·쿠션 / 립 / 아이 / 블러셔', seed: ['베이스·쿠션', '립', '아이', '블러셔'] });
+        }
+        return common;
+      } });
+    } else if (kind === 'spot') {
+      push({ t: 'arr', path: ['callouts'], kicker: '스티커', titleFn: function (it) { return it.text || '문구'; }, nodes: [
+        { t: 'text', path: ['text'], label: '문구', rows: 2 },
+        { t: 'text', path: ['x'], label: '가로 위치 (0~1080)', rows: 1 },
+        { t: 'text', path: ['y'], label: '세로 위치 (0~1000)', rows: 1 },
+        { t: 'text', path: ['size'], label: '글자 크기', rows: 1 },
+        { t: 'text', path: ['tilt'], label: '기울기 (도)', rows: 1 },
+        { t: 'text', path: ['fill'], label: '바탕색 (#FFFFFF)', rows: 1 }
+      ] });
+      if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '사진 아래 각주', rows: 2 });
+    } else if (kind === 'floor') {
+      push({ t: 'text', path: ['answer'], label: '상단 답 줄', rows: 2 });
+      push({ t: 'strarr', path: ['columns'], label: '열 이름 (3열 고정)', seed: ['층', '무엇이 있나', '대표 체험 · 공간'] });
+      push({ t: 'arr', path: ['rows'], kicker: '층', titleFn: function (it) { return [it.floor, it.title].filter(Boolean).join(' · ') || '층'; }, nodes: [
+        { t: 'text', path: ['floor'], label: '층 (예: 1F)', rows: 1 },
+        { t: 'text', path: ['what'], label: '무엇이 있나', rows: 2 },
+        { t: 'text', path: ['title'], label: '대표 체험·공간', rows: 2 },
+        { t: 'text', path: ['desc'], label: '설명', rows: 3 },
+        { t: 'text', path: ['tag'], label: '우측 태그', rows: 1 }
+      ] });
+      if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '표 아래 각주', rows: 2 });
+    } else if (kind === 'scale') {
+      push({ t: 'arr', path: ['stats'], kicker: '수치', titleFn: function (it) { return it.value || '수치'; }, nodes: [
+        { t: 'text', path: ['value'], label: '값', rows: 1 },
+        { t: 'text', path: ['note'], label: '설명', rows: 2 }
+      ] });
+    } else if (kind === 'age') {
+      push({ t: 'arr', path: ['stats'], kicker: '큰 숫자', titleFn: function (it) { return it.value || '숫자'; }, nodes: [
+        { t: 'text', path: ['value'], label: '값', rows: 1 },
+        { t: 'text', path: ['note'], label: '보조 라벨', rows: 2 }
+      ] });
+      if (s.mini) push({ t: 'obj', path: ['mini'], title: '비교 표', nodes: [
+        { t: 'text', path: ['head'], label: '표 제목', rows: 1 },
+        { t: 'table', colsPath: ['cols'], rowsPath: ['rows'], label: '칸 고치기', hint: '칸을 누르면 바로 반영' }
+      ] });
+    } else if (kind === 'check') {
+      push({ t: 'arr', path: ['items'], kicker: '확인', titleFn: function (it, k) { return pad2(k + 1) + ' · ' + (it.title || ''); }, nodes: [
+        { t: 'text', path: ['title'], label: '제목', rows: 1 },
+        { t: 'obj', path: ['route'], title: '위치·시간 줄 (모두 비우면 사라짐)', nodes: [
+          { t: 'text', path: ['from'], label: '출발지', rows: 1 },
+          { t: 'text', path: ['walk'], label: '도보 시간', rows: 1 },
+          { t: 'text', path: ['to'], label: '도착지', rows: 1 },
+          { t: 'text', path: ['hours'], label: '운영 시간', rows: 1 }
+        ] },
+        { t: 'text', path: ['body'], label: '본문', rows: 3 }
+      ] });
     } else if (kind === 'closing') {
-      push({ t: 'text', path: ['credit'], label: '사진 크레딧', rows: 1 });
+      push({ t: 'text', path: ['cta'], label: '저장·공유 유도 문구', rows: 2 });
+      push({ t: 'text', path: ['sources_label'], label: '출처 라벨', rows: 1, hint: '기본 SOURCES', seed: 'SOURCES' });
       push({ t: 'strarr', path: ['sources'], label: '출처 목록' });
       push({ t: 'text', abs: true, path: ['disclaimer'], label: '면책 문구', rows: 3 });
+      push({ t: 'text', path: ['credit'], label: '사진 크레딧 (보관용)', rows: 1, hint: '장표에는 그리지 않음 · 사진 출처는 SOURCES에' });
     }
   } else {
     if (kind === 'table') push({ t: 'table', colsPath: ['table', 'columns'], rowsPath: ['table', 'rows'], label: '칸 고치기' });
@@ -4575,7 +4697,10 @@ function kindName(kind, fam) {
     table: '표', cards: '카드', brand_pair: '이미지 + 표', brand_wide: '이미지 + 블록', list: '번호 목록',
     reasons: '이유 목록', bars: '막대 도표', points: '포인트', band: '사진 띠', split: '사진 + 블록',
     lineup: '제품 5종', figure: '도해',
-    compare: '비교 패널', products: '제품', quad: '4칸 카드', steps: '단계', lineage: '계보', closing: '마무리', brief: '도표'
+    compare: '비교 패널', products: '제품', quad: '4칸 카드', steps: '단계', lineage: '계보', closing: '마무리', brief: '도표',
+    story: '사실 · 요약', stats: '숫자 카드', diagram: '막대 도해', checks: '항목 목록', notes: '사진 · 스티커',
+    how: '매대 비교 도해', spot: '현장 사진 · 스티커', floor: '층별 안내', scale: '수치 카드',
+    age: '큰 숫자 · 비교표', check: '확인 항목'
   };
   return names[kind] || '내용';
 }
@@ -4589,7 +4714,8 @@ function captionGroups(page) {
     { t: 'text', abs: true, path: ['caption'], label: '인스타 캡션', rows: 6, hint: isBrief() ? CAP_HINT_BRIEF : CAP_HINT_DEFAULT }
   ])];
   if (state.family === 'pick') {
-    g.unshift(group('뷰티 픽 하단 날짜', [
+    g.unshift(group('뷰티 픽 하단 푸터', [
+      { t: 'text', abs: true, path: ['series'], label: '시리즈 문구', rows: 1, hint: '하단 BEAUTY PICK 자리' },
       { t: 'text', abs: true, path: ['date'], label: '날짜 (YYYY.MM.DD)', rows: 1, hint: '결재 시 결재일로 자동 변경' }
     ]));
   }
