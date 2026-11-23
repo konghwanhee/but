@@ -2577,15 +2577,31 @@ function pPara(text, x, top, size, lineH, maxW, color) {
   return top + lineH * lines.length;
 }
 function pTags(tags, y, dark) {
+  // 둥근 알약 대신 얇은 테두리의 네모 라벨 박스(영한 매거진 톤) — 파이썬 렌더러와 동일 규격
   var x = P_MX;
   (tags || []).forEach(function (t) {
-    var s = String(t).toUpperCase(), tw = trackedW(s, 18, 'medium', 2.4);
-    pRound(x, y, tw + 44, 46, 23);
-    _ctx.strokeStyle = dark ? 'rgba(255,255,255,0.59)' : pA(P_INK, 0.32);
-    _ctx.lineWidth = 1; _ctx.stroke();
-    tracked(s, x + 22, y + 30, 18, 'medium', dark ? WHITE : pA(P_INK, 0.82), 2.4);
-    x += tw + 54;
+    var s = String(t).toUpperCase(), tw = trackedW(s, 17, 'bold', 2.2);
+    _ctx.strokeStyle = dark ? 'rgba(255,255,255,0.65)' : pA(P_INK, 0.38);
+    _ctx.lineWidth = 1;
+    _ctx.strokeRect(x + 0.5, y + 0.5, tw + 33, 39);
+    tracked(s, x + 17, y + 27, 17, 'bold', dark ? WHITE : pA(P_INK, 0.82), 2.2);
+    x += tw + 34 + 8;
   });
+}
+
+function pCallout(text, x, y, fill, size, tilt) {
+  // 사진·종이 위에 살짝 기울여 붙인 스티커형 네모 박스
+  var tw = measure(text, size, 'bold');
+  var bw = tw + 44, bh = size + 30;
+  _ctx.save();
+  _ctx.translate(x + bw / 2, y + bh / 2);
+  _ctx.rotate((tilt || 0) * Math.PI / 180);
+  _ctx.fillStyle = fill || '#FFFFFF';
+  _ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
+  _ctx.strokeStyle = P_INK; _ctx.lineWidth = 2;
+  _ctx.strokeRect(-bw / 2 + 1, -bh / 2 + 1, bw - 2, bh - 2);
+  drawText(text, 0, 1, size, 'bold', P_INK, 'mm');
+  _ctx.restore();
 }
 function pTakeaway(text, top, dark, width) {
   if (!text) return top;
@@ -2646,8 +2662,29 @@ function pickSlide(s, idx, total) {
   if (kind === 'diagram') return pickDiagram(s, page, total);
   if (kind === 'table') return pickTable(s, page, total);
   if (kind === 'checks') return pickChecks(s, page, total);
+  if (kind === 'notes') return pickNotes(s, page, total);
   if (kind === 'closing') return pickClosing(s, page, total);
   return pickStory(s, page, total);
+}
+
+function pickNotes(s, page, total) {
+  pHead(page, s.label, false);
+  pHeadText(s.headline || [], 250, 72, P_INK);
+  var phTop = s.photo_top === undefined ? 470 : s.photo_top;
+  var phH = s.photo_h === undefined ? 520 : s.photo_h;
+  if (s.image) {
+    pImgFilter('contrast(1.04) saturate(0.94)', function () {
+      drawCoverCrop(s.image, P_MX, phTop, P_CW, phH, 0.5, s.focus_y === undefined ? 0.5 : s.focus_y, 1);
+    });
+  }
+  _ctx.strokeStyle = pA(P_INK, 0.18); _ctx.lineWidth = 2;
+  _ctx.strokeRect(P_MX, phTop, P_CW, phH);
+  (s.callouts || []).forEach(function (c) {
+    pCallout(c.text, c.x, c.y, c.fill || '#FFFFFF', c.size || 21, c.tilt === undefined ? -1.6 : c.tilt);
+  });
+  if (s.takeaway) pTakeaway(s.takeaway, phTop + phH + 32, false);
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 6, false);
 }
 
 function pickStory(s, page, total) {
@@ -2950,7 +2987,7 @@ function familyOf(d) {
   var tech = ['points', 'band', 'split', 'compare', 'quad', 'products', 'steps', 'lineage', 'closing'];
   var kinds = ((d && d.slides) || []).map(function (s) { return s.kind; });
   for (var i = 0; i < kinds.length; i++) {
-    if (kinds[i] === 'story' || kinds[i] === 'stats' || kinds[i] === 'diagram' || kinds[i] === 'checks') return 'pick';
+    if (kinds[i] === 'story' || kinds[i] === 'stats' || kinds[i] === 'diagram' || kinds[i] === 'checks' || kinds[i] === 'notes') return 'pick';
     if (tech.indexOf(kinds[i]) >= 0) return 'tech';
   }
   return 'point';
@@ -4048,7 +4085,7 @@ function coverSpec() {
       { t: 'lines', path: ['headline'], label: '표지 헤드라인' },
       { t: 'text', path: ['lead'], label: '리드 (굵은 한 줄)', rows: 1 },
       { t: 'text', path: ['body'], label: '본문', rows: 3 },
-      { t: 'strarr', path: ['tags'], label: '알약 태그' }
+      { t: 'strarr', path: ['tags'], label: '태그 (네모 박스)' }
     ]));
     return g;
   }
@@ -4171,6 +4208,8 @@ function slideSpec(s, i) {
       if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '표 아래 노트', rows: 2 });
     } else if (kind === 'checks') {
       push({ t: 'arr', path: ['items'], kicker: '항목', titleFn: function (it, k) { return pad2(k + 1) + ' · ' + (it.title || ''); }, nodes: [{ t: 'text', path: ['title'], label: '제목', rows: 1 }, { t: 'text', path: ['body'], label: '본문', rows: 3 }] });
+    } else if (kind === 'notes') {
+      push({ t: 'arr', path: ['callouts'], kicker: '스티커', titleFn: function (it) { return it.text || '문구'; }, nodes: [{ t: 'text', path: ['text'], label: '문구', rows: 1 }] });
     } else if (kind === 'closing') {
       push({ t: 'text', path: ['credit'], label: '사진 크레딧', rows: 1 });
       push({ t: 'strarr', path: ['sources'], label: '출처 목록' });
