@@ -2672,6 +2672,12 @@ function pickSlide(s, idx, total) {
   if (kind === 'table') return pickTable(s, page, total);
   if (kind === 'checks') return pickChecks(s, page, total);
   if (kind === 'notes') return pickNotes(s, page, total);
+  if (kind === 'how') return pickHow(s, page, total);
+  if (kind === 'spot') return pickSpot(s, page, total);
+  if (kind === 'floor') return pickFloor(s, page, total);
+  if (kind === 'scale') return pickScale(s, page, total);
+  if (kind === 'age') return pickAge(s, page, total);
+  if (kind === 'check') return pickCheck(s, page, total);
   if (kind === 'closing') return pickClosing(s, page, total);
   return pickStory(s, page, total);
 }
@@ -2854,22 +2860,304 @@ function pickChecks(s, page, total) {
   pDots(total, Number(page) || 6, false);
 }
 
-function pickClosing(s, page, total) {
-  var bg = s.bg_image;
-  if (bg) {
-    pImgFilter('grayscale(1) brightness(0.52) contrast(1.15)', function () {
-      drawCoverCrop(bg, 0, 0, W, H, 0.5, 0.42, 1);
+/* ---- 뷰티 픽: 매대 비교 도해(02 HOW) ---- */
+function pProductShape(x, y, w, h, fill) {
+  pRound(x, y, w, h, Math.max(2, Math.round(w * 0.16)));
+  _ctx.fillStyle = fill; _ctx.fill();
+  _ctx.strokeStyle = pA(P_INK, 0.20); _ctx.lineWidth = 1; _ctx.stroke();
+  var cw = Math.max(4, w * 0.42), chh = Math.max(3, h * 0.14);
+  _ctx.fillStyle = pMix(fill, P_INK, 0.28);
+  _ctx.fillRect(x + (w - cw) / 2, y - chh, cw, chh + 2);
+}
+function pBrandWall(x, y, w, h) {
+  var names = ['브랜드 A', '브랜드 B', '브랜드 C'];
+  var tones = [['#F5D2E2', '#EBB6CD', '#FBE3EE'],
+               ['#E2D8F1', '#CDBCE6', '#EFE8F8'],
+               ['#DDEBDE', '#C1D9C4', '#EBF4EC']];
+  var gap = 12, cw = (w - gap * 2) / 3;
+  for (var i = 0; i < 3; i++) {
+    var cx = x + i * (cw + gap);
+    pRound(cx, y, cw, h, 6); _ctx.fillStyle = '#FBF8F5'; _ctx.fill();
+    _ctx.strokeStyle = pA(P_INK, 0.16); _ctx.lineWidth = 1; _ctx.stroke();
+    drawText(names[i], cx + cw / 2, y + 26, 15, 'bold', pA(P_INK, 0.62), 'mm');
+    var sh = (h - 58) / 4, top = y + 44;
+    for (var k = 0; k < 4; k++) {
+      var baseY = top + (k + 1) * sh - 10;
+      pHLine(cx + 8, baseY, cx + cw - 8, baseY, pA(P_INK, 0.16), 1);
+      for (var j = 0; j < 3; j++) {
+        var pw = (cw - 36) / 3, ph = 30 + (k + j) % 3 * 7;
+        pProductShape(cx + 12 + j * (pw + 6), baseY - ph, pw, ph, tones[i][j % 3]);
+      }
+    }
+  }
+}
+function pTypeWall(x, y, w, h) {
+  var labels = ['베이스·쿠션', '립', '아이', '블러셔'];
+  var palette = ['#F5D2E2', '#E2D8F1', '#DDEBDE', '#FBEFD2', '#D8E5F2', '#F6E2D6'];
+  var gap = 10, rh = (h - gap * 3) / 4;
+  for (var i = 0; i < 4; i++) {
+    var ry = y + i * (rh + gap);
+    pRound(x, ry, w, rh, 6); _ctx.fillStyle = '#FBF8F5'; _ctx.fill();
+    _ctx.strokeStyle = pA(P_INK, 0.16); _ctx.lineWidth = 1; _ctx.stroke();
+    drawText(labels[i], x + 14, ry + rh / 2 + 1, 15, 'bold', pA(P_INK, 0.66), 'lm');
+    var px0 = x + 148, pw = (w - 166) / 5, baseY = ry + rh - 14;
+    for (var j = 0; j < 5; j++) {
+      var ph = 30 + (i + j) % 3 * 8;
+      pProductShape(px0 + j * (pw + 4), baseY - ph, pw - 4, ph, palette[(i * 2 + j) % 6]);
+    }
+  }
+}
+function pComparePanel(panel, x, y, w, h) {
+  pRound(x, y, w, h, 8); _ctx.fillStyle = WHITE; _ctx.fill();
+  _ctx.strokeStyle = pA(P_INK, 0.13); _ctx.lineWidth = 1; _ctx.stroke();
+  drawText(panel.title, x + 26, y + 44, 28, 'extrabold', P_INK, 'ls');
+  tracked(panel.sub || '', x + 26, y + 72, 15, 'medium', pA(P_INK, 0.45), 4);
+  var ax = x + 26, ay = y + 96, aw = w - 52, ah = h - 96 - 62;
+  if (panel.type === 'brand') pBrandWall(ax, ay, aw, ah); else pTypeWall(ax, ay, aw, ah);
+  drawText(panel.caption || '', x + 26, y + h - 20, 18, 'regular', pA(P_INK, 0.6), 'ls');
+}
+function pickHow(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 258, 72, P_INK);
+  var top = Math.max(y + 26, 438);
+  var lines = wrapText(s.intro || '', 24, 'regular', 900);
+  for (var i = 0; i < lines.length; i++) {
+    drawText(lines[i], P_MX, top + i * 38 + 38 * 0.72, 24, 'regular', pA(P_INK, 0.82), 'ls');
+  }
+  var introBottom = top + lines.length * 38;
+  if (s.banner) {
+    var bw = trackedW(s.banner, 18, 'medium', 3);
+    _ctx.fillStyle = pMix(P_INK, pKey(), 0.85);
+    _ctx.fillRect(P_RIGHT - bw - 48, 300, bw + 48, 46);
+    tracked(s.banner, P_RIGHT - bw - 24, 329, 18, 'medium', WHITE, 3);
+  }
+  var panelsTop = Math.max(introBottom + 40, 520), panelH = 468, gap = 40;
+  var pw = (P_CW - gap) / 2;
+  (s.panels || []).forEach(function (panel, idx) {
+    pComparePanel(panel, P_MX + idx * (pw + gap), panelsTop, pw, panelH);
+  });
+  pTakeaway(s.takeaway, panelsTop + panelH + 52, false);
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 2, false);
+}
+
+/* ---- 뷰티 픽: 현장 사진 + 스티커(03 SPOT) ---- */
+function pickSpot(s, page, total) {
+  var photoH = 1000;
+  _ctx.fillStyle = pPaper(); _ctx.fillRect(0, 0, W, H);
+  if (s.image) {
+    pImgFilter('contrast(1.04) saturate(1.0) brightness(1.01)', function () {
+      drawCoverCrop(s.image, 0, 0, W, photoH,
+        s.focus_x === undefined ? 0.5 : s.focus_x,
+        s.focus_y === undefined ? 0.5 : s.focus_y, 1);
     });
-    _ctx.save();
-    try { _ctx.globalCompositeOperation = 'color'; } catch (e) { }
-    _ctx.globalAlpha = 0.55;
-    _ctx.fillStyle = 'rgb(120,150,195)';
-    _ctx.fillRect(0, 0, W, H);
-    _ctx.restore();
-    _ctx.fillStyle = 'rgba(0,42,126,0.32)'; _ctx.fillRect(0, 0, W, H);
-    pStops(0, 0, W, H, [8, 10, 14], [[0, 80], [300, 55], [700, 95], [1000, 195], [H, 225]]);
+  }
+  pStops(0, 0, W, photoH, [8, 10, 14], [[0, 220], [300, 198], [540, 0], [photoH, 0]]);
+  pHead(page, s.label, true);
+  _ctx.save();
+  _ctx.shadowColor = 'rgba(10,4,10,0.62)';
+  _ctx.shadowBlur = 22;
+  _ctx.shadowOffsetY = 2;
+  pHeadText(s.headline || [], 246, 72, WHITE);
+  _ctx.restore();
+  (s.callouts || []).forEach(function (c) {
+    pCallout(c.text, c.x, c.y, c.fill || '#FFFFFF', c.size || 32,
+      c.tilt === undefined ? -1.6 : c.tilt, 30, 19, 8);
+  });
+  pTakeaway(s.takeaway, photoH + 54, false, undefined, 27);
+  if (s.note) drawText(s.note, P_MX, photoH + 132, 18, 'regular', pA(P_INK, 0.5), 'ls');
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 3, false);
+}
+
+/* ---- 뷰티 픽: 층별 안내(04 FLOOR) ---- */
+function pickFloor(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 258, 72, P_INK);
+  var ansTop = Math.max(y + 27, 452);
+  var lead = wrapText(s.answer || '', 27, 'bold', 872), lh = Math.round(27 * 1.38);
+  pHLine(P_MX + 2, ansTop + 4, P_MX + 2, ansTop + lh * lead.length - 6, pA(P_INK, 0.22), 2);
+  for (var i = 0; i < lead.length; i++) {
+    drawText(lead[i], P_MX + 28, ansTop + i * lh + 27 * 0.8, 27, 'bold', P_INK, 'ls');
+  }
+  var top = ansTop + 84;
+  var widths = s.widths || [11, 34, 55];
+  var xs = [P_MX], colW = [];
+  for (var q = 0; q < widths.length; q++) colW.push(P_CW * widths[q] / 100);
+  for (var k = 0; k < widths.length - 1; k++) xs.push(xs[xs.length - 1] + colW[k]);
+  pHLine(P_MX, top, P_RIGHT, top, pA(P_INK, 0.75), 2);
+  (s.columns || []).forEach(function (col, j) {
+    tracked(col, xs[j], top + 34, 17, 'medium', pA(P_INK, 0.55), 3);
+  });
+  var rowTop = top + 58;
+  (s.rows || []).forEach(function (row) {
+    var what = wrapText(row.what || '', 20, 'regular', colW[1] - 34);
+    var desc = wrapText(row.desc || '', 18, 'regular', colW[2] - 24);
+    var rowH = 34 + 26 + desc.length * 24 + 22;
+    pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
+    drawText(row.floor, xs[0], rowTop + 50, 30, 'extrabold', pMix(P_INK, pKey(), 0.55), 'ls');
+    for (var m = 0; m < what.length; m++) {
+      drawText(what[m], xs[1], rowTop + 40 + m * 28, 20, 'regular', pA(P_INK, 0.78), 'ls');
+    }
+    drawText(row.title, xs[2], rowTop + 40, 21, 'extrabold', P_INK, 'ls');
+    if (row.tag) {
+      tracked(row.tag, P_RIGHT - trackedW(row.tag, 15, 'medium', 1), rowTop + 40, 15, 'medium', pA(P_INK, 0.45), 1);
+    }
+    for (var n = 0; n < desc.length; n++) {
+      drawText(desc[n], xs[2], rowTop + 68 + n * 24, 18, 'regular', pA(P_INK, 0.66), 'ls');
+    }
+    rowTop += rowH;
+  });
+  pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
+  var note = wrapText(s.note || '', 18, 'regular', P_CW);
+  for (var r = 0; r < note.length; r++) {
+    drawText(note[r], P_MX, rowTop + 34 + r * 26 + 14, 18, 'regular', pA(P_INK, 0.5), 'ls');
+  }
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 4, false);
+}
+
+/* ---- 뷰티 픽: 배경·규모 합본(05 SCALE) ---- */
+function pickScale(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 258, 72, P_INK);
+  var top = Math.max(y + 26, 442);
+  var stats = s.stats || [], gap = 14;
+  var cw = (P_CW - gap * (stats.length - 1)) / stats.length;
+  stats.forEach(function (st, i) {
+    var cx = P_MX + i * (cw + gap);
+    _ctx.fillStyle = pMix(pPaper(), P_INK, 0.055);
+    _ctx.fillRect(cx, top, cw, 116);
+    var size = 31;
+    while (measure(st.value, size, 'extrabold') > cw - 26 && size > 20) size -= 1;
+    drawText(st.value, cx + 14, top + 48, size, 'extrabold', pMix(P_INK, pKey(), 0.55), 'ls');
+    var nl = wrapText(st.note || '', 15, 'regular', cw - 26);
+    for (var j = 0; j < nl.length; j++) {
+      drawText(nl[j], cx + 14, top + 74 + j * 19, 15, 'regular', pA(P_INK, 0.58), 'ls');
+    }
+  });
+  var y2 = pPara(s.body, P_MX, top + 152, 25, 40, 900, pA(P_INK, 0.84));
+  pTakeaway(s.takeaway, y2 + 26, false);
+  if (s.image) {
+    pImgFilter('contrast(1.04) saturate(1.0) brightness(1.02)', function () {
+      drawCoverCrop(s.image, 0, 856, W, 314, 0.5,
+        s.band_focus === undefined ? 0.5 : s.band_focus, 1);
+    });
+  }
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 5, false);
+}
+
+/* ---- 뷰티 픽: 연령 경쟁(06 AGE) ---- */
+function pickAge(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 250, 70, P_INK);
+  var top = Math.max(y + 40, 452), colGap = 56, cw = (P_CW - colGap) / 2;
+  (s.stats || []).forEach(function (st, i) {
+    var cx = P_MX + i * (cw + colGap), size = i === 0 ? 108 : 74;
+    while (measure(st.value, size, 'extrabold') > cw - 6 && size > 34) size -= 2;
+    drawText(st.value, cx, top + size * 0.92, size, 'extrabold', pMix(P_INK, pKey(), 0.55), 'ls');
+    drawText(st.note || '', cx + 2, top + size * 0.92 + 40, 20, 'regular', pA(P_INK, 0.62), 'ls');
+  });
+  pHLine(P_MX + cw + colGap / 2, top + 16, P_MX + cw + colGap / 2, top + 168, pA(P_INK, 0.14), 1);
+  var bodyTop = top + 210;
+  pHLine(P_MX, bodyTop - 40, P_RIGHT, bodyTop - 40, pA(P_INK, 0.14), 1);
+  var y2 = pPara(s.body, P_MX, bodyTop, 25, 40, 900, pA(P_INK, 0.84));
+  y2 = pTakeaway(s.takeaway, y2 + 28, false);
+  var mini = s.mini;
+  if (mini) {
+    var ty = y2 + 48;
+    pHLine(P_MX, ty, P_RIGHT, ty, pA(P_INK, 0.22), 1);
+    tracked(mini.head || '', P_MX, ty + 32, 16, 'medium', pA(P_INK, 0.55), 2);
+    var colx = [P_MX, P_MX + 380, P_MX + 640];
+    (mini.cols || []).forEach(function (c, i) {
+      tracked(c, colx[i], ty + 66, 16, 'medium', pA(P_INK, 0.5), 2);
+    });
+    var ry = ty + 84;
+    (mini.rows || []).forEach(function (row) {
+      pHLine(P_MX, ry, P_RIGHT, ry, pA(P_INK, 0.14), 1);
+      drawText(row[0], P_MX, ry + 34, 19, 'regular', pA(P_INK, 0.66), 'ls');
+      drawText(row[1], colx[1], ry + 35, 21, 'bold', P_INK, 'ls');
+      drawText(row[2], colx[2], ry + 35, 21, 'bold', P_INK, 'ls');
+      ry += 58;
+    });
+    pHLine(P_MX, ry, P_RIGHT, ry, pA(P_INK, 0.14), 1);
+  }
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 6, false);
+}
+
+/* ---- 뷰티 픽: 방문 전 확인(07 CHECK) ---- */
+function pPinIcon(x, y, sz, color) {
+  _ctx.fillStyle = color;
+  _ctx.beginPath(); _ctx.ellipse(x, y - sz * 0.10, sz * 0.30, sz * 0.30, 0, 0, Math.PI * 2); _ctx.fill();
+  _ctx.beginPath();
+  _ctx.moveTo(x - sz * 0.21, y + sz * 0.04);
+  _ctx.lineTo(x + sz * 0.21, y + sz * 0.04);
+  _ctx.lineTo(x, y + sz * 0.60);
+  _ctx.closePath(); _ctx.fill();
+  _ctx.fillStyle = WHITE;
+  _ctx.beginPath(); _ctx.arc(x, y - sz * 0.08, sz * 0.11, 0, Math.PI * 2); _ctx.fill();
+}
+function pClockIcon(x, y, sz, color) {
+  _ctx.strokeStyle = color; _ctx.lineWidth = Math.max(2, sz * 0.1);
+  _ctx.beginPath(); _ctx.arc(x, y, sz * 0.46, 0, Math.PI * 2); _ctx.stroke();
+  _ctx.beginPath(); _ctx.moveTo(x, y); _ctx.lineTo(x, y - sz * 0.28); _ctx.stroke();
+  _ctx.beginPath(); _ctx.moveTo(x, y); _ctx.lineTo(x + sz * 0.2, y + sz * 0.1); _ctx.stroke();
+}
+function pArrowIcon(x0, x1, y, color) {
+  pHLine(x0, y, x1, y, color, 2);
+  _ctx.fillStyle = color;
+  _ctx.beginPath(); _ctx.moveTo(x1, y); _ctx.lineTo(x1 - 9, y - 5); _ctx.lineTo(x1 - 9, y + 5);
+  _ctx.closePath(); _ctx.fill();
+}
+function pickCheck(s, page, total) {
+  pHead(page, s.label, false);
+  var y = pHeadText(s.headline, 252, 72, P_INK);
+  var cy = Math.max(y + 30, 456);
+  (s.items || []).forEach(function (item, idx) {
+    pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
+    drawText(pad2(idx + 1), P_MX, cy + 48, 20, 'extrabold', pMix(P_INK, pKey(), 0.6), 'ls');
+    drawText(item.title, P_MX + 56, cy + 50, 29, 'extrabold', P_INK, 'ls');
+    var yy = cy + 94, route = item.route, lines;
+    if (route) {
+      pPinIcon(P_MX + 74, yy + 8, 30, pKey());
+      drawText(route.from, P_MX + 96, yy + 20, 24, 'bold', P_INK, 'ls');
+      var wFrom = measure(route.from, 24, 'bold');
+      var ax0 = P_MX + 96 + wFrom + 20;
+      pArrowIcon(ax0, ax0 + 54, yy + 10, pA(P_INK, 0.45));
+      drawText(route.walk, ax0, yy + 44, 16, 'regular', pA(P_INK, 0.55), 'ls');
+      var bx = ax0 + 70;
+      pPinIcon(bx + 10, yy + 8, 30, pKey());
+      drawText(route.to, bx + 32, yy + 20, 24, 'bold', P_INK, 'ls');
+      yy += 54;
+      pClockIcon(P_MX + 78, yy + 10, 26, pA(P_INK, 0.55));
+      tracked(route.hours, P_MX + 100, yy + 19, 21, 'bold', pA(P_INK, 0.8), 1);
+      yy += 62;
+      lines = wrapText(item.body, 21, 'regular', P_CW - 60);
+    } else {
+      lines = wrapText(item.body, 23, 'regular', P_CW - 56);
+    }
+    for (var j = 0; j < lines.length; j++) {
+      drawText(lines[j], P_MX + 56, yy + j * 34, 23, 'regular', pA(P_INK, 0.74), 'ls');
+    }
+    cy = yy + lines.length * 34 + 26;
+  });
+  pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
+  pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
+  pFooter(page, total, s.source, false);
+  pDots(total, Number(page) || 7, false);
+}
+
+function pickClosing(s, page, total) {
+  var bg = s.bg_image, bandH = 470;
+  _ctx.fillStyle = pDeep(); _ctx.fillRect(0, 0, W, H);
+  if (bg) {
+    pImgFilter('contrast(1.05) saturate(0.98) brightness(0.98)', function () {
+      drawCoverCrop(bg, 0, 0, W, bandH, 0.5, s.bg_focus === undefined ? 0.42 : s.bg_focus, 1);
+    });
+    pStops(0, 0, W, bandH, [8, 10, 14], [[0, 130], [200, 60], [bandH, 20]]);
   } else {
-    _ctx.fillStyle = pDeep(); _ctx.fillRect(0, 0, W, H);
     var g = _ctx.createLinearGradient(0, 0, 0, H);
     for (var i = 0; i <= 24; i++) {
       var t = i / 24;
@@ -2878,33 +3166,37 @@ function pickClosing(s, page, total) {
     _ctx.fillStyle = g; _ctx.fillRect(0, 0, W, H);
   }
   pHead(page, s.label, true);
-  var y = pHeadText(s.headline, 268, 76, WHITE);
-  y = Math.max(y + 34, 500);
-  y = pPara(s.body, P_MX, y, 26, 44, 906, 'rgba(255,255,255,0.82)');
-  pTags(s.tags || [], y + 40, true);
-
-  var sy = 872;
-  tracked('SOURCES', P_MX, sy, 16, 'medium', 'rgba(255,255,255,0.47)', 4);
-  pHLine(P_MX, sy + 12, P_MX + 40, sy + 12, 'rgba(255,255,255,0.35)', 1);
-  var yy = sy + 42;
+  var y = pHeadText(s.headline, 572, 76, WHITE);
+  y = Math.max(y + 30, 772);
+  y = pPara(s.body, P_MX, y, 24, 39, 906, 'rgba(255,255,255,0.82)');
+  if (s.cta) {
+    _ctx.fillStyle = pKey(); _ctx.fillRect(P_MX, y + 34, 4, 26);
+    drawText(s.cta, P_MX + 22, y + 58, 22, 'bold', 'rgba(255,255,255,0.93)', 'ls');
+    y += 82;
+  }
+  var sy = Math.max(y + 26, 896);
+  tracked('SOURCES', P_MX, sy, 14, 'medium', 'rgba(255,255,255,0.43)', 4);
+  pHLine(P_MX, sy + 11, P_MX + 38, sy + 11, 'rgba(255,255,255,0.31)', 1);
+  var yy = sy + 26;
   (s.sources || []).forEach(function (src) {
-    var lines = wrapText('· ' + src, 18, 'regular', P_CW - 10);
+    var lines = wrapText('· ' + src, 15, 'regular', P_CW - 10);
     for (var j = 0; j < lines.length; j++) {
-      drawText(lines[j], P_MX, yy + 14, 18, 'regular', 'rgba(255,255,255,0.59)', 'ls');
-      yy += 26;
+      drawText(lines[j], P_MX, yy + 12, 15, 'regular', 'rgba(255,255,255,0.56)', 'ls');
+      yy += 20;
     }
   });
-  if (s.credit) drawText(s.credit, P_MX, yy + 24, 17, 'medium', 'rgba(255,255,255,0.63)', 'ls');
-
   var disc = (D && D.disclaimer) || '';
   if (disc) {
-    var dl = wrapText(disc, 16, 'regular', P_CW);
-    for (var k = 0; k < dl.length; k++) drawText(dl[k], P_MX, 1206 + k * 22 + 12, 16, 'regular', 'rgba(255,255,255,0.43)', 'ls');
+    var dl = wrapText(disc, 15, 'regular', P_CW);
+    var dy = Math.min(Math.max(yy + 22, 1186), 1216);
+    for (var k = 0; k < dl.length; k++) {
+      drawText(dl[k], P_MX, dy + k * 20 + 11, 15, 'regular', 'rgba(255,255,255,0.41)', 'ls');
+    }
   }
   var f2 = String((D && D.series) || 'BEAUTY PICK') + ' · ' + String((D && D.date) || '');
-  tracked(f2, P_MX, 1306, 16, 'medium', 'rgba(255,255,255,0.47)', 2);
+  tracked(f2, P_MX, 1316, 15, 'medium', 'rgba(255,255,255,0.47)', 2);
   var t2 = page + ' / ' + pad2(total);
-  tracked(t2, P_RIGHT - trackedW(t2, 16, 'medium', 2), 1306, 16, 'medium', 'rgba(255,255,255,0.47)', 2);
+  tracked(t2, P_RIGHT - trackedW(t2, 15, 'medium', 2), 1316, 15, 'medium', 'rgba(255,255,255,0.47)', 2);
 }
 
 /* ---------------------------------------------------------------- 9. 장표 렌더 */

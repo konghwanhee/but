@@ -1,4 +1,18 @@
 {
+  "assets/1f-mini-beauty.jpg": {
+    "sha1": "3fe85fb758fce63d45256f300165172bb61b1ba6",
+    "source": "downloads/pick-01-photos/real/1f-mini-beauty.jpg",
+    "w": 960,
+    "h": 720,
+    "bytes": 310057
+  },
+  "assets/1f-step-display.jpg": {
+    "sha1": "a23515c52d8f3d52f436c067f28ff51f860131d3",
+    "source": "downloads/pick-01-photos/real/1f-step-display.jpg",
+    "w": 960,
+    "h": 720,
+    "bytes": 189041
+  },
   "assets/aekyung_logo.png": {
     "sha1": "b5b83686815f74092f74c0e29d40b4bc4a70f14e",
     "source": "downloads/brand-src/aekyung_logo.png",
@@ -362,6 +376,20 @@
     "w": 860,
     "h": 940,
     "bytes": 49162
+  },
+  "assets/ext-full.jpg": {
+    "sha1": "5ddab055a412c27696d7643fef9cc4fd00382478",
+    "source": "downloads/pick-01-photos/real/ext-full.jpg",
+    "w": 1200,
+    "h": 900,
+    "bytes": 552014
+  },
+  "assets/ext-queue.jpg": {
+    "sha1": "27a2e80b59cd1b8014755ec419fd4d5ed3d8b37e",
+    "source": "downloads/pick-01-photos/real/ext-queue.jpg",
+    "w": 1600,
+    "h": 1200,
+    "bytes": 1613743
   },
   "assets/fc59e6c76ae344dbad0ffaacf15c514f.jpg": {
     "sha1": "5da04a4683789d0620e9b2980a7b253e6db61047",
