@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-23T18:57:34+09:00",
+  "generatedAt": "2026-11-23T19:01:06+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -13,7 +13,7 @@
       "subtitle": "올리브영 화장품 vs 피부과 2등급 의료기기",
       "coverThumb": "covers/beauty-point-01-cover.png",
       "jsonPath": "data/beauty-point-01.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00",
+      "updatedAt": "2026-11-23T19:00:51+09:00",
       "approved": true,
       "publishedAt": "2026-11-23T08:06:00+09:00",
       "approvedAt": "2026-11-22T11:05:44.732Z",
@@ -29,7 +29,7 @@
       "subtitle": "의료기기 · 의약품 · 화장품, 허가가 가르는 판매처와 표시 문구",
       "coverThumb": "covers/beauty-point-02-cover.png",
       "jsonPath": "data/beauty-point-02.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00",
+      "updatedAt": "2026-11-23T19:00:51+09:00",
       "approved": true,
       "publishedAt": null,
       "approvedAt": "2026-11-22T11:06:35.756Z",
@@ -45,7 +45,7 @@
       "subtitle": "다이소 전용 세컨드 브랜드 8개",
       "coverThumb": "covers/beauty-point-03-cover.png",
       "jsonPath": "data/beauty-point-03.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00",
+      "updatedAt": "2026-11-23T19:00:51+09:00",
       "approved": true,
       "publishedAt": null,
       "approvedAt": "2026-11-22T11:07:25.364Z",
@@ -61,7 +61,7 @@
       "subtitle": "OEM · 설계는 브랜드가, 생산은 공장이",
       "coverThumb": "covers/beauty-point-04-cover.png",
       "jsonPath": "data/beauty-point-04.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-point-05",
@@ -73,7 +73,7 @@
       "subtitle": "ODM · 개발부터 생산까지 맡기는 방식",
       "coverThumb": "covers/beauty-point-05-cover.png",
       "jsonPath": "data/beauty-point-05.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-point-06",
@@ -85,7 +85,7 @@
       "subtitle": "OBM · 기획부터 판매까지 한 회사가",
       "coverThumb": "covers/beauty-point-06-cover.png",
       "jsonPath": "data/beauty-point-06.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-point-07",
@@ -97,7 +97,7 @@
       "subtitle": "번외편 · 위탁 용어와 글로벌 브랜드 모델",
       "coverThumb": "covers/beauty-point-07-cover.png",
       "jsonPath": "data/beauty-point-07.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-point-08",
@@ -109,7 +109,7 @@
       "subtitle": "앞면 문구가 말하는 것과 말하지 않는 것",
       "coverThumb": "covers/beauty-point-08-cover.png",
       "jsonPath": "data/beauty-point-08.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-point-09",
@@ -121,7 +121,7 @@
       "subtitle": "높을수록 좋다는 말, 어디까지 맞을까",
       "coverThumb": "covers/beauty-point-09-cover.png",
       "jsonPath": "data/beauty-point-09.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-point-10",
@@ -133,7 +133,7 @@
       "subtitle": "크림도 로션도, 뒷면을 읽는 규칙은 같습니다",
       "coverThumb": "covers/beauty-point-10-cover.png",
       "jsonPath": "data/beauty-point-10.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-tech-01",
@@ -145,7 +145,7 @@
       "subtitle": "레티놀을 처음 쓰는 사람에게",
       "coverThumb": "covers/beauty-tech-01-cover.png",
       "jsonPath": "data/beauty-tech-01.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-tech-02",
@@ -157,7 +157,7 @@
       "subtitle": "이름은 비슷해도 역할은 다릅니다",
       "coverThumb": "covers/beauty-tech-02-cover.png",
       "jsonPath": "data/beauty-tech-02.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-tech-03",
@@ -169,7 +169,7 @@
       "subtitle": "같은 세라마이드라도, 전성분표에 적힌 이름은 다릅니다",
       "coverThumb": "covers/beauty-tech-03-cover.png",
       "jsonPath": "data/beauty-tech-03.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-tech-04",
@@ -181,7 +181,7 @@
       "subtitle": "AHA · BHA · PHA, 고르는 기준",
       "coverThumb": "covers/beauty-tech-04-cover.png",
       "jsonPath": "data/beauty-tech-04.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     },
     {
       "id": "beauty-brief-01",
@@ -193,7 +193,7 @@
       "subtitle": "화장품 124억 달러 · 환자 200만 · 홍대 두 개의 핑크",
       "coverThumb": "covers/beauty-brief-01-cover.png",
       "jsonPath": "data/beauty-brief-01.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00",
+      "updatedAt": "2026-11-23T19:00:51+09:00",
       "approved": true,
       "publishedAt": "2026-11-23T18:09:00+09:00",
       "approvedAt": "2026-11-23T08:39:45.267Z",
@@ -209,7 +209,7 @@
       "subtitle": "올리브영 첫 색조 특화 매장 컬러 그라운드 홍대",
       "coverThumb": "covers/beauty-pick-01-cover.png",
       "jsonPath": "data/beauty-pick-01.json",
-      "updatedAt": "2026-11-23T18:57:19+09:00"
+      "updatedAt": "2026-11-23T19:00:51+09:00"
     }
   ]
 }

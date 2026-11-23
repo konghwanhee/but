@@ -164,8 +164,57 @@
       "source": "자료 · CJ올리브영 보도자료(2026.11.17) · 전자신문(2026.11.20)"
     },
     {
-      "kind": "stats",
+      "kind": "notes",
       "page": "06",
+      "label": "SPOT",
+      "headline": [
+        "가보면,",
+        "이런 게 좋다"
+      ],
+      "image": "assets/panel-2f.jpg",
+      "focus_y": 0.5,
+      "callouts": [
+        {
+          "text": "브랜드 이름 몰라도",
+          "x": 44,
+          "y": 420,
+          "fill": "#FDEAF2",
+          "tilt": -2.0
+        },
+        {
+          "text": "무신사 뷰티가 바로 옆",
+          "x": 600,
+          "y": 470,
+          "fill": "#FFFFFF",
+          "tilt": 1.8
+        },
+        {
+          "text": "립은 립끼리, 베이스는 베이스끼리",
+          "x": 300,
+          "y": 610,
+          "fill": "#FFF6DC",
+          "tilt": -1.2
+        },
+        {
+          "text": "3층 루키 존, 새 브랜드부터",
+          "x": 60,
+          "y": 760,
+          "fill": "#EAF5EC",
+          "tilt": 1.6
+        },
+        {
+          "text": "12세도, 12월 21일부터",
+          "x": 548,
+          "y": 880,
+          "fill": "#FFFFFF",
+          "tilt": -1.8
+        }
+      ],
+      "takeaway": "브랜드보다 취향이 먼저인 매장입니다."
+    },
+    {
+      "kind": "stats",
+      "page": "07",
       "label": "AGE",
       "headline": [
         "열두 살부터,",
@@ -189,7 +238,7 @@
     },
     {
       "kind": "checks",
-      "page": "07",
+      "page": "08",
       "label": "CHECK",
       "headline": [
         "가기 전에",
@@ -214,7 +263,7 @@
     },
     {
       "kind": "closing",
-      "page": "08",
+      "page": "09",
       "label": "NEXT",
       "headline": [
         "색조의 다음 무대는,",
