@@ -2589,28 +2589,37 @@ function pTags(tags, y, dark) {
   });
 }
 
-function pCallout(text, x, y, fill, size, tilt) {
+function pCallout(text, x, y, fill, size, tilt, padX, padY, shadow) {
   // 사진·종이 위에 살짝 기울여 붙인 스티커형 네모 박스
+  padX = padX === undefined ? 30 : padX;
+  padY = padY === undefined ? 19 : padY;
   var tw = measure(text, size, 'bold');
-  var bw = tw + 44, bh = size + 30;
+  var bw = tw + padX * 2, bh = size + padY * 2;
   _ctx.save();
   _ctx.translate(x + bw / 2, y + bh / 2);
   _ctx.rotate((tilt || 0) * Math.PI / 180);
+  if (shadow) {
+    _ctx.shadowColor = 'rgba(12,8,14,0.34)';
+    _ctx.shadowBlur = shadow * 0.8;
+    _ctx.shadowOffsetY = shadow;
+  }
   _ctx.fillStyle = fill || '#FFFFFF';
   _ctx.fillRect(-bw / 2, -bh / 2, bw, bh);
-  _ctx.strokeStyle = P_INK; _ctx.lineWidth = 2;
+  _ctx.shadowColor = 'transparent'; _ctx.shadowBlur = 0; _ctx.shadowOffsetY = 0;
+  _ctx.strokeStyle = P_INK; _ctx.lineWidth = size >= 26 ? 3 : 2;
   _ctx.strokeRect(-bw / 2 + 1, -bh / 2 + 1, bw - 2, bh - 2);
   drawText(text, 0, 1, size, 'bold', P_INK, 'mm');
   _ctx.restore();
 }
-function pTakeaway(text, top, dark, width) {
+function pTakeaway(text, top, dark, width, size) {
   if (!text) return top;
+  size = size || 24;
   var w = width || P_CW;
-  var lines = wrapText(text, 24, 'bold', w - 34);
-  var lh = 36;
+  var lines = wrapText(text, size, 'bold', w - 34);
+  var lh = Math.round(size * 1.5);
   _ctx.fillStyle = pKey(); _ctx.fillRect(P_MX, top + 2, 4, lh * lines.length - 8);
   for (var i = 0; i < lines.length; i++) {
-    drawText(lines[i], P_MX + 22, top + i * lh + 26, 24, 'bold',
+    drawText(lines[i], P_MX + 22, top + i * lh + lh * 0.72, size, 'bold',
       dark ? 'rgba(255,255,255,0.92)' : pMix(P_INK, pKey(), 0.35), 'ls');
   }
   return top + lh * lines.length;
@@ -2668,23 +2677,24 @@ function pickSlide(s, idx, total) {
 }
 
 function pickNotes(s, page, total) {
-  pHead(page, s.label, false);
-  pHeadText(s.headline || [], 250, 72, P_INK);
-  var phTop = s.photo_top === undefined ? 470 : s.photo_top;
-  var phH = s.photo_h === undefined ? 520 : s.photo_h;
+  // 사진 한 장으로 캔버스를 가득 채우고 큰 네모 스티커를 엇갈려 붙인다 — scripts/beauty_pick_carousel.py 와 동일 규격
   if (s.image) {
-    pImgFilter('contrast(1.04) saturate(0.94)', function () {
-      drawCoverCrop(s.image, P_MX, phTop, P_CW, phH, 0.5, s.focus_y === undefined ? 0.5 : s.focus_y, 1);
+    pImgFilter('contrast(1.03) saturate(1.0) brightness(1.05)', function () {
+      drawCoverCrop(s.image, 0, 0, W, H,
+        s.focus_x === undefined ? 0.5 : s.focus_x,
+        s.focus_y === undefined ? 0.5 : s.focus_y, 1);
     });
   }
-  _ctx.strokeStyle = pA(P_INK, 0.18); _ctx.lineWidth = 2;
-  _ctx.strokeRect(P_MX, phTop, P_CW, phH);
+  pStops(0, 0, W, H, [8, 10, 14], [[0, 196], [280, 152], [480, 62], [620, 0], [880, 0], [1110, 132], [H, 234]]);
+  pHead(page, s.label, true);
+  pHeadText(s.headline || [], 246, 72, WHITE, P_CW);
   (s.callouts || []).forEach(function (c) {
-    pCallout(c.text, c.x, c.y, c.fill || '#FFFFFF', c.size || 21, c.tilt === undefined ? -1.6 : c.tilt);
+    pCallout(c.text, c.x, c.y, c.fill || '#FFFFFF', c.size || 32,
+      c.tilt === undefined ? -1.6 : c.tilt, 30, 19, 8);
   });
-  if (s.takeaway) pTakeaway(s.takeaway, phTop + phH + 32, false);
-  pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 6, false);
+  if (s.takeaway) pTakeaway(s.takeaway, 1136, true, 900, 28);
+  pFooter(page, total, s.source, true);
+  pDots(total, Number(page) || 6, true);
 }
 
 function pickStory(s, page, total) {
