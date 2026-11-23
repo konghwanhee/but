@@ -171,8 +171,8 @@
         "가보면,",
         "이런 게 좋다"
       ],
-      "image": "assets/panel-2f.jpg",
-      "focus_y": 0.64,
+      "image": "assets/cg-hongdae-1f-bleed.jpg",
+      "focus_y": 0.5,
       "callouts": [
         {
           "text": "브랜드 이름 몰라도",
@@ -216,7 +216,8 @@
         }
       ],
       "takeaway": "브랜드보다 취향이 먼저인 매장입니다.",
-      "focus_x": 0.56
+      "focus_x": 0.5,
+      "source": "사진 · CJ올리브영 뉴스룸 보도자료(2026.11.17) 1층 인테리어 컷"
     },
     {
       "kind": "stats",
