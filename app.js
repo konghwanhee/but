@@ -4233,7 +4233,7 @@ function kindName(kind, fam) {
 /* 인스타 캡션 그룹 — 다섯 챕터 모두 최상위 `caption` 한 칸만 둔다.
    표지·2장·3장~ 어느 장표에서 보더라도 같은 한 벌을 고치는 같은 칸이다. */
 var CAP_HINT_DEFAULT = '제목 1줄 · 빈 줄 · 요약 2~3줄 (해시태그 없이) · 결재 시 함께 커밋';
-var CAP_HINT_BRIEF = '오프닝(00일 뷰티 소식 00건을 모았습니다. / 빈 줄 / 요약)에 이어 올라간 기사 압축 요약 · 해시태그 없이 · 2,200자 이내 · 결재 시 함께 커밋';
+var CAP_HINT_BRIEF = '오프닝 + 기사 압축 요약 · 해시태그 없이 · 2,200자 이내';
 function captionGroups(page) {
   var g = [group('인스타 캡션', [
     { t: 'text', abs: true, path: ['caption'], label: '인스타 캡션', rows: 6, hint: isBrief() ? CAP_HINT_BRIEF : CAP_HINT_DEFAULT }
