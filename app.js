@@ -3061,6 +3061,7 @@ function loadDeck(id, opts) {
     .then(function (data) {
       if (!data || !Array.isArray(data.slides)) throw new Error('slides 배열이 없는 JSON입니다');
       D = clone(data);
+      migrateCaption(D);
       // 목록(manifest)에 아직 없는 결재 기록이 카드뉴스 JSON 에 있으면 같이 맞춰 둔다.
       if (DECK[id] && typeof data.approved === 'boolean') {
         DECK[id].approved = data.approved;
@@ -3079,7 +3080,7 @@ function loadDeck(id, opts) {
       if (saved) {
         try {
           var sd = JSON.parse(saved);
-          if (sd && (sd.cover || sd.slides)) { D = sd; state.family = familyOf(D); restored = true; state.dirty = true; }
+          if (sd && (sd.cover || sd.slides)) { D = sd; migrateCaption(D); state.family = familyOf(D); restored = true; state.dirty = true; }
         } catch (e) { }
       }
       buildPages();
@@ -3784,20 +3785,6 @@ function updateStageHead() {
   var p = state.pages[state.page];
   document.getElementById('stageTitle').textContent = pageName(p);
   document.getElementById('pageInfo').textContent = (state.page + 1) + ' / ' + state.pages.length;
-  var cc = document.getElementById('btnCapCopy');
-  if (cc) cc.hidden = !isBrief();
-}
-/* 지금 보고 있는 장표의 인스타 캡션 — 표지·2장은 1~2장 공통 오프닝, 3장~은 그 페이지 캡션. */
-function currentPageCaptionLabel() {
-  var p = state.pages[state.page];
-  if (!p || p.type === 'cover' || p.type === 'index') return '1~2장 오프닝 캡션';
-  return (p.i + 3) + '장 캡션';
-}
-function currentPageCaption() {
-  var p = state.pages[state.page];
-  if (!p) return '';
-  if (p.type === 'cover' || p.type === 'index') return String((D && D.openingCaption) || '');
-  return slideCap(p.i);
 }
 function esc(s) {
   return String(s === undefined || s === null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -3991,162 +3978,17 @@ function tableField(colsPath, rowsPath, label, hint) {
   return grp;
 }
 /* ---------------------------------------------------------------- 11b. 인스타 캡션
-   뷰티 브리핑: 1장 오프닝(openingCaption, 2장 자동 반영) + 3장~마지막 장 페이지별 캡션(slideCaptions, 길이 = slides.length).
-   오프닝 캡션 편집·복사 UI는 1장(표지)에만 두고, 2장(요약)에는 안내 한 줄만 둔다.
-   뷰티 포인트·테크·픽: 기존 단일 caption 그대로. */
-var CAP_LIMIT = 2200;   /* 인스타 캡션 한도(자) */
+   다섯 챕터 모두 최상위 `caption` 한 벌만 쓴다(1장~마지막 장 공통 · 표지·2장·3장~ 어느 화면에서 고쳐도 같은 칸).
+   예전 뷰티 브리핑 덱처럼 `caption` 없이 `openingCaption` 만 있는 JSON 은 migrateCaption 이
+   읽을 때 `caption` 으로 옮겨 두고, 저장은 `caption` 에 한다. */
+/* 예전 브리핑 덱(caption 비어 있고 openingCaption 만 있음) → 단일 caption 으로 안전하게 읽기. */
+function migrateCaption(d) {
+  if (!d) return d;
+  if (typeof d.caption !== 'string') d.caption = d.caption === undefined || d.caption === null ? '' : String(d.caption);
+  if (!d.caption.trim() && d.openingCaption && String(d.openingCaption).trim()) d.caption = String(d.openingCaption);
+  return d;
+}
 function isBrief() { return state.family === 'brief'; }
-function capArr() {
-  if (!D) return [];
-  if (!Array.isArray(D.slideCaptions)) D.slideCaptions = [];
-  return D.slideCaptions;
-}
-function slideCap(i) { var a = capArr(); var v = a[i]; return v === undefined || v === null ? '' : String(v); }
-function capLen(s) { return Array.prototype.slice.call(String(s || '')).length; }
-/* 복사 버튼 라벨을 잠깐 '복사됨 ✓'로 바꿔 모바일에서도 눌린 것이 바로 보이게 한다. */
-function flashCopied(btn) {
-  if (!btn) return;
-  if (!btn._capOrig) btn._capOrig = btn.textContent;
-  btn.textContent = '복사됨 ✓';
-  if (btn.className.indexOf(' copied') < 0) btn.className += ' copied';
-  clearTimeout(btn._capT);
-  btn._capT = setTimeout(function () {
-    btn.textContent = btn._capOrig;
-    btn.className = btn.className.replace(/\s*copied/g, '');
-  }, 1600);
-}
-function copyCaption(text, label, btn) {
-  var t = String(text || '');
-  if (!t.replace(/\s/g, '')) { toast('복사할 캡션이 비어 있습니다'); return; }
-  function done() { toast((label ? label + ' · ' : '') + capLen(t) + '자 복사했습니다'); flashCopied(btn); }
-  function fallback() {
-    var ta = document.createElement('textarea');
-    ta.value = t; ta.setAttribute('readonly', '');
-    ta.style.position = 'fixed'; ta.style.left = '-9999px'; ta.style.top = '0';
-    document.body.appendChild(ta); ta.select();
-    var ok = false;
-    try { ok = document.execCommand('copy'); } catch (e) { }
-    ta.remove();
-    if (ok) done(); else toast('복사하지 못했습니다 · 본문을 길게 눌러 직접 복사해 주세요');
-  }
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(t).then(done, fallback);
-  } else fallback();
-}
-var _capSeq = 0;
-function captionField(path, label, hint) {
-  var wrap = el('div', 'fld capFld');
-  var id = 'capF' + (++_capSeq);
-  var head = el('div', 'capHead');
-  var lb = el('label', 'capName', label);
-  lb.setAttribute('for', id);
-  head.appendChild(lb);
-  var tools = el('span', 'capTools');
-  var cnt = el('span', 'n', '');
-  tools.appendChild(cnt);
-  var cp = el('button', 'mini capCopy', '복사');
-  cp.type = 'button'; cp.title = label + '을(를) 클립보드에 복사';
-  cp.addEventListener('click', function () { copyCaption(ta.value, label, cp); });
-  tools.appendChild(cp);
-  head.appendChild(tools);
-  wrap.appendChild(head);
-  if (hint) wrap.appendChild(el('p', 'capHint', hint));
-  var ta = document.createElement('textarea');
-  ta.id = id;
-  ta.className = 'tall capArea'; ta.rows = 6; ta.spellcheck = false;
-  var v = getPath(path);
-  ta.value = v === undefined || v === null ? '' : String(v);
-  function upd() {
-    var n = capLen(ta.value);
-    cnt.textContent = n + '자 / ' + CAP_LIMIT.toLocaleString('en-US');
-    cnt.className = 'n' + (n > CAP_LIMIT ? ' over' : '');
-  }
-  ta.addEventListener('input', function () { setPath(path, ta.value); autoGrow(ta); upd(); commit(); });
-  wrap.appendChild(ta);
-  upd();
-  setTimeout(function () { autoGrow(ta); upd(); }, 0);
-  return wrap;
-}
-function allCaptions() {
-  var out = [String((D && D.openingCaption) || '').trim()];
-  (D && D.slides || []).forEach(function (s, i) { var t = slideCap(i).trim(); if (t) out.push(t); });
-  return out.filter(function (t) { return t; }).join('\n\n\n');
-}
-/* 페이지 캡션 전체 보기 — 페이지로 바로 이동 + 한 장씩 복사 */
-function captionOverview() {
-  var box = el('div', 'capList');
-  var items = [{ label: '1~2장 오프닝 (공통)', page: 0, text: String((D && D.openingCaption) || ''), sub: '2장 자동 반영 · 1장 표지에서 수정' }];
-  ((D && D.slides) || []).forEach(function (s, i) {
-    var sub = String(s.index_title || headlineText(s.headline || []) || '').split(/\s+/).filter(Boolean).join(' ');
-    items.push({ label: (i + 3) + '장 캡션', page: i + 2, text: slideCap(i), sub: sub });
-  });
-  items.forEach(function (it) {
-    var row = el('div', 'capItem');
-    var head = el('div', 'capItemHead');
-    var jump = el('button', 'capJump', it.label); jump.type = 'button';
-    jump.title = '이 페이지로 이동';
-    jump.addEventListener('click', function () { goPage(it.page); });
-    head.appendChild(jump);
-    if (it.sub) head.appendChild(el('span', 'capItemSub', it.sub));
-    head.appendChild(el('span', 'capItemLen', capLen(it.text) + '자'));
-    var cp = el('button', 'mini', '복사'); cp.type = 'button'; cp.title = it.label + '을(를) 클립보드에 복사';
-    cp.addEventListener('click', function () { copyCaption(it.text, it.label, cp); });
-    head.appendChild(cp);
-    row.appendChild(head);
-    row.appendChild(el('pre', 'capItemText', it.text ? it.text : '(아직 없음)'));
-    box.appendChild(row);
-  });
-  var foot = el('div', 'capRow');
-  var all = el('button', 'mini', '전체 캡션 복사'); all.type = 'button';
-  all.addEventListener('click', function () { copyCaption(allCaptions(), '전체 캡션', all); });
-  foot.appendChild(all);
-  box.appendChild(foot);
-  return box;
-}
-/* 2장(요약)에서 보는 오프닝 캡션 — 1장에서 수정하고, 여기서는 읽기·복사만. */
-function sharedCaptionBox(path, label, hint) {
-  var v = getPath(path);
-  var text = v === undefined || v === null ? '' : String(v);
-  var wrap = el('div', 'fld capFld capShared');
-  var head = el('div', 'capHead');
-  head.appendChild(el('span', 'capName ro', label));
-  var tools = el('span', 'capTools');
-  tools.appendChild(el('span', 'n', capLen(text) + '자'));
-  var cp = el('button', 'mini capCopy', '복사');
-  cp.type = 'button'; cp.title = label + '을(를) 클립보드에 복사';
-  cp.addEventListener('click', function () { copyCaption(text, label, cp); });
-  tools.appendChild(cp);
-  head.appendChild(tools);
-  wrap.appendChild(head);
-  if (hint) wrap.appendChild(el('p', 'capHint', hint));
-  wrap.appendChild(el('pre', 'capItemText capSharedText', text ? text : '(아직 없음)'));
-  return wrap;
-}
-/* 기존 단일 caption(01. 02. …)을 1장 오프닝(2장 자동 반영) + 페이지별 캡션 초안으로 나눈다 — 누를 때만. */
-function splitLegacyCaption() {
-  var text = String((D && D.caption) || '').replace(/\r/g, '').trim();
-  var n = ((D && D.slides) || []).length;
-  if (!text || !n) { toast('나눌 기존 캡션이 없습니다'); return; }
-  var parts = text.split(/\n{2,}(?=\d{1,2}\.\s)/);
-  if (parts.length !== n + 1) {
-    toast('기존 캡션을 ' + n + '개 페이지로 자동으로 나누지 못했습니다 · 직접 채워 주세요');
-    return;
-  }
-  var opening = parts[0].trim();
-  var items = parts.slice(1).map(function (b) { return b.trim(); });
-  var li = items.length - 1, lines = items[li].split('\n'), tail = [];
-  while (lines.length) {
-    var ln = lines[lines.length - 1].trim();
-    if (!ln || ln.charAt(0) === '#' || /^원문 기사는/.test(ln)) { if (ln) tail.unshift(ln); lines.pop(); }
-    else break;
-  }
-  items[li] = lines.join('\n').trim();
-  if (tail.length) opening += '\n\n' + tail.join('\n');
-  D.slideCaptions = items;
-  D.openingCaption = opening;
-  buildPanel(); commit();
-  toast('기존 캡션을 1장 오프닝 + 페이지별 ' + n + '개로 나눴습니다 · 확인 후 GitHub에 저장해 주세요');
-}
 function itemBox(title, kicker) {
   var box = el('div', 'item');
   var h = el('h4');
@@ -4165,17 +4007,7 @@ function renderNodes(nodes, basePath, container) {
     if (nd.t === 'text') container.appendChild(textField(nodePath(nd, basePath), nd.label, nd.rows, nd.hint));
     else if (nd.t === 'lines') container.appendChild(headlineField(nodePath(nd, basePath), nd.label));
     else if (nd.t === 'strarr') container.appendChild(strArrField(nodePath(nd, basePath), nd.label, nd.hint));
-    else if (nd.t === 'cap') container.appendChild(captionField(nodePath(nd, basePath), nd.label, nd.hint));
-    else if (nd.t === 'capShared') container.appendChild(sharedCaptionBox(nodePath(nd, basePath), nd.label, nd.hint));
-    else if (nd.t === 'capList') container.appendChild(captionOverview());
     else if (nd.t === 'note') container.appendChild(el('p', 'subnote', nd.text || ''));
-    else if (nd.t === 'splitLegacy') {
-      var sp = el('button', 'mini', nd.label || '기존 캡션을 페이지별로 나누기');
-      sp.type = 'button';
-      sp.addEventListener('click', splitLegacyCaption);
-      container.appendChild(el('p', 'subnote', nd.hint || ''));
-      container.appendChild(sp);
-    }
     else if (nd.t === 'table') container.appendChild(tableField(nodePath({ path: nd.colsPath, abs: nd.abs }, basePath), nodePath({ path: nd.rowsPath, abs: nd.abs }, basePath), nd.label, nd.hint));
     else if (nd.t === 'obj') {
       var box = el('div', 'item');
@@ -4398,51 +4230,20 @@ function kindName(kind, fam) {
   return names[kind] || '내용';
 }
 
-/* 인스타 캡션 그룹 — 브리핑은 페이지별, 나머지는 단일 caption.
-   1장(표지)에만 오프닝 캡션 편집·복사 UI를 두고, 2장(요약)에는 안내 한 줄만 둔다. */
+/* 인스타 캡션 그룹 — 다섯 챕터 모두 최상위 `caption` 한 칸만 둔다.
+   표지·2장·3장~ 어느 장표에서 보더라도 같은 한 벌을 고치는 같은 칸이다. */
+var CAP_HINT_DEFAULT = '제목 1줄 · 빈 줄 · 요약 2~3줄 (해시태그 없이) · 결재 시 함께 커밋';
+var CAP_HINT_BRIEF = '오프닝(00일 뷰티 소식 00건을 모았습니다. / 빈 줄 / 요약)에 이어 올라간 기사 압축 요약 · 해시태그 없이 · 2,200자 이내 · 결재 시 함께 커밋';
 function captionGroups(page) {
-  if (!isBrief()) {
-    var g = [group('인스타 캡션', [
-      { t: 'text', abs: true, path: ['caption'], label: '인스타 캡션', rows: 6, hint: '제목 1줄 · 빈 줄 · 요약 2~3줄 (해시태그 없이) · 결재 시 함께 커밋' }
-    ])];
-    if (state.family === 'pick') {
-      g.unshift(group('뷰티 픽 하단 날짜', [
-        { t: 'text', abs: true, path: ['date'], label: '날짜 (YYYY.MM.DD)', rows: 1, hint: '결재 시 결재일로 자동 변경' }
-      ]));
-    }
-    return g;
+  var g = [group('인스타 캡션', [
+    { t: 'text', abs: true, path: ['caption'], label: '인스타 캡션', rows: 6, hint: isBrief() ? CAP_HINT_BRIEF : CAP_HINT_DEFAULT }
+  ])];
+  if (state.family === 'pick') {
+    g.unshift(group('뷰티 픽 하단 날짜', [
+      { t: 'text', abs: true, path: ['date'], label: '날짜 (YYYY.MM.DD)', rows: 1, hint: '결재 시 결재일로 자동 변경' }
+    ]));
   }
-  var n = ((D && D.slides) || []).length;
-  var out = [];
-  if (page.type === 'cover') {
-    var openNodes = [{
-      t: 'cap', abs: true, path: ['openingCaption'], label: '1장 오프닝 캡션 (2장 자동 반영)',
-      hint: '00일 뷰티 소식 00건을 모았습니다. → 빈 줄 → 요약 1~2줄 → 빈 줄 → 고정 두 문장 · 해시태그 없이 · 2장(오늘의 뷰티 N)에도 그대로 붙습니다'
-    }];
-    if (!(Array.isArray(D.slideCaptions) && D.slideCaptions.length) && D.caption) {
-      openNodes.push({
-        t: 'splitLegacy', label: '기존 단일 캡션에서 페이지별 캡션 초안 만들기',
-        hint: '예전 방식(01. 02. …)으로 쓴 caption이 남아 있습니다. 눌러서 1장 오프닝과 페이지별 캡션으로 나눌 수 있습니다(확인 후 저장).'
-      });
-    }
-    out.push(group('인스타 캡션 · 1장 오프닝 (2장 자동 반영)', openNodes, null, true));
-    out.push(group('페이지 캡션 전체 보기', [{ t: 'capList', abs: true }], n + 1 + '개', false));
-    return out;
-  }
-  if (page.type === 'index') {
-    out.push(group('인스타 캡션', [
-      { t: 'note', text: '1장 오프닝 캡션이 2장에 자동 반영됩니다 · 수정은 1장(표지)에서, 여기서는 확인·복사만.' },
-      { t: 'capShared', abs: true, path: ['openingCaption'], label: '1~2장 오프닝 캡션 (공통)', hint: '아래 문구가 1장·2장 캡션으로 함께 쓰입니다.' }
-    ], null, true));
-    return out;
-  }
-  var i = page.i;
-  out.push(group((i + 3) + '장 캡션', [{
-    t: 'cap', abs: true, path: ['slideCaptions', i], label: (i + 3) + '장 캡션',
-    hint: '이 페이지에만 붙는 개별 캡션 · 본문 제목 / 본문요약 / (빈 줄) / 추가 내용 / (빈 줄) / 매체보도일 (항목 사이는 빈 줄)'
-  }], (i + 3) + '/' + (n + 2), true));
-  out.push(group('페이지 캡션 전체 보기', [{ t: 'capList', abs: true }], n + 1 + '개', false));
-  return out;
+  return g;
 }
 function buildPanel() {
   var body = document.getElementById('panelBody');
@@ -4947,12 +4748,6 @@ function wireChrome() {
     var on = stageEl.classList.toggle('big');
     zoomBtn.textContent = on ? '닫기' : '크게 보기';
   });
-  var capCopyBtn = document.getElementById('btnCapCopy');
-  if (capCopyBtn) {
-    capCopyBtn.addEventListener('click', function () {
-      copyCaption(currentPageCaption(), currentPageCaptionLabel(), capCopyBtn);
-    });
-  }
 
   document.getElementById('btnReset').addEventListener('click', function () {
     if (!state.presetId) return;
