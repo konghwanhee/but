@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-23T22:57:31.822Z",
+  "generatedAt": "2026-11-23T22:57:40.189Z",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -204,12 +204,16 @@
       "series": "pick",
       "seriesLabel": "뷰티 픽",
       "issueNo": 1,
-      "date": "2026-11-23",
+      "date": "2026-11-24",
       "title": "브랜드는 빼고, 색만 남겼다",
       "subtitle": "올리브영 첫 색조 특화 매장 컬러 그라운드 홍대",
       "coverThumb": "covers/beauty-pick-01-cover.png",
       "jsonPath": "data/beauty-pick-01.json",
-      "updatedAt": "2026-11-23T22:57:31.822Z"
+      "updatedAt": "2026-11-23T22:57:40.189Z",
+      "approved": true,
+      "approvedAt": "2026-11-23T22:57:37.571Z",
+      "scheduledUploadAt": "2026-11-24T07:57:00+09:00",
+      "publishedAt": null
     }
   ]
 }
