@@ -338,9 +338,12 @@ textarea.mid{min-height:48px}
 .item>h4 .k{font-size:10px;font-weight:800;color:var(--accent);letter-spacing:.05em}
 
 /* ---------- 인스타 캡션 (뷰티 브리핑 = 페이지별 캡션) ---------- */
-.capFld>label .n.over{color:#a23a31}
-.capFld>label{align-items:flex-start}
-.capFld>label .capName{flex:1 1 auto;min-width:0;word-break:keep-all;line-height:1.35}
+.capHead{display:flex;align-items:flex-start;justify-content:space-between;gap:7px;
+  font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;letter-spacing:.02em}
+.capHead .capName{flex:1 1 auto;min-width:0;word-break:keep-all;line-height:1.35;cursor:pointer}
+.capHead .capName.ro{cursor:default}
+.capHead .n{flex:0 0 auto;color:#b3a3a0;font-weight:600}
+.capHead .n.over{color:#a23a31}
 .capTools{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .capCopy{padding:3px 10px;font-size:11px;border-radius:7px;min-width:52px}
 .capCopy.copied,.capItemHead .mini.copied{background:var(--accent);border-color:var(--accent);color:#fff}

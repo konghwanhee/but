@@ -4033,10 +4033,14 @@ function copyCaption(text, label, btn) {
     navigator.clipboard.writeText(t).then(done, fallback);
   } else fallback();
 }
+var _capSeq = 0;
 function captionField(path, label, hint) {
   var wrap = el('div', 'fld capFld');
-  var lb = el('label');
-  lb.appendChild(el('span', 'capName', label));
+  var id = 'capF' + (++_capSeq);
+  var head = el('div', 'capHead');
+  var lb = el('label', 'capName', label);
+  lb.setAttribute('for', id);
+  head.appendChild(lb);
   var tools = el('span', 'capTools');
   var cnt = el('span', 'n', '');
   tools.appendChild(cnt);
@@ -4044,10 +4048,11 @@ function captionField(path, label, hint) {
   cp.type = 'button'; cp.title = label + '을(를) 클립보드에 복사';
   cp.addEventListener('click', function () { copyCaption(ta.value, label, cp); });
   tools.appendChild(cp);
-  lb.appendChild(tools);
-  wrap.appendChild(lb);
+  head.appendChild(tools);
+  wrap.appendChild(head);
   if (hint) wrap.appendChild(el('p', 'capHint', hint));
   var ta = document.createElement('textarea');
+  ta.id = id;
   ta.className = 'tall capArea'; ta.rows = 6; ta.spellcheck = false;
   var v = getPath(path);
   ta.value = v === undefined || v === null ? '' : String(v);
@@ -4103,16 +4108,16 @@ function sharedCaptionBox(path, label, hint) {
   var v = getPath(path);
   var text = v === undefined || v === null ? '' : String(v);
   var wrap = el('div', 'fld capFld capShared');
-  var lb = el('label');
-  lb.appendChild(el('span', 'capName', label));
+  var head = el('div', 'capHead');
+  head.appendChild(el('span', 'capName ro', label));
   var tools = el('span', 'capTools');
   tools.appendChild(el('span', 'n', capLen(text) + '자'));
   var cp = el('button', 'mini capCopy', '복사');
   cp.type = 'button'; cp.title = label + '을(를) 클립보드에 복사';
   cp.addEventListener('click', function () { copyCaption(text, label, cp); });
   tools.appendChild(cp);
-  lb.appendChild(tools);
-  wrap.appendChild(lb);
+  head.appendChild(tools);
+  wrap.appendChild(head);
   if (hint) wrap.appendChild(el('p', 'capHint', hint));
   wrap.appendChild(el('pre', 'capItemText capSharedText', text ? text : '(아직 없음)'));
   return wrap;
