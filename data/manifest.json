@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-23T08:18:48.880Z",
+  "generatedAt": "2026-11-23T08:19:34.787Z",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -193,7 +193,7 @@
       "subtitle": "화장품 124억 달러 · 환자 200만 · 홍대 두 개의 핑크",
       "coverThumb": "covers/beauty-brief-01-cover.png",
       "jsonPath": "data/beauty-brief-01.json",
-      "updatedAt": "2026-11-23T08:18:48.880Z"
+      "updatedAt": "2026-11-23T08:19:34.787Z"
     },
     {
       "id": "beauty-pick-test",
