@@ -4572,11 +4572,13 @@ function slideSpec(s, i) {
     } else if (kind === 'notes') {
       push({ t: 'arr', path: ['callouts'], kicker: '스티커', titleFn: function (it) { return it.text || '문구'; }, nodes: [
         { t: 'text', path: ['text'], label: '문구', rows: 2 },
-        { t: 'text', path: ['x'], label: '가로 위치 (0~1080)', rows: 1 },
-        { t: 'text', path: ['y'], label: '세로 위치 (0~1000)', rows: 1 },
-        { t: 'text', path: ['size'], label: '글자 크기', rows: 1 },
-        { t: 'text', path: ['tilt'], label: '기울기 (도)', rows: 1 },
-        { t: 'text', path: ['fill'], label: '바탕색 (#FFFFFF)', rows: 1 }
+        { t: 'obj', path: [], title: '위치·크기 (선택)', nodes: [
+          { t: 'text', path: ['x'], label: '가로 위치', rows: 1, hint: '0~1080' },
+          { t: 'text', path: ['y'], label: '세로 위치', rows: 1, hint: '0~1000' },
+          { t: 'text', path: ['size'], label: '글자 크기', rows: 1 },
+          { t: 'text', path: ['tilt'], label: '기울기 (도)', rows: 1 },
+          { t: 'text', path: ['fill'], label: '바탕색', rows: 1, hint: '#FFFFFF' }
+        ] }
       ] });
     } else if (kind === 'how') {
       push({ t: 'text', path: ['intro'], label: '도입 본문', rows: 3 });
@@ -4598,11 +4600,13 @@ function slideSpec(s, i) {
     } else if (kind === 'spot') {
       push({ t: 'arr', path: ['callouts'], kicker: '스티커', titleFn: function (it) { return it.text || '문구'; }, nodes: [
         { t: 'text', path: ['text'], label: '문구', rows: 2 },
-        { t: 'text', path: ['x'], label: '가로 위치 (0~1080)', rows: 1 },
-        { t: 'text', path: ['y'], label: '세로 위치 (0~1000)', rows: 1 },
-        { t: 'text', path: ['size'], label: '글자 크기', rows: 1 },
-        { t: 'text', path: ['tilt'], label: '기울기 (도)', rows: 1 },
-        { t: 'text', path: ['fill'], label: '바탕색 (#FFFFFF)', rows: 1 }
+        { t: 'obj', path: [], title: '위치·크기 (선택)', nodes: [
+          { t: 'text', path: ['x'], label: '가로 위치', rows: 1, hint: '0~1080' },
+          { t: 'text', path: ['y'], label: '세로 위치', rows: 1, hint: '0~1000' },
+          { t: 'text', path: ['size'], label: '글자 크기', rows: 1 },
+          { t: 'text', path: ['tilt'], label: '기울기 (도)', rows: 1 },
+          { t: 'text', path: ['fill'], label: '바탕색', rows: 1, hint: '#FFFFFF' }
+        ] }
       ] });
       if (s.note !== undefined) push({ t: 'text', path: ['note'], label: '사진 아래 각주', rows: 2 });
     } else if (kind === 'floor') {
@@ -4631,16 +4635,20 @@ function slideSpec(s, i) {
         { t: 'table', colsPath: ['cols'], rowsPath: ['rows'], label: '칸 고치기', hint: '칸을 누르면 바로 반영' }
       ] });
     } else if (kind === 'check') {
-      push({ t: 'arr', path: ['items'], kicker: '확인', titleFn: function (it, k) { return pad2(k + 1) + ' · ' + (it.title || ''); }, nodes: [
-        { t: 'text', path: ['title'], label: '제목', rows: 1 },
-        { t: 'obj', path: ['route'], title: '위치·시간 줄 (모두 비우면 사라짐)', nodes: [
-          { t: 'text', path: ['from'], label: '출발지', rows: 1 },
-          { t: 'text', path: ['walk'], label: '도보 시간', rows: 1 },
-          { t: 'text', path: ['to'], label: '도착지', rows: 1 },
-          { t: 'text', path: ['hours'], label: '운영 시간', rows: 1 }
-        ] },
-        { t: 'text', path: ['body'], label: '본문', rows: 3 }
-      ] });
+      push({ t: 'arr', path: ['items'], kicker: '확인', titleFn: function (it, k) { return pad2(k + 1) + ' · ' + (it.title || ''); }, nodes: function (item) {
+        var n = [{ t: 'text', path: ['title'], label: '제목', rows: 1 }];
+        // 동선 줄은 이미 있는 항목에만 보여준다(빈 칸을 늘어놓지 않게).
+        if (item && item.route) {
+          n.push({ t: 'obj', path: ['route'], title: '위치·시간 줄 (모두 비우면 사라짐)', nodes: [
+            { t: 'text', path: ['from'], label: '출발지', rows: 1 },
+            { t: 'text', path: ['walk'], label: '도보 시간', rows: 1 },
+            { t: 'text', path: ['to'], label: '도착지', rows: 1 },
+            { t: 'text', path: ['hours'], label: '운영 시간', rows: 1 }
+          ] });
+        }
+        n.push({ t: 'text', path: ['body'], label: '본문', rows: 3 });
+        return n;
+      } });
     } else if (kind === 'closing') {
       push({ t: 'text', path: ['cta'], label: '저장·공유 유도 문구', rows: 2 });
       push({ t: 'text', path: ['sources_label'], label: '출처 라벨', rows: 1, hint: '기본 SOURCES', seed: 'SOURCES' });
