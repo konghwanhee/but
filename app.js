@@ -2208,22 +2208,23 @@ function tLineage(s, headLast) {
 function frameBrief(page, progress) {
   drawLogo('black', MX, 78, 44);
   if (page) drawText(page, CR, 96, 25, 'medium', GRAY_SOFT, 'rs');
-  if (progress) dotsBrief(progress[0], progress[1]);
+  if (progress) barsBrief(progress[0], progress[1]);
 }
-/* 하단 점 넘김 인디케이터 — 뷰티 픽과 같은 감도(지름 8px · 간격 15px · 바닥에서 52px).
-   현재 장표만 #111111, 나머지는 은은한 그레이 #D2D2D2. */
-function dotsBrief(cur, tot) {
+/* 하단 가로 막대(____) 인디케이터 — 2026-11-23 환희 님 확정(점 대신 막대).
+   scripts/cardnews_carousel.py 의 `draw_bars()` 와 같은 규격: 두께 5px · 중심 y 1298 · 간격 7px ·
+   전체 폭 400px 안쪽. 현재 장표만 #111111, 나머지는 은은한 그레이 #D9D9D9. */
+function barsBrief(cur, tot) {
   tot = Math.max(1, Number(tot) || 1);
   cur = Math.min(Math.max(1, Number(cur) || 1), tot);
-  var gap = 15, r = 4, y = 1298;
-  var x0 = (W - (tot - 1) * gap) / 2;
+  var gap = 7, h = 5, y = 1298;
+  var barW = Math.max(8, Math.min(46, Math.floor((400 - (tot - 1) * gap) / tot)));
+  var x0 = (W - (tot * barW + (tot - 1) * gap)) / 2;
   for (var i = 0; i < tot; i++) {
-    _ctx.beginPath();
-    _ctx.fillStyle = (i === cur - 1) ? INK : '#D2D2D2';
-    _ctx.arc(x0 + i * gap, y, r, 0, Math.PI * 2);
-    _ctx.fill();
+    _ctx.fillStyle = (i === cur - 1) ? INK : '#D9D9D9';
+    _ctx.fillRect(x0 + i * (barW + gap), y - h / 2, barW, h);
   }
 }
+var dotsBrief = barsBrief; /* 이전 이름 호환 */
 function indexRows(c) {
   return (c.slides || []).map(function (s, i) {
     var label = String(s.label || ''), k = label.indexOf(' · ');
@@ -2525,16 +2526,23 @@ function pHead(page, label, dark) {
     dark ? 'rgba(255,255,255,0.62)' : pA(P_INK, 0.62), 6);
   drawLogo(dark ? 'white' : 'black', P_RIGHT - pLogoW(28), 100, 28);
 }
-function pDots(total, cur, dark) {
-  var gap = 15, r = 3, y = 1298, x0 = (W - (total - 1) * gap) / 2;
+/* 하단 가로 막대(____) 인디케이터 — 2026-11-23 환희 님 확정(점 대신 막대).
+   scripts/beauty_pick_carousel.py 의 `bars()` 와 같은 규격: 두께 5px · 중심 y 1298 · 간격 7px ·
+   전체 폭 400px 안쪽(장수가 늘면 막대가 짧아질 뿐 화면을 가로지르지 않는다). 현재 장표만 진하게. */
+function pIndicator(total, cur, dark) {
+  total = Math.max(1, Number(total) || 1);
+  cur = Math.min(Math.max(1, Number(cur) || 1), total);
+  var gap = 7, h = 5, y = 1298;
+  var barW = Math.max(8, Math.min(46, Math.floor((400 - (total - 1) * gap) / total)));
+  var x0 = (W - (total * barW + (total - 1) * gap)) / 2;
   for (var i = 0; i < total; i++) {
     var on = (i === cur - 1);
-    _ctx.beginPath();
-    _ctx.fillStyle = dark ? (on ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.43)')
-      : (on ? pA(P_INK, 0.75) : pA(P_INK, 0.28));
-    _ctx.arc(x0 + i * gap, y, r, 0, Math.PI * 2); _ctx.fill();
+    _ctx.fillStyle = dark ? (on ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.30)')
+      : (on ? pA(P_INK, 0.92) : pA(P_INK, 0.18));
+    _ctx.fillRect(x0 + i * (barW + gap), y - h / 2, barW, h);
   }
 }
+var pDots = pIndicator; /* 이전 이름 호환 */
 function pFooter(page, total, source, dark) {
   var muted = dark ? 'rgba(255,255,255,0.55)' : pA(P_INK, 0.5);
   if (source) {
@@ -2661,7 +2669,7 @@ function pickCover() {
   }
   pTags(c.tags || [], tagsY, true);
   if (c.photo_source) tracked(c.photo_source, P_MX, 1252, 15, 'medium', 'rgba(255,255,255,0.50)', 1);
-  pDots(total, 1, true);
+  pIndicator(total, 1, true);
 }
 
 function pickSlide(s, idx, total) {
@@ -2701,7 +2709,7 @@ function pickNotes(s, page, total) {
   });
   if (s.takeaway) pTakeaway(s.takeaway, 1136, true, 900, 28);
   pFooter(page, total, s.source, true);
-  pDots(total, Number(page) || 6, true);
+  pIndicator(total, Number(page) || 6, true);
 }
 
 function pickStory(s, page, total) {
@@ -2727,7 +2735,7 @@ function pickStory(s, page, total) {
   }
   pStops(0, bandTop, W, bandH, [8, 10, 14], [[0, 0], [150, 60], [bandH, 236]]);
   pFooter(page, total, null, true);
-  pDots(total, Number(page) || (Number(total) - 1), true);
+  pIndicator(total, Number(page) || (Number(total) - 1), true);
 }
 
 function pickStats(s, page, total) {
@@ -2762,7 +2770,7 @@ function pickStats(s, page, total) {
     tracked(s1, P_MX, 1252, 17, 'medium', pA(P_INK, 0.5), 2);
     var t1 = page + ' / ' + pad2(total);
     tracked(t1, P_RIGHT - trackedW(t1, 17, 'medium', 2), 1252, 17, 'medium', pA(P_INK, 0.5), 2);
-    pDots(total, Number(page) || 3, false);
+    pIndicator(total, Number(page) || 3, false);
     return;
   }
   var colW = (P_CW - 60) / 2;
@@ -2778,7 +2786,7 @@ function pickStats(s, page, total) {
   var y3 = pPara(s.body, P_MX, bodyTop, 26, 44, 900, pA(P_INK, 0.84));
   pTakeaway(s.takeaway, y3 + 30, false);
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 3, false);
+  pIndicator(total, Number(page) || 3, false);
 }
 
 function pickDiagram(s, page, total) {
@@ -2804,7 +2812,7 @@ function pickDiagram(s, page, total) {
   var y2 = pPara(s.body, P_MX, barTop + 26, 26, 44, 900, pA(P_INK, 0.84));
   pTakeaway(s.takeaway, y2 + 30, false);
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 4, false);
+  pIndicator(total, Number(page) || 4, false);
 }
 
 function pickTable(s, page, total) {
@@ -2840,7 +2848,7 @@ function pickTable(s, page, total) {
   }
   pTakeaway(s.takeaway, noteY + 74, false);
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 5, false);
+  pIndicator(total, Number(page) || 5, false);
 }
 
 function pickChecks(s, page, total) {
@@ -2858,7 +2866,7 @@ function pickChecks(s, page, total) {
   pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
   pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 6, false);
+  pIndicator(total, Number(page) || 6, false);
 }
 
 /* ---- 뷰티 픽: 매대 비교 도해(02 HOW) ---- */
@@ -2939,7 +2947,7 @@ function pickHow(s, page, total) {
   });
   pTakeaway(s.takeaway, panelsTop + panelH + 52, false);
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 2, false);
+  pIndicator(total, Number(page) || 2, false);
 }
 
 /* ---- 뷰티 픽: 현장 사진 + 스티커(03 SPOT) ---- */
@@ -2968,7 +2976,7 @@ function pickSpot(s, page, total) {
   pTakeaway(s.takeaway, photoH + 54, false, undefined, 27);
   if (s.note) drawText(s.note, P_MX, photoH + 132, 18, 'regular', pA(P_INK, 0.5), 'ls');
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 3, false);
+  pIndicator(total, Number(page) || 3, false);
 }
 
 /* ---- 뷰티 픽: 층별 안내(04 FLOOR) ---- */
@@ -3015,7 +3023,7 @@ function pickFloor(s, page, total) {
     drawText(note[r], P_MX, rowTop + 34 + r * 26 + 14, 18, 'regular', pA(P_INK, 0.5), 'ls');
   }
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 4, false);
+  pIndicator(total, Number(page) || 4, false);
 }
 
 /* ---- 뷰티 픽: 배경·규모 합본(05 SCALE) ---- */
@@ -3046,7 +3054,7 @@ function pickScale(s, page, total) {
     });
   }
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 5, false);
+  pIndicator(total, Number(page) || 5, false);
 }
 
 /* ---- 뷰티 픽: 연령 경쟁(06 AGE) ---- */
@@ -3085,7 +3093,7 @@ function pickAge(s, page, total) {
     pHLine(P_MX, ry, P_RIGHT, ry, pA(P_INK, 0.14), 1);
   }
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 6, false);
+  pIndicator(total, Number(page) || 6, false);
 }
 
 /* ---- 뷰티 픽: 방문 전 확인(07 CHECK) ---- */
@@ -3147,7 +3155,7 @@ function pickCheck(s, page, total) {
   pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
   pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
   pFooter(page, total, s.source, false);
-  pDots(total, Number(page) || 7, false);
+  pIndicator(total, Number(page) || 7, false);
 }
 
 function pickClosing(s, page, total) {
