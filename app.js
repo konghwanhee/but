@@ -2660,6 +2660,7 @@ function pickCover() {
     drawText(bodyLines[k], P_MX + 30, bodyTop + k * bodyLh + 30, 25, 'regular', 'rgba(255,255,255,0.85)', 'ls');
   }
   pTags(c.tags || [], tagsY, true);
+  if (c.photo_source) tracked(c.photo_source, P_MX, 1252, 15, 'medium', 'rgba(255,255,255,0.50)', 1);
   pDots(total, 1, true);
 }
 
