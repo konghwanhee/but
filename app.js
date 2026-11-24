@@ -2297,52 +2297,198 @@ function indexRows(c) {
     };
   });
 }
+/* --- 2026-11-24 환희 님 확정: 2페이지 목차 = C안 `스플릿 레일 저널형` ------------
+   좌측 레일  — 큰 건수 + ISSUE · 날짜/요일 · KEYWORDS 4개 (`BRIEF {호수}` 표기는 넣지 않음)
+   우측 저널  — TODAY'S BRIEFING · `오늘의 뷰티`(건수 숫자는 넣지 않음) · 리드 1줄 · 목차
+   우측 상단  — 발행일만 (건수·호수 중복 표기 없음)
+   `scripts/cardnews_carousel.py` 의 `_index_layout()` 과 같은 좌표·같은 식을 쓴다.
+   행 안 글자는 잉크(inkSpan/blockBase)로 위·아래 여백을 같게 앉히고,
+   10~18건이면 행 높이·폰트가 자동으로 줄어든다. */
+var IX_RAIL_R = 356, IX_COL_X = 432, IX_DIV_X = IX_COL_X - 40;
+var IX_LIST_TOP = 362, IX_LIST_BOT = 1190, IX_FOOT_Y = 1246;
+var IX_DAYS = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+
+function ixFlat(s) { return String(s === undefined || s === null ? '' : s).replace(/\s+/g, ' ').trim(); }
+/* 레일 날짜 — index.date → 표지 킥커 → 발행·결재 시각 → 오늘 */
+function ixDate(c) {
+  var cfg = c.index || {};
+  var raw = ixFlat(cfg.date), m, i;
+  if (!raw) {
+    m = /(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/.exec(String((c.cover || {}).kicker || ''));
+    if (m) raw = m[1] + '.' + pad2(Number(m[2])) + '.' + pad2(Number(m[3]));
+  }
+  if (!raw) {
+    var keys = ['publishedAt', 'approvedAt', 'scheduledUploadAt'];
+    for (i = 0; i < keys.length; i++) {
+      m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(c[keys[i]] || ''));
+      if (m) { raw = m[1] + '.' + m[2] + '.' + m[3]; break; }
+    }
+  }
+  if (!raw) {
+    var d = new Date();
+    raw = d.getFullYear() + '.' + pad2(d.getMonth() + 1) + '.' + pad2(d.getDate());
+  }
+  return raw;
+}
+/* 날짜 아래 작은 요일 줄 — 비어 있으면 날짜에서 요일을 계산한다 */
+function ixRailSub(c, date) {
+  var sub = ixFlat((c.index || {}).rail_sub);
+  if (sub) return sub;
+  var m = /(\d{4})[.\-\/](\d{1,2})[.\-\/](\d{1,2})/.exec(String(date));
+  if (m) {
+    var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    if (!isNaN(d.getTime())) return IX_DAYS[(d.getDay() + 6) % 7] + ' · SEOUL';
+  }
+  return 'SEOUL';
+}
+/* 우측 저널 제목 — `오늘의 뷰티`. `{n}`(건수)은 그리지 않는다 */
+function ixHead(cfg) {
+  var head = ixFlat(String(cfg.headline || '').replace('{n}', ' '));
+  return head || '오늘의 뷰티';
+}
+/* 리드 1줄 — 비어 있으면 분야로 자동 추출 */
+function ixLead(cfg, rows, n) {
+  var lead = ixFlat(cfg.lead);
+  if (lead) return lead;
+  var cats = [];
+  rows.forEach(function (r) {
+    var c = ixFlat(r.cat);
+    if (c && cats.indexOf(c) < 0) cats.push(c);
+  });
+  if (cats.length >= 2) return '오늘 꼭 봐야 할 ' + n + '가지 — ' + cats[0] + '부터 ' + cats[cats.length - 1] + '까지';
+  return '오늘의 뷰티 소식 ' + n + '건을 중요한 순서대로 정리했습니다.';
+}
+/* 레일 키워드 4개 — 비어 있으면 분야 → 제목 첫 마디로 자동 추출 */
+function ixKeywords(cfg, rows) {
+  var kws = [];
+  (cfg.keywords || []).forEach(function (k) {
+    var t = ixFlat(k);
+    if (t && kws.indexOf(t) < 0) kws.push(t);
+  });
+  if (kws.length) return kws.slice(0, 4);
+  rows.forEach(function (r) {
+    var c = ixFlat(r.cat);
+    if (c && kws.indexOf(c) < 0) kws.push(c);
+  });
+  rows.forEach(function (r) {
+    if (kws.length >= 4) return;
+    var t = ixFlat(String(r.title || '').split(/[,，]/)[0]);
+    if (t && kws.indexOf(t) < 0) kws.push(t);
+  });
+  return kws.slice(0, 4);
+}
+/* maxW 에 맞는 글자 크기 — 최소 크기에서도 넘치면 말줄임(…) */
+function fitText(str, size, weight, maxW, minSize) {
+  var s = ixFlat(str), sz = Math.round(size), cut, cand;
+  while (sz > minSize && measure(s, sz, weight) > maxW) sz -= 1;
+  if (measure(s, sz, weight) > maxW) {
+    for (cut = s.length - 1; cut > 0; cut--) {
+      cand = s.slice(0, cut).replace(/[ ,·-]+$/, '') + '…';
+      if (measure(cand, sz, weight) <= maxW) { s = cand; break; }
+    }
+  }
+  return { text: s, size: sz };
+}
 function renderIndex(c) {
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
   var cfg = c.index || {};
-  drawLogo('black', MX, 78, 44);
   var rows = indexRows(c), n = rows.length;
-  var headline = (cfg.headline || '오늘의 뷰티 {n}').replace('{n}', String(n));
-  var hs = 66;
-  while (hs > 44 && measure(headline, hs, 'extrabold') > W - MX * 2) hs -= 1;
-  var headBase = 250;
-  drawText(headline, MX, headBase, hs, 'extrabold', INK, 'ls');
-  var cols = (cfg.columns && cfg.columns.length ? cfg.columns : ['NO.', '분야', '제목', '핵심 수치']);
-  var NUM_X = MX, CAT_X = MX + 58, TITLE_X = MX + 214, RIGHT = CR;
-  var headY = headBase + 58;
-  tracked(cols[0], NUM_X, headY, 14, 'bold', '#B0B0B0', 2);
-  tracked(cols[1], CAT_X, headY, 14, 'bold', '#B0B0B0', 2);
-  tracked(cols[2], TITLE_X, headY, 14, 'bold', '#B0B0B0', 2);
-  var cw = trackedW(cols[3], 14, 'bold', 2);
-  tracked(cols[3], RIGHT - cw, headY, 14, 'bold', '#B0B0B0', 2);
-  var listTop = headY + 20, listBottom = 1204;
-  _ctx.fillStyle = INK; _ctx.fillRect(MX, listTop, CR - MX, 1);
-  if (!n) return;
-  var rowH = (listBottom - listTop) / n;
-  var numSz = clampNum(rowH * 0.34, 12, 20), catSz = clampNum(rowH * 0.29, 10, 15);
-  var figSz = clampNum(rowH * 0.33, 11, 19), titleCap = clampNum(rowH * 0.40, 12, 23);
-  var titleSz = Math.round(titleCap);
-  while (titleSz > 11) {
-    var fits = true;
-    for (var i = 0; i < rows.length; i++) {
-      var figW = rows[i].figure ? measure(rows[i].figure, figSz, 'bold') + 30 : 0;
-      if (measure(rows[i].title, titleSz, 'bold') > RIGHT - TITLE_X - figW) { fits = false; break; }
-      if (rows[i].cat && measure(rows[i].cat, catSz, 'bold') > TITLE_X - CAT_X - 12) { fits = false; break; }
+  var date = ixDate(c);
+  drawLogo('black', MX, 78, 44);
+
+  /* 우측 상단 — 발행일만 */
+  drawText(date, CR, 96, 22, 'bold', GRAY_EMPH, 'rs');
+
+  /* 좌측 레일 ① 건수 */
+  var fNum = 170, fIss = 15;
+  var numBase = blockBase(fNum, 'extrabold', 196, 470, 2, 70, fIss, 'bold');
+  drawText(String(n), MX + 6, numBase, fNum, 'extrabold', INK, 'ls');
+  tracked('ISSUE', MX + 8, numBase + 70, fIss, 'bold', '#9A9A9A', 6);
+  _ctx.fillStyle = INK; _ctx.fillRect(MX, 486, IX_RAIL_R - MX, 1);
+
+  /* 좌측 레일 ② 날짜 */
+  var dateBase = blockBase(26, 'extrabold', 486, 602, 2, 32, 14, 'bold');
+  drawText(date, MX, dateBase, 26, 'extrabold', INK, 'ls');
+  var railSub = ixRailSub(c, date);
+  if (railSub) {
+    var rs = fitText(railSub, 14, 'bold', IX_RAIL_R - MX, 11);
+    tracked(rs.text, MX, dateBase + 32, rs.size, 'bold', '#A0A0A0', 3);
+  }
+  _ctx.fillStyle = '#E9E9E9'; _ctx.fillRect(MX, 602, IX_RAIL_R - MX, 1);
+
+  /* 좌측 레일 ③ 키워드 */
+  var kws = ixKeywords(cfg, rows);
+  var kwLabelInk = inkSpan(13, 'bold');
+  var kwLast = kws.length ? 56 + 64 * (kws.length - 1) : 0;
+  var kwBottom = kws.length ? inkSpan(24, 'bold').bottom : kwLabelInk.bottom;
+  var kwBase = (602 + 922) / 2 - ((kwLast + kwBottom - kwLabelInk.top) / 2) - kwLabelInk.top;
+  tracked('KEYWORDS', MX, kwBase, 13, 'bold', '#A0A0A0', 4);
+  kws.forEach(function (kw, i) {
+    var kf = fitText(kw, 24, 'bold', IX_RAIL_R - MX, 14);
+    drawText(kf.text, MX, kwBase + 56 + 64 * i, kf.size, 'bold', INK, 'ls');
+    if (i < kws.length - 1) {
+      _ctx.fillStyle = '#F1F1F1';
+      _ctx.fillRect(MX, Math.round(kwBase + 56 + 64 * i + 22), IX_RAIL_R - 24 - MX, 1);
     }
-    if (fits) break;
-    titleSz -= 1;
+  });
+
+  /* 중앙 세로 괘선 */
+  _ctx.fillStyle = '#E2E2E2'; _ctx.fillRect(IX_DIV_X, 196, 1, IX_LIST_BOT - 196);
+
+  /* 우측 저널 헤더 */
+  tracked("TODAY'S BRIEFING", IX_COL_X, 210, 19, 'extrabold', '#8A8A8A', 6);
+  var hf = fitText(ixHead(cfg), 56, 'extrabold', CR - IX_COL_X, 40);
+  drawText(hf.text, IX_COL_X, 276, hf.size, 'extrabold', INK, 'ls');
+  var headBot = 276 + inkSpan(56, 'extrabold').bottom;
+  var leadFit = fitText(ixLead(cfg, rows, n), 18, 'regular', CR - IX_COL_X, 12);
+  drawText(leadFit.text, IX_COL_X, cellBase(leadFit.size, 'regular', headBot + 4, 344),
+    leadFit.size, 'regular', '#5A5A5A', 'ls');
+  _ctx.fillStyle = INK; _ctx.fillRect(IX_COL_X, 344, CR - IX_COL_X, 2);
+
+  /* 우측 저널 목차 */
+  if (!n) return;
+  var rowH = (IX_LIST_BOT - IX_LIST_TOP) / n;
+  var compact = rowH < 62;
+  var nSz, tSz, fSz = 12, subSz = 13, subDy = 0;
+  if (compact) { nSz = 13; tSz = 19; }
+  else {
+    nSz = Math.max(12, Math.min(16, Math.round(rowH * 0.19)));
+    tSz = Math.max(17, Math.min(27, Math.round(rowH * 0.33)));
+    subSz = Math.max(13, Math.min(17, Math.round(rowH * 0.20)));
+    subDy = Math.max(26, Math.min(34, Math.round(rowH * 0.41)));
   }
   rows.forEach(function (r, i) {
-    var top = listTop + rowH * i, cy = top + rowH / 2;
-    drawText(r.num, NUM_X, cy, Math.round(numSz), 'bold', '#8E8E8E', 'lm');
-    if (r.cat) drawText(r.cat, CAT_X, cy, Math.round(catSz), 'bold', GRAY_SOFT, 'lm');
-    drawText(r.title, TITLE_X, cy, titleSz, 'bold', INK, 'lm');
-    if (r.figure) drawText(r.figure, RIGHT, cy, Math.round(figSz), 'bold', '#1A1A1A', 'rm');
-    if (i < n - 1) { _ctx.fillStyle = '#ECECEC'; _ctx.fillRect(MX, top + rowH - 1, CR - MX, 1); }
+    var top = IX_LIST_TOP + rowH * i, bot = top + rowH, base, tf, sf, ff, figW;
+    if (i > 0) {
+      _ctx.fillStyle = '#E9E9E9';
+      _ctx.fillRect(IX_COL_X, Math.round(top), CR - IX_COL_X, 1);
+    }
+    if (compact) {
+      base = cellBase(tSz, 'bold', top, bot);
+      drawText(r.num, IX_COL_X, base, nSz, 'bold', '#B2B2B2', 'ls');
+      figW = r.figure ? measure(r.figure, fSz, 'medium') + 20 : 0;
+      tf = fitText(r.title, tSz, 'bold', CR - IX_COL_X - 34 - figW, 12);
+      drawText(tf.text, IX_COL_X + 34, base, tf.size, 'bold', INK, 'ls');
+      if (r.figure) {
+        ff = fitText(r.figure, fSz, 'medium', 240, 10);
+        drawText(ff.text, CR, base + 1, ff.size, 'medium', '#7A7A7A', 'rs');
+      }
+      return;
+    }
+    sf = (r.cat && r.figure) ? (r.cat + ' · ' + r.figure) : (r.cat || r.figure);
+    base = sf ? blockBase(tSz, 'bold', top, bot, 2, subDy, subSz, 'medium') : cellBase(tSz, 'bold', top, bot);
+    drawText(r.num, IX_COL_X, base, nSz, 'bold', '#B2B2B2', 'ls');
+    tf = fitText(r.title, tSz, 'bold', CR - IX_COL_X - 40, 13);
+    drawText(tf.text, IX_COL_X + 40, base, tf.size, 'bold', INK, 'ls');
+    if (sf) {
+      var sfit = fitText(sf, subSz, 'medium', CR - IX_COL_X - 40, 11);
+      drawText(sfit.text, IX_COL_X + 40, base + subDy, sfit.size, 'medium', '#6F6F6F', 'ls');
+    }
   });
-  _ctx.fillStyle = INK; _ctx.fillRect(MX, listBottom, CR - MX, 1);
+
+  /* 하단 문구 */
   var footer = cfg.footer === undefined ? '원문 출처는 각 페이지 하단 표기' : cfg.footer;
-  if (footer) drawText(footer, MX, listBottom + 42, 20, 'regular', '#A8A8A8', 'ls');
+  if (footer) drawText(ixFlat(footer), MX, IX_FOOT_Y, 19, 'regular', '#A8A8A8', 'ls');
 }
 
 function chartTitle(spec, box) {
@@ -4554,8 +4700,9 @@ function indexSpec() {
   var g = [];
   var n = (D.slides || []).length;
   g.push(group('요약 장표', [
-    { t: 'text', path: ['headline'], label: '제목', rows: 1, hint: '{n} = ' + n },
-    { t: 'strarr', path: ['columns'], label: '열 머리글' },
+    { t: 'text', path: ['headline'], label: '제목 (오른쪽 저널)', rows: 1, hint: '건수 숫자는 그리지 않음' },
+    { t: 'text', path: ['lead'], label: '리드 1줄', rows: 2, hint: '비우면 분야로 자동' },
+    { t: 'strarr', path: ['keywords'], label: '왼쪽 레일 키워드 (최대 4개)', hint: '비우면 자동' },
     { t: 'text', path: ['footer'], label: '하단 문구', rows: 1 }
   ]));
   g.push(group('요약 행 (기사별)', [
