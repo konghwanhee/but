@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-24T17:18:57+09:00",
+  "generatedAt": "2026-11-24T17:20:21+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -193,7 +193,7 @@
       "subtitle": "수출 61.7% · 환자 200만 · 일본까지 가는 약",
       "coverThumb": "covers/beauty-brief-02-cover.png",
       "jsonPath": "data/beauty-brief-02.json",
-      "updatedAt": "2026-11-24T17:18:42+09:00"
+      "updatedAt": "2026-11-24T17:20:20+09:00"
     },
     {
       "id": "beauty-brief-01",
