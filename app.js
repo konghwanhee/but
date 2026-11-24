@@ -2792,8 +2792,8 @@ function briefSlide(s, idx, total) {
     var headPart = k >= 0 ? label.slice(0, k) : label;
     x += tracked(headPart, x, 206, fL, 'bold', INK, 2) + 12;
     if (k >= 0) {
-      x += tracked('·', x, fL, 'bold', '#C0C0C0', 2) + 12;
-      tracked(label.slice(k + 3), x, fL, 'bold', GRAY_SOFT, 2);
+      x += tracked('·', x, 206, fL, 'bold', '#C0C0C0', 2) + 12;
+      tracked(label.slice(k + 3), x, 206, fL, 'bold', GRAY_SOFT, 2);
     }
   }
   drawHeadlines(lines.map(segments), MX, hFirst, hgap, hsize, { ink: INK, gray: GRAY_EMPH });
