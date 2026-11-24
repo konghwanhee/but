@@ -3672,7 +3672,7 @@ function pickClosing(s, page, total) {
   tracked(f2, P_MX, FOOT_BASE, 17, 'medium', 'rgba(255,255,255,0.55)', 2);
   var t2 = page + ' / ' + pad2(total);
   tracked(t2, P_RIGHT - trackedW(t2, 17, 'medium', 2), FOOT_BASE, 17, 'medium', 'rgba(255,255,255,0.55)', 2);
-  pProgress(total, Number(page) || total, true);   // 마무리 장표도 진행 바(100%)
+  /* 뷰티 픽 마지막 장에는 진행 바를 넣지 않는다 (2026-11-24 환희 님 지시) */
 }
 
 /* ---------------------------------------------------------------- 9. 장표 렌더 */
