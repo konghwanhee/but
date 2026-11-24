@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-24T09:14:54.000Z",
+  "generatedAt": "2026-11-24T10:50:52.000Z",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -193,11 +193,12 @@
       "subtitle": "수출 61.7% · 환자 200만 · 일본까지 가는 약",
       "coverThumb": "covers/beauty-brief-02-cover.png",
       "jsonPath": "data/beauty-brief-02.json",
-      "updatedAt": "2026-11-24T18:08:42+09:00",
+      "updatedAt": "2026-11-24T19:39:07+09:00",
       "approved": true,
       "approvedAt": "2026-11-24T08:49:16.565Z",
       "scheduledUploadAt": "2026-11-24T18:00:00+09:00",
-      "publishedAt": "2026-11-24T18:08:42+09:00"
+      "publishedAt": "2026-11-24T19:39:07+09:00",
+      "instagramUrl": "https://www.instagram.com/p/DgHwpa9ExS-/"
     },
     {
       "id": "beauty-brief-01",
@@ -225,11 +226,12 @@
       "subtitle": "올리브영 첫 색조 특화 매장 컬러 그라운드 홍대",
       "coverThumb": "covers/beauty-pick-01-cover.png",
       "jsonPath": "data/beauty-pick-01.json",
-      "updatedAt": "2026-11-24T17:18:42+09:00",
+      "updatedAt": "2026-11-24T19:48:32+09:00",
       "approved": true,
-      "publishedAt": "2026-11-24T12:38:00+09:00",
+      "publishedAt": "2026-11-24T19:48:32+09:00",
       "approvedAt": "2026-11-24T03:19:58.320Z",
-      "scheduledUploadAt": "2026-11-24T12:19:00+09:00"
+      "scheduledUploadAt": "2026-11-24T12:19:00+09:00",
+      "instagramUrl": "https://www.instagram.com/p/DgHxuUlE9qP/"
     }
   ]
 }
