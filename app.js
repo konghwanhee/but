@@ -2719,9 +2719,13 @@ function modOutlets(source) {
 }
 function tailRight(text, yBase, size, color) {
   if (!text) return;
-  var sz = size || 14, maxW = (CR - MX) * 0.66;
-  while (sz > 9 && measure(text, sz, 'medium') > maxW) sz -= 1;
-  drawText(text, CR, yBase, sz, 'medium', color || MOD_TAIL_COLOR, 'rs');
+  var sz = size || 14, maxW = (CR - MX) * 0.66, t = String(text);
+  while (sz > 11 && measure(t, sz, 'medium') > maxW) sz -= 1;
+  if (measure(t, sz, 'medium') > maxW) {
+    while (t.length > 1 && measure(t + '…', sz, 'medium') > maxW) t = t.slice(0, -1);
+    t = t.replace(/[\s·]+$/, '') + '…';
+  }
+  drawText(t, CR, yBase, sz, 'medium', color || MOD_TAIL_COLOR, 'rs');
 }
 function tailOffset(bodySize, bodyWt, lead) {
   var lt = inkSpan(MOD_LABEL_SIZE, 'bold'), bt = inkSpan(bodySize, bodyWt);
