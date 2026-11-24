@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-24T11:16:30.012Z",
+  "generatedAt": "2026-11-24T16:28:40.477Z",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -29,7 +29,7 @@
       "subtitle": "의료기기 · 의약품 · 화장품, 허가가 가르는 판매처와 표시 문구",
       "coverThumb": "covers/beauty-point-02-cover.png",
       "jsonPath": "data/beauty-point-02.json",
-      "updatedAt": "2026-11-24T17:18:42+09:00",
+      "updatedAt": "2026-11-24T16:28:40.477Z",
       "approved": true,
       "publishedAt": null,
       "approvedAt": "2026-11-22T11:06:35.756Z",
