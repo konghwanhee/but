@@ -4490,7 +4490,9 @@ function slideSpec(s, i) {
   var base = [], mid = [], tail = [];
   base.push({ t: 'text', path: ['label'], label: '라벨 (예: 01 · 기준)', rows: 1 });
   base.push({ t: 'lines', path: ['headline'], label: '헤드라인' });
-  if (s.body !== undefined) base.push({ t: 'text', path: ['body'], label: '본문', rows: 3 });
+  // 확인(check) 장표의 body 는 장표 맨 아래 안내 줄이라, 제목·본문이 아니라 확인 항목 칸 끝에서 고친다.
+  var checkBodyInGroup = fam === 'pick' && kind === 'check';
+  if (s.body !== undefined && !checkBodyInGroup) base.push({ t: 'text', path: ['body'], label: '본문', rows: 3 });
 
   function push(o) { mid.push(o); }
   if (fam === 'brief') {
@@ -4648,6 +4650,8 @@ function slideSpec(s, i) {
         n.push({ t: 'text', path: ['body'], label: '본문', rows: 3 });
         return n;
       } });
+      // 장표 맨 아래 안내 줄(예: 07 CHECK 의 "보고 싶은 층을 …"). 비우면 캔버스에서 바로 사라진다.
+      push({ t: 'text', path: ['body'], label: '하단 안내 문구 (장표 맨 아래)', rows: 2, hint: '비우면 하단 줄이 사라짐 · 다시 쓰면 그 자리에 다시 나옴' });
     } else if (kind === 'closing') {
       push({ t: 'text', path: ['cta'], label: '저장·공유 유도 문구', rows: 2 });
       push({ t: 'text', path: ['sources_label'], label: '출처 라벨', rows: 1, hint: '기본 SOURCES', seed: 'SOURCES' });
