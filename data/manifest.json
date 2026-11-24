@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-23T23:14:22.000Z",
+  "generatedAt": "2026-11-24T03:11:15.046Z",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -209,7 +209,7 @@
       "subtitle": "올리브영 첫 색조 특화 매장 컬러 그라운드 홍대",
       "coverThumb": "covers/beauty-pick-01-cover.png",
       "jsonPath": "data/beauty-pick-01.json",
-      "updatedAt": "2026-11-24T08:10:00+09:00",
+      "updatedAt": "2026-11-24T03:11:15.046Z",
       "approved": true,
       "approvedAt": "2026-11-23T22:57:37.571Z",
       "scheduledUploadAt": "2026-11-24T07:57:00+09:00",
