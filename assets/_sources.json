@@ -216,6 +216,13 @@
     "h": 1350,
     "bytes": 232634
   },
+  "assets/classys_mono.png": {
+    "sha1": "bad6e2114caad873c34586e0d60c9746157cc2d4",
+    "source": "downloads/brand-src/classys_mono.png",
+    "w": 900,
+    "h": 233,
+    "bytes": 3867
+  },
   "assets/clio_logo.png": {
     "sha1": "93f0234c58f93cd5ca41d12d775eddd7b87f5584",
     "source": "downloads/beauty-point-logos/clio_logo.png",
@@ -257,6 +264,13 @@
     "w": 900,
     "h": 236,
     "bytes": 36566
+  },
+  "assets/cosmax_mono.png": {
+    "sha1": "6bac7758c0ba2e970bd78dd1487c65073092163d",
+    "source": "downloads/brand-src/cosmax_mono.png",
+    "w": 660,
+    "h": 236,
+    "bytes": 2750
   },
   "assets/cosmax_sh.jpg": {
     "sha1": "0eefc88f1fd53b2c1d98675be6da38ffbc31a72a",
@@ -594,6 +608,13 @@
     "h": 3447,
     "bytes": 249538
   },
+  "assets/oligio_mono.png": {
+    "sha1": "8c826a7256229616df3c9172b08e983a3c42e1ea",
+    "source": "downloads/brand-src/oligio_mono.png",
+    "w": 261,
+    "h": 98,
+    "bytes": 1111
+  },
   "assets/oliveyoung_logo.png": {
     "sha1": "8bd21375926c25e4613a24355a88325a0a86a96b",
     "source": "downloads/brand-src/oliveyoung_logo.png",
@@ -649,6 +670,13 @@
     "w": 900,
     "h": 324,
     "bytes": 40703
+  },
+  "assets/oy_festa_cover.jpg": {
+    "sha1": "75f796addc824846a5e8660a85e7920793165587",
+    "source": "downloads/brief-02-src/oy_festa_cover.jpg",
+    "w": 974,
+    "h": 1218,
+    "bytes": 340260
   },
   "assets/panel-1f.jpg": {
     "sha1": "cd721102dfbeb0aaedba36d207ce31ab5d73c362",
