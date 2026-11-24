@@ -558,5 +558,8 @@
   "approved": true,
   "approvedAt": "2026-11-22T11:06:35.756Z",
   "scheduledUploadAt": "2026-11-25T08:00:00+09:00",
-  "publishedAt": null
+  "publishedAt": "2026-11-25T08:52:00+09:00",
+  "uploaded": true,
+  "uploadedAt": "2026-11-25T08:52:00+09:00",
+  "instagramUrl": "https://www.instagram.com/p/DgJLaytEyL8/"
 }

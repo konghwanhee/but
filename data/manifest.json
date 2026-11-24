@@ -29,11 +29,12 @@
       "subtitle": "의료기기 · 의약품 · 화장품, 허가가 가르는 판매처와 표시 문구",
       "coverThumb": "covers/beauty-point-02-cover.png",
       "jsonPath": "data/beauty-point-02.json",
-      "updatedAt": "2026-11-24T16:28:40.477Z",
+      "updatedAt": "2026-11-25T08:52:00+09:00",
       "approved": true,
-      "publishedAt": null,
+      "publishedAt": "2026-11-25T08:52:00+09:00",
       "approvedAt": "2026-11-22T11:06:35.756Z",
-      "scheduledUploadAt": "2026-11-25T08:00:00+09:00"
+      "scheduledUploadAt": "2026-11-25T08:00:00+09:00",
+      "instagramUrl": "https://www.instagram.com/p/DgJLaytEyL8/"
     },
     {
       "id": "beauty-point-03",
