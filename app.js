@@ -103,17 +103,63 @@ function blockBase(size, weight, top, bottom, n, lead, lastSize, lastWeight) {
   return (top + bottom) / 2 - h / 2 - a;
 }
 function cellBase(size, weight, top, bottom) { return blockBase(size, weight, top, bottom, 1, 0); }
-/* 표 블록 위·아래에 같은 값으로 쓸 여백 */
+/* --- 표 위·아래 여백 28~56px 범위 고정 (2026-11-24 환희 님 확정) -------------
+   파이썬 `scripts/table_layout.py` 와 같은 식. 넉넉하면 기본값(44px)에서 멈춰 위에
+   붙이고 남는 공간은 아래 숨 공간으로, 28~56px 사이라면 양쪽을 같은 값으로, 모자라면
+   28px를 지키고 행 최소 높이를 허용선(36px)까지 줄인다. */
+var GAP_MIN = 28, GAP_MAX = 56, GAP_DEFAULT = 44, ROW_FLOOR = 36;
+function clampGap(g) {
+  var v = (g === undefined || g === null || isNaN(Number(g))) ? GAP_DEFAULT : Number(g);
+  return Math.max(GAP_MIN, Math.min(GAP_MAX, v));
+}
+function balancedGap(space, need, gap) {
+  var g0 = clampGap(gap), room = (space - need) / 2;
+  if (room >= GAP_MAX) return Math.max(GAP_MIN, Math.min(g0, GAP_MAX));
+  if (room >= GAP_MIN) return room;
+  return GAP_MIN;
+}
+/* 표 블록 계획 — 여백은 28px 아래로 깎지 않고 행 최소 높이를 2px씩 줄여 지킨다 */
 function planBlock(topAvail, bottomAvail, headH, nRows, minRowH, gap, minGap, rowCap) {
-  var space = bottomAvail - topAvail;
-  var need = headH + nRows * (minRowH || 44);
-  var g = Math.max(minGap || 12, Math.min(gap || 44, (space - need) / 2));
-  var rowH = (bottomAvail - g - (topAvail + g + headH)) / Math.max(1, nRows);
-  if (rowCap && rowH > rowCap) {
-    rowH = rowCap;
-    g = Math.max(minGap || 12, (space - (headH + rowH * nRows)) / 2);
-  }
-  return { top: topAvail + g, rowH: rowH, gap: g };
+  var space = bottomAvail - topAvail, n = Math.max(1, nRows);
+  var mh = Number(minRowH || 44), floor = ROW_FLOOR;
+  while (mh > floor && (space - (headH + n * mh)) / 2 < GAP_MIN) mh = Math.max(floor, mh - 2);
+  var g = balancedGap(space, headH + n * mh, gap);
+  var rowH = (space - 2 * g - headH) / n;
+  if (rowCap && rowH > rowCap) rowH = rowCap;
+  return { top: topAvail + g, rowH: rowH, gap: g, tight: rowH < mh - 0.5 };
+}
+/* 표 아래에 각주(belowH)·밴드(bandH)가 있는 장표 — 아래 여백도 위와 같은 값이 된다 */
+function planWithBelow(topAvail, limit, headH, nRows, belowH, bandH, gap, minRowH, rowCap) {
+  return planBlock(topAvail, limit - (belowH || 0) - (bandH || 0), headH, nRows, minRowH, gap, undefined, rowCap);
+}
+/* 라벨 잉크 아래 ~ 본문 첫 줄 잉크 위 — 본문 줄 잉크 간격보다 7px 넓게 */
+function inkLineGap(size, weight, lead) {
+  var s = inkSpan(size, weight);
+  return Math.max(0, lead - (s.bottom - s.top));
+}
+var LABEL_BODY_EXTRA = 16, LABEL_BODY_MIN = 24;
+function labelBodyGap(size, weight, lead, extra) {
+  var e = (extra === undefined || extra === null) ? LABEL_BODY_EXTRA : extra;
+  return Math.max(inkLineGap(size, weight, lead) + e, LABEL_BODY_MIN);
+}
+/* 상단 라벨 + 본문 박스 (박스 위·아래 여백 같게) */
+function labelBox(labelSize, labelWt, bodySize, bodyWt, lead, n, padTop, extra) {
+  var lt = inkSpan(labelSize, labelWt), bt = inkSpan(bodySize, bodyWt);
+  var gap = labelBodyGap(bodySize, bodyWt, lead, extra);
+  var labelBase = padTop - lt.top;
+  var first = labelBase + lt.bottom + gap - bt.top;
+  var h = first + lead * (Math.max(1, n) - 1) + bt.bottom + padTop;
+  return { labelBase: labelBase, first: first, h: h };
+}
+/* 높이가 정한 밴드 안에 라벨+본문 블록을 잉크 기준 세로 가운데로 */
+function stackBox(labelSize, labelWt, bodySize, bodyWt, lead, n, height, padMin, extra) {
+  var lt = inkSpan(labelSize, labelWt), bt = inkSpan(bodySize, bodyWt);
+  var gap = labelBodyGap(bodySize, bodyWt, lead, extra);
+  var blockH = (lt.bottom - lt.top) + gap + (bt.bottom - bt.top) + lead * (Math.max(1, n) - 1);
+  var pm = padMin === undefined ? 14 : padMin, top;
+  if (blockH + 2 * pm <= height) top = Math.min(Math.max((height - blockH) / 2, pm), height - blockH - pm);
+  else top = Math.max(0, (height - blockH) / 2);
+  return { labelBase: top - lt.top, first: top - lt.top + lt.bottom + gap - bt.top, blockH: blockH };
 }
 
 /* --- 문장부호 기준 줄바꿈 (kr_wrap.py 이식) ------------------------------- */
@@ -802,13 +848,17 @@ function takeaway(text, height, label, limit) {
   var lines = wrapText(text, fsize, 'bold', CR - MX - 76);
   var n = lines.length;
   var gap = h === 104 ? 32 : 33;
-  var first = y0 + h / 2 - gap * (n - 1) / 2 + (h === 104 ? 12 : 10);
+  var first;
   if (label) {
     var kc = String(KEY).replace('#', '');
     var rr = parseInt(kc.slice(0, 2), 16) / 255, gg = parseInt(kc.slice(2, 4), 16) / 255, bb = parseInt(kc.slice(4, 6), 16) / 255;
     var lum = 0.2126 * rr + 0.7152 * gg + 0.0722 * bb;
-    tracked(label, MX + 34, y0 + (h === 104 ? 28 : 30), 15, 'bold', lum > 0.15 ? KEY : WHITE, 3);
-    first += h === 104 ? 10 : 12;
+    /* 라벨과 첫 줄 사이를 본문 줄 간격보다 넓게, 밴드 위·아래는 같게 (2026-11-24) */
+    var sb = stackBox(15, 'bold', fsize, 'bold', gap, n, h, 14, 8);
+    tracked(label, MX + 34, y0 + sb.labelBase, 15, 'bold', lum > 0.15 ? KEY : WHITE, 3);
+    first = y0 + sb.first;
+  } else {
+    first = blockBase(fsize, 'bold', y0 + 14, y0 + h - 14, n, gap, fsize, 'bold');
   }
   for (var i = 0; i < n; i++) drawText(lines[i], MX + 34, first + i * gap, fsize, 'bold', WHITE, 'ls');
   return base;
@@ -1135,7 +1185,7 @@ function drawVisualPoint(s) {
 /* ---------------------------------------------------------------- 6. 뷰티 포인트 장표 */
 function pTable(s, headLast) {
   var spec = s.table || {}, cols = spec.columns || [], rows = spec.rows || [];
-  var gapP = Number(spec.table_gap === undefined ? (s.table_gap === undefined ? 44 : s.table_gap) : spec.table_gap);
+  var gapP = clampGap(spec.table_gap === undefined ? (s.table_gap === undefined ? GAP_DEFAULT : s.table_gap) : spec.table_gap);
   var ncol = cols.length || 1;
   var raw = (spec.widths && spec.widths.length) ? spec.widths : new Array(ncol).fill(1);
   var tot = raw.reduce(function (a, b) { return a + Number(b); }, 0) || 1;
@@ -1148,25 +1198,11 @@ function pTable(s, headLast) {
     var bs0 = Number(s.body_size || 24);
     prevInk = headLast - (Math.round(bs0 * 1.62) - inkSpan(bs0, 'regular').bottom);
   } else {
-    prevInk = headLast + inkSpan(Number(s.head_size || 62), 'extrabold').bottom;
+    prevInk = headLast + inkSpan(Number(s.__headSize || 62), 'extrabold').bottom;
   }
-  var top = Math.max(prevInk + Number(s.gap_after_head === undefined ? gapP : s.gap_after_head),
-                     Number(s.__visFloor || 0));
-  drawRule(top);
-  var headTop = top + 22, headH = Number(spec.head_height || 54);
-  _ctx.fillStyle = INK; _ctx.fillRect(MX, headTop, CR - MX, headH);
-  var fh = Number(spec.head_size || 21), x = MX;
-  var headBase = cellBase(fh, 'bold', headTop, headTop + headH);
-  cols.forEach(function (c, j) {
-    var align = spec.align && spec.align[j] === 'r';
-    var tx = align ? x + widths[j] - 18 : x + (j ? 18 : 20);
-    drawText(c, tx, headBase, fh, 'bold', WHITE, align ? 'rs' : 'ls');
-    x += widths[j];
-  });
-  var listTop = headTop + headH;
+  var headH = Number(spec.head_height || 54), headHT = 22 + headH;
   var bandH = s.takeaway ? 112 : 0;
-  var avail = (s.__limit || CTM) - listTop - (bandH ? bandH + gapP : 0);
-  var rowH = avail / Math.max(1, rows.length);
+  var limitP = (s.__limit || CTM), floorP = Number(s.__visFloor || 0);
   var boost = Number(spec.key_size_boost === undefined ? 2 : spec.key_size_boost);
   var size = Number(spec.cell_size || 24);
   while (size > 17) {
@@ -1184,6 +1220,36 @@ function pTable(s, headLast) {
     if (ok) break;
     size -= 1;
   }
+  /* 표 위·아래 여백 28~56px 범위 고정 — 세로가 빠듯하면 글자를 1px씩 줄여 지킨다 */
+  var size0 = size, plan = null;
+  for (var extra = 0; extra < 4; extra++) {
+    var szc = Math.max(17, size0 - extra);
+    var leadC = Math.round(szc * 1.36);
+    var linesMax = 1;
+    rows.forEach(function (rr) { (rr || []).forEach(function (cc) { linesMax = Math.max(linesMax, String(cc).split('\n').length); }); });
+    var inkH = inkSpan(szc, 'medium').bottom - inkSpan(szc, 'medium').top;
+    var contentH = inkH + leadC * (linesMax - 1) + 28;
+    plan = planWithBelow(Math.max(prevInk, floorP - gapP), limitP, headHT, rows.length, 0, bandH,
+                         gapP, contentH, spec.row_height);
+    if (!plan.tight || floorP > prevInk + gapP) break;
+    size = szc;
+  }
+  size = Math.max(17, size0 - extra);
+  var top = Math.max(plan.top, floorP);
+  var rowH = Math.max(1, (limitP - bandH - plan.gap - (top + headHT)) / Math.max(1, rows.length));
+  gapP = plan.gap;
+  drawRule(top);
+  var headTop = top + 22;
+  _ctx.fillStyle = INK; _ctx.fillRect(MX, headTop, CR - MX, headH);
+  var fh = Number(spec.head_size || 21), x = MX;
+  var headBase = cellBase(fh, 'bold', headTop, headTop + headH);
+  cols.forEach(function (c, j) {
+    var align = spec.align && spec.align[j] === 'r';
+    var tx = align ? x + widths[j] - 18 : x + (j ? 18 : 20);
+    drawText(c, tx, headBase, fh, 'bold', WHITE, align ? 'rs' : 'ls');
+    x += widths[j];
+  });
+  var listTop = headTop + headH;
   var leadT = Math.round(size * 1.36);
   for (var i = 0; i < rows.length; i++) {
     var y0 = listTop + rowH * i, cy = y0 + rowH / 2;
@@ -1565,7 +1631,15 @@ function pLineupTable(s, headLast) {
   var items = s.products || [], n = Math.max(1, items.length);
   var lim = s.__limit || CTM;
   var bandH = s.takeaway ? 112 : 0;
-  var top = Math.max(headLast + Number(s.gap_after_head === undefined ? 20 : s.gap_after_head), 0);
+  /* 표 위 여백은 28~56px 범위 고정 — 앞 블록 잉크 아래에서 잰다 (2026-11-24) */
+  var prevInkL = headLast;
+  if (s.body) {
+    var bsL = Number(s.body_size || 24);
+    prevInkL = headLast - (Math.round(bsL * 1.62) - inkSpan(bsL, 'regular').bottom);
+  } else {
+    prevInkL = headLast + inkSpan(Number(s.__headSize || 62), 'extrabold').bottom;
+  }
+  var top = Math.max(prevInkL + clampGap(s.gap_after_head === undefined ? GAP_DEFAULT : s.gap_after_head), 0);
   var headH = Number(s.head_row_h === undefined ? 54 : s.head_row_h);
   var swW = Number(s.swatch_w === undefined ? 168 : s.swatch_w), swH = Number(s.swatch_h === undefined ? 96 : s.swatch_h);
   var gapA = Number(s.gap_a === undefined ? 12 : s.gap_a), nameW = Number(s.name_w === undefined ? 196 : s.name_w);
@@ -1596,7 +1670,7 @@ function pLineupTable(s, headLast) {
     _ctx.fillStyle = INK; _ctx.fillRect(MX, top + 25, CR - MX, 1);
     rowsTop = top + headH;
   }
-  var rowH = (lim - bandH - (bandH ? 26 : 0) - rowsTop) / n;
+  var rowH = (lim - bandH - (bandH ? GAP_MIN : 0) - rowsTop) / n;
   for (var k = 0; k < n; k++) {
     if (tint && k % 2 === 1) {
       _ctx.fillStyle = tint;
@@ -1956,12 +2030,7 @@ function tDuo(s, headLast) {
 function tTable(s, headLast) {
   var spec = s.table || {}, cols = spec.columns || [], rows = spec.rows || [];
   /* 표 위·아래 여백을 같은 값으로 (파이썬 make_table 과 같은 식, 2026-11-24) */
-  var gap = Number(spec.table_gap === undefined ? (s.table_gap === undefined ? 44 : s.table_gap) : spec.table_gap);
-  var prevBottom = headLast + 6;
-  if (s.body) {
-    var bodyY = headLast + Number(s.gap_after_head === undefined ? 44 : s.gap_after_head) + 10;
-    prevBottom = bodyTextTech(s.body, bodyY, s.body_size || 22) + 4;
-  }
+  var gap = clampGap(spec.table_gap === undefined ? (s.table_gap === undefined ? GAP_DEFAULT : s.table_gap) : spec.table_gap);
   var ncol = cols.length || 1;
   var raw = (spec.widths && spec.widths.length) ? spec.widths : new Array(ncol).fill(1);
   var tot = raw.reduce(function (a, b) { return a + Number(b); }, 0) || 1;
@@ -1969,14 +2038,43 @@ function tTable(s, headLast) {
   var keyCells = {};
   (spec.key_cells || []).forEach(function (cc) { keyCells[cc[0] + ',' + cc[1]] = true; });
   var headH = Number(spec.head_height || 52);
+  /* 앞 요소(헤드라인·본문)의 잉크 아래 끝 — 여기서 28~56px를 띄운다 */
+  var prevBottom = headLast + inkSpan(Number(s.__headSize || 60), 'extrabold').bottom;
+  if (s.body) {
+    var bodySizeT = Number(s.body_size || 22);
+    var bodyY = headLast + Number(s.gap_after_head === undefined ? 44 : s.gap_after_head) + 10;
+    prevBottom = bodyTextTech(s.body, bodyY, bodySizeT) + inkSpan(bodySizeT, 'regular').bottom;
+  }
   var note = s.note || '';
   var noteLines = note ? wrapText(note, 18, 'medium', CR - MX) : [];
-  var noteH = noteLines.length ? gap + 34 + 27 * (noteLines.length - 1) : 0;
-  var bandH = s.takeaway ? 138 : 0;
-  var bottomAvail = CTM - bandH - noteH;
-  var plan = planBlock(prevBottom, bottomAvail, headH, rows.length,
-                       Number(spec.row_min === undefined ? 78 : spec.row_min), gap, 20,
-                       Number(spec.row_height === undefined ? 152 : spec.row_height));
+  var noteH = 0;
+  if (noteLines.length) noteH = (inkSpan(18, 'medium').bottom - inkSpan(18, 'medium').top) + 27 * (noteLines.length - 1);
+  var bandH = s.takeaway ? 130 : 0;
+  var sizeT = Number(spec.cell_size || 22);
+  while (sizeT > 15) {
+    var okwT = true;
+    for (var r0 = 0; r0 < rows.length && okwT; r0++) {
+      for (var j0 = 0; j0 < rows[r0].length; j0++) {
+        if (measure(String(rows[r0][j0]).split('\n')[0], sizeT, 'medium') > widths[j0] - 32) { okwT = false; break; }
+      }
+    }
+    if (okwT) break;
+    sizeT -= 1;
+  }
+  var rowMinT = Number(spec.row_min === undefined ? 78 : spec.row_min);
+  var rowCapT = Number(spec.row_height === undefined ? 152 : spec.row_height);
+  var plan = null, extraT = 0;
+  for (extraT = 0; extraT < 4; extraT++) {
+    var szT = Math.max(15, sizeT - extraT);
+    var leadT2 = Math.round(szT * 1.32);
+    var linesMaxT = 1;
+    rows.forEach(function (rr) { (rr || []).forEach(function (cc) { linesMaxT = Math.max(linesMaxT, String(cc).split('\n').length); }); });
+    var contentHT = (leadT2 - (inkSpan(szT, 'medium').bottom - inkSpan(szT, 'medium').top)) * (linesMaxT - 1) + 32 + 19;
+    plan = planWithBelow(prevBottom, CTM, headH, rows.length, noteH, bandH, gap,
+                         Math.max(rowMinT, contentHT), rowCapT);
+    if (!plan.tight) break;
+  }
+  sizeT = Math.max(15, sizeT - extraT);
   var top = plan.top, rowH = plan.rowH;
   gap = plan.gap;
   _ctx.fillStyle = INK; _ctx.fillRect(MX, top, CR - MX, headH);
@@ -1987,19 +2085,7 @@ function tTable(s, headLast) {
     x += widths[j];
   });
   var listTop = top + headH;
-  var size = Number(spec.cell_size || 22);
-  while (size > 15) {
-    var ok = true;
-    for (var r = 0; r < rows.length && ok; r++) {
-      for (var j2 = 0; j2 < rows[r].length; j2++) {
-        var parts = String(rows[r][j2]).split('\n');
-        for (var p = 0; p < parts.length; p++) if (measure(parts[p], size, 'medium') > widths[j2] - 32) { ok = false; break; }
-        if (!ok) break;
-      }
-    }
-    if (ok) break;
-    size -= 1;
-  }
+  var size = sizeT;
   var lead = Math.round(size * 1.32);
   for (var i = 0; i < rows.length; i++) {
     var y0 = listTop + rowH * i;
@@ -2494,8 +2580,9 @@ function renderIndex(c) {
 function chartTitle(spec, box) {
   var title = spec.title;
   if (!title) return box.y;
-  drawText(title, box.x, box.y + 14, 20, 'bold', GRAY_SOFT, 'ls');
-  return box.y + 48;
+  /* 제목 잉크 위 끝을 상자 위 끝에 맞춘다 — 표 위 여백을 상자 위에서 잰다 (2026-11-24) */
+  drawText(title, box.x, box.y - inkSpan(16, 'bold').top, 16, 'bold', '#A0A0A0', 'ls');
+  return box.y + 40;
 }
 function chartBarV(spec, box) {
   var x0 = box.x, y0 = box.y, w = box.w, h = box.h;
@@ -2539,37 +2626,58 @@ function chartBarH(spec, box) {
   });
 }
 function chartTable(spec, box) {
+  /* B안 표 (2026-11-24 확정): 회색 제목 + 헤어라인, 톤다운 헤더(1px 상·하 실선,
+     미디엄 그레이). 표 위·아래 여백은 바깥 레이아웃이 28~56px로 고정한다. */
   var x0 = box.x, y0 = box.y, w = box.w, h = box.h;
-  var top = chartTitle(spec, box);
   var cols = spec.columns || [], rows = spec.rows || [];
   var align = spec.align || [];
   var widths = spec.widths;
   if (!widths) widths = new Array(cols.length).fill(w / Math.max(1, cols.length));
-  else { var s = widths.reduce(function (a, b) { return a + Number(b); }, 0) || 1; widths = widths.map(function (ww) { return Number(ww) / s * w; }); }
-  var n = rows.length, headH = 68;
-  var avail = y0 + h - top - headH - 24;
-  var rowH = avail / Math.max(1, n);
-  if (spec.row_height) rowH = Math.min(spec.row_height, rowH);
-  var cellSize = spec.cell_size || 25;
-  /* 머리글은 괘선 윗 구역에 잉크 세로 가운데 — 위·아래 여백 같게 (파이썬 chart_table 과 같은 식) */
-  var headBase = cellBase(20, 'bold', top, top + headH - 10), x = x0;
+  else { var sw = widths.reduce(function (a, b) { return a + Number(b); }, 0) || 1; widths = widths.map(function (ww) { return Number(ww) / sw * w; }); }
+  var n = Math.max(1, rows.length), headH = TABLE_HEAD_H;
+  var y = y0;
+  if (spec.title) {
+    drawText(spec.title, x0, y - inkSpan(16, 'bold').top, 16, 'bold', '#A0A0A0', 'ls');
+    y += 26;
+  }
+  _ctx.fillStyle = INK; _ctx.fillRect(x0, y, w, 1);
+  var headTop = y + 1, x = x0;
+  var headBase = cellBase(Number(spec.head_size || 16), 'medium', headTop, headTop + headH - 1);
   cols.forEach(function (c, j) {
     var right = align[j] === 'r';
-    drawText(c, right ? x + widths[j] : x, headBase, 20, 'bold', '#8F8F8F', right ? 'rs' : 'ls');
+    drawText(c, right ? x + widths[j] : x, headBase, Number(spec.head_size || 16), 'medium', '#6B7280', right ? 'rs' : 'ls');
     x += widths[j];
   });
-  _ctx.fillStyle = INK; _ctx.fillRect(x0, top + headH - 10, w, 1);
+  var headBot = headTop + headH;
+  _ctx.fillStyle = '#DCDCDC'; _ctx.fillRect(x0, headBot, w, 1);
+  var rowsTop = headBot + 1;
+  var cellSize = Number(spec.cell_size || 23);
+  while (cellSize > 16) {
+    var okw = true;
+    for (var r = 0; r < rows.length && okw; r++) {
+      for (var j2 = 0; j2 < rows[r].length; j2++) {
+        if (measure(String(rows[r][j2]), cellSize, 'medium') > widths[j2] - 8) { okw = false; break; }
+      }
+    }
+    if (okw) break;
+    cellSize -= 1;
+  }
+  var rowH = Math.max(1, (y0 + h - rowsTop - 1) / n);
   rows.forEach(function (row, i) {
-    var rTop = top + headH + rowH * i, rBot = top + headH + rowH * (i + 1), xx = x0;
+    var rTop = rowsTop + rowH * i, rBot = rTop + rowH, xx = x0;
     for (var j = 0; j < cols.length; j++) {
       var right = align[j] === 'r';
-      var wt = j === 0 ? 'bold' : 'regular';
+      var wt = j === 0 ? (spec.label_bold ? 'bold' : 'medium') : 'medium';
       var yb = cellBase(cellSize, wt, rTop, rBot);
-      drawText(row[j] === undefined ? '' : row[j], right ? xx + widths[j] : xx, yb, cellSize, wt, j === 0 ? INK : GRAY_BODY, right ? 'rs' : 'ls');
+      drawText(row[j] === undefined ? '' : row[j], right ? xx + widths[j] : xx, yb, cellSize, wt,
+               j === 0 ? INK : GRAY_BODY, right ? 'rs' : 'ls');
       xx += widths[j];
     }
-    if (i < n - 1) { _ctx.fillStyle = '#EDEDED'; _ctx.fillRect(x0, rBot + 2, w, 1); }
+    if (i < n - 1) { _ctx.fillStyle = '#F1F1F1'; _ctx.fillRect(x0, rBot, w, 1); }
   });
+  var last = rowsTop + rowH * n;
+  _ctx.fillStyle = '#DCDCDC'; _ctx.fillRect(x0, last, w, 1);
+  return last;
 }
 function chartTimeline(spec, box) {
   var x0 = box.x, y0 = box.y, w = box.w, h = box.h;
@@ -2587,6 +2695,39 @@ function chartTimeline(spec, box) {
 }
 var CHARTS = { bar_v: chartBarV, bar_h: chartBarH, table: chartTable, timeline: chartTimeline };
 
+/* --- 본문 B안 (2026-11-24 환희 님 확정) ------------------------------------
+   본문 · 반론 · 표를 헤어라인 모듈로 나누고, 모듈마다 13px 트래킹 회색 꼬리표를 단다.
+   꼬리표 줄 우측에는 발간지(본문)·매체명(반론)을 같은 폰트·크기·색으로 나란히 둔다. */
+var MOD_LABEL_SIZE = 13, MOD_LABEL_TRACK = 3, MOD_LABEL_COLOR = '#A0A0A0';
+var MOD_TAIL_COLOR = '#9A9A9A', MOD_HAIR = '#E5E7EB';
+var MOD_TOP_GAP = 40, MOD_RULE_GAP = 32, MOD_AFTER_RULE = 32, MOD_TABLE_GAP = 40;
+var TABLE_BOTTOM = 1163, TABLE_HEAD_H = 40, TABLE_MIN_ROW = 46;
+var COUNTER_LEAD = 28, COUNTER_SIZE = 20;
+
+function modOutlets(source) {
+  var s = String(source || '').trim();
+  if (!s) return '';
+  var keep = [];
+  s.split('·').forEach(function (part) {
+    var t = part.trim();
+    if (!t) return;
+    if (/^\d{4}[.\-\/]\d{1,2}[.\-\/]\d{1,2}$/.test(t)) return;
+    if (/^\d{4}년/.test(t) && t.length <= 16) return;
+    keep.push(t);
+  });
+  return keep.join(' · ');
+}
+function tailRight(text, yBase, size, color) {
+  if (!text) return;
+  var sz = size || 14, maxW = (CR - MX) * 0.66;
+  while (sz > 9 && measure(text, sz, 'medium') > maxW) sz -= 1;
+  drawText(text, CR, yBase, sz, 'medium', color || MOD_TAIL_COLOR, 'rs');
+}
+function tailOffset(bodySize, bodyWt, lead) {
+  var lt = inkSpan(MOD_LABEL_SIZE, 'bold'), bt = inkSpan(bodySize, bodyWt);
+  return (lt.bottom - lt.top) + labelBodyGap(bodySize, bodyWt, lead) - bt.top;
+}
+
 function briefSlide(s, idx, total) {
   _ctx.fillStyle = WHITE; _ctx.fillRect(0, 0, W, H);
   var lines = s.headline || [];
@@ -2601,22 +2742,39 @@ function briefSlide(s, idx, total) {
   while (headlineWidth(lines.map(segments), hsize, 'extrabold') > maxW && hsize > minHead) hsize -= 2;
   var hgap = Math.round(hsize * 1.24);
   var hFirst = 206 + 96, hLast = hFirst + hgap * (lines.length - 1);
-  var ruleY = hLast + 52, bFirst = ruleY + 62;
-  if (media) bFirst = Math.max(bFirst, media.y + media.h + 54);
+  var hInkBottom = hLast + inkSpan(hsize, 'extrabold').bottom;
+
   var bodyText = s.body || '', chart = s.chart;
-  var reserve = media ? 240 : 260;
-  var bodyMaxW = W - MX * 2 - 4;
-  var cand = [[Number(s.body_size || 29), null], [28, 43], [27, 41], [26, 39], [25, 37]];
-  var picked = null;
-  for (var i = 0; i < cand.length; i++) {
-    var bs = cand[i][0], bgap = cand[i][1] || Math.round(bs * 1.55);
-    var bLines = wrapText(bodyText, bs, 'regular', bodyMaxW);
-    var bLast = bFirst + bgap * Math.max(0, bLines.length - 1);
-    var chartTop = bLast + 50, chartH = 1178 - chartTop;
-    picked = { bs: bs, bgap: bgap, lines: bLines, bLast: bLast, chartTop: chartTop, chartH: chartH, bFirst: bFirst, ruleY: ruleY, hsize: hsize, hgap: hgap, hFirst: hFirst };
-    if (!chart || chartH >= reserve) break;
+  var nRows = (chart && chart.type === 'table') ? (chart.rows || []).length : 0;
+  var reserve = nRows ? (26 + TABLE_HEAD_H + TABLE_MIN_ROW * nRows + 8) : (chart ? 200 : 0);
+  var topY = hInkBottom + MOD_TOP_GAP;
+  if (media) topY = Math.max(topY, media.y + media.h + 46);
+
+  var counterText = s.counter_note || '';
+  var ctrSize = Number(s.counter_size || COUNTER_SIZE);
+  var ctrLines = counterText ? wrapText(counterText, ctrSize, 'regular', W - MX * 2) : [];
+  var ctrOff = tailOffset(ctrSize, 'regular', COUNTER_LEAD);
+  var cs = inkSpan(ctrSize, 'regular');
+  var ctrH = (cs.bottom - cs.top) + COUNTER_LEAD * Math.max(0, ctrLines.length - 1) + 18;
+
+  var cand = [[29, 45], [28, 43], [27, 41], [26, 40], [25, 38], [24, 36], [23, 34], [22, 32]];
+  var L = null;
+  for (var ci = 0; ci < cand.length; ci++) {
+    var bs = cand[ci][0], bgap = cand[ci][1];
+    var bLines = bodyText ? wrapText(bodyText, bs, 'regular', W - MX * 2 - 4) : [];
+    var bFirst = bLines.length ? topY + tailOffset(bs, 'regular', bgap) : topY;
+    var bBottom = bLines.length ? bFirst + bgap * (bLines.length - 1) + inkSpan(bs, 'regular').bottom : topY;
+    var rule1 = bBottom + MOD_RULE_GAP;
+    var ctrTop = rule1 + MOD_AFTER_RULE;
+    var ctrBottom = counterText ? ctrTop + ctrH : rule1;
+    var rule2 = ctrBottom + MOD_RULE_GAP;
+    var chartTop = (counterText ? rule2 : rule1) + MOD_TABLE_GAP;
+    var chartH = TABLE_BOTTOM - chartTop;
+    L = { bs: bs, bgap: bgap, lines: bLines, bFirst: bFirst, bBottom: bBottom,
+          rule1: rule1, ctrTop: ctrTop, ctrBottom: ctrBottom, rule2: rule2,
+          chartTop: chartTop, chartH: chartH };
+    if ((!chart || chartH >= reserve) && chartH > 120) break;
   }
-  var L = picked;
   if (s.brand_logo) {
     var bl = s.brand_logo, im = getImage(bl.image);
     if (imgOk(im)) {
@@ -2634,14 +2792,31 @@ function briefSlide(s, idx, total) {
     var headPart = k >= 0 ? label.slice(0, k) : label;
     x += tracked(headPart, x, 206, fL, 'bold', INK, 2) + 12;
     if (k >= 0) {
-      x += tracked('·', x, 206, fL, 'bold', '#C0C0C0', 2) + 12;
-      tracked(label.slice(k + 3), x, 206, fL, 'bold', GRAY_SOFT, 2);
+      x += tracked('·', x, fL, 'bold', '#C0C0C0', 2) + 12;
+      tracked(label.slice(k + 3), x, fL, 'bold', GRAY_SOFT, 2);
     }
   }
-  drawHeadlines(lines.map(segments), MX, L.hFirst, L.hgap, L.hsize, { ink: INK, gray: GRAY_EMPH });
-  var ruleW = media ? Math.min(88, maxW) : 88;
-  _ctx.fillStyle = '#D5D5D5'; _ctx.fillRect(MX, L.ruleY, Math.max(40, ruleW), 2);
-  for (var j = 0; j < L.lines.length; j++) drawText(L.lines[j], MX, L.bFirst + j * L.bgap, L.bs, 'regular', GRAY_BODY, 'ls');
+  drawHeadlines(lines.map(segments), MX, hFirst, hgap, hsize, { ink: INK, gray: GRAY_EMPH });
+
+  /* 본문 모듈 — 꼬리표(좌 `본문`) + 발간지(우) */
+  var labTop = L.bFirst - (L.lines.length ? tailOffset(L.bs, 'regular', L.bgap) : 0);
+  if (L.lines.length) {
+    var yLab = labTop - inkSpan(MOD_LABEL_SIZE, 'bold').top;
+    tracked(('본문'), MX, yLab, MOD_LABEL_SIZE, 'bold', MOD_LABEL_COLOR, MOD_LABEL_TRACK);
+    tailRight(modOutlets(s.source), yLab, 14);
+    for (var j = 0; j < L.lines.length; j++) drawText(L.lines[j], MX, L.bFirst + j * L.bgap, L.bs, 'regular', GRAY_BODY, 'ls');
+    _ctx.fillStyle = MOD_HAIR; _ctx.fillRect(MX, Math.round(L.rule1), CR - MX, 1);
+  }
+  /* 반론 모듈 — 꼬리표 + 매체명 */
+  if (counterText) {
+    var yC = L.ctrTop - inkSpan(MOD_LABEL_SIZE, 'bold').top;
+    tracked(s.counter_label || '반론 · 해명', MX, yC, MOD_LABEL_SIZE, 'bold', MOD_LABEL_COLOR, MOD_LABEL_TRACK);
+    tailRight(s.counter_source || '', yC, 14);
+    for (var q = 0; q < ctrLines.length; q++) {
+      drawText(ctrLines[q], MX, L.ctrTop + ctrOff + q * COUNTER_LEAD, ctrSize, 'regular', GRAY_BODY, 'ls');
+    }
+    _ctx.fillStyle = MOD_HAIR; _ctx.fillRect(MX, Math.round(L.rule2), CR - MX, 1);
+  }
   if (chart) {
     var fn = CHARTS[chart.type || 'table'];
     if (fn) fn(chart, { x: MX, y: L.chartTop, w: W - MX * 2, h: L.chartH });
@@ -2759,6 +2934,7 @@ function pFooter(page, total, source, dark) {
   var t = page + ' / ' + pad2(total);
   tracked(t, P_RIGHT - trackedW(t, 17, 'medium', 2), 1252, 17, 'medium', muted, 2);
 }
+var _pHeadInk = 0;
 function pHeadText(lines, top, size, fill, maxW) {
   var arr = (lines || []).map(function (l) { return Array.isArray(l) ? l.join('') : String(l); });
   var mw = maxW || P_CW, over = true, guard = 0;
@@ -2768,9 +2944,16 @@ function pHeadText(lines, top, size, fill, maxW) {
     if (over) size -= 2;
   }
   var lh = Math.round(size * 1.16);
-  for (var j = 0; j < arr.length; j++) drawText(arr[j], P_MX, top + j * lh + size * 0.82, size, 'extrabold', fill, 'ls');
+  var lastBase = top;
+  for (var j = 0; j < arr.length; j++) {
+    lastBase = top + j * lh + size * 0.82;
+    drawText(arr[j], P_MX, lastBase, size, 'extrabold', fill, 'ls');
+  }
+  /* 마지막 줄 잉크의 아래 끝 — 표·박스가 여기서 28~56px를 잰다 (2026-11-24) */
+  _pHeadInk = arr.length ? lastBase + inkSpan(size, 'extrabold').bottom : top;
   return top + lh * arr.length;
 }
+function pHeadInkBottom() { return _pHeadInk; }
 function pLead(text, top, maxW, dark, size) {
   size = size || 27;
   var lines = wrapText(text || '', size, 'bold', (maxW || P_CW) - 28);
@@ -3032,7 +3215,8 @@ function pickDiagram(s, page, total) {
 function pickTable(s, page, total) {
   pHead(page, s.label, false);
   var y = pHeadText(s.headline, 258, 72, P_INK);
-  var top = Math.max(y + 40, 480);
+  /* 표 위 여백은 28~56px 범위 고정 — 헤드라인 잉크 아래 끝에서 (2026-11-24) */
+  var top = pHeadInkBottom(s) + GAP_DEFAULT;
   var widths = s.widths || [36, 30, 22, 12];
   if (widths.length !== 4) widths = [36, 30, 22, 12];
   widths = widths.map(function (w2) { return Number(w2) || 0; });
@@ -3065,12 +3249,11 @@ function pickTable(s, page, total) {
     rowTop += rowH;
   });
   pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
-  var noteY = rowTop + 40;
-  if (s.note) {
-    var nl = wrapText(s.note, 19, 'regular', P_CW);
-    for (var j = 0; j < nl.length; j++) drawText(nl[j], P_MX, noteY + j * 28 + 16, 19, 'regular', pA(P_INK, 0.52), 'ls');
-  }
-  pTakeaway(s.takeaway, noteY + 74, false);
+  var gap = GAP_DEFAULT;
+  var noteY = rowTop + gap;
+  var nl = s.note ? wrapText(s.note, 19, 'regular', P_CW) : [];
+  for (var j = 0; j < nl.length; j++) drawText(nl[j], P_MX, noteY + j * 28 + 16, 19, 'regular', pA(P_INK, 0.52), 'ls');
+  pTakeaway(s.takeaway, noteY + nl.length * 28 + gap - 12, false);
   pFooter(page, total, s.source, false);
   pProgress(total, Number(page) || 5, false);
 }
@@ -3223,7 +3406,7 @@ function pickFloor(s, page, total) {
     drawText(lead[i], P_MX + 28, ansTop + i * lh + 27 * 0.8, 27, 'bold', P_INK, 'ls');
   }
   /* 표 위 여백과 표 아래(각주) 여백을 같은 값으로 (파이썬 make_floor 와 같은 식) */
-  var gap = Number(s.table_gap === undefined ? 44 : s.table_gap);
+  var gap = clampGap(s.table_gap === undefined ? GAP_DEFAULT : s.table_gap);
   var ansBottom = ansTop + lh * (lead.length - 1) + 27 * 0.8 + inkSpan(27, 'bold').bottom;
   var top = ansBottom + gap;
   // 표는 3열 고정(층 · 무엇이 있나 · 대표 체험·공간). 폭 배열이나 열 이름이 어긋나도 기본값으로 그린다.
@@ -3510,6 +3693,7 @@ function renderSlidePage(s, idx, total, family) {
       if (panelMode) s.__bodyRight = r.x - 34;
     }
   }
+  s.__headSize = head.size || 62;
   var kind = s.kind || 'table';
   var fn = family === 'tech' ? TECH_KINDS[kind] : POINT_KINDS[kind];
   if (!fn) fn = family === 'tech' ? TECH_KINDS.table : POINT_KINDS.table;
