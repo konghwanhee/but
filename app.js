@@ -4651,7 +4651,7 @@ function slideSpec(s, i) {
         return n;
       } });
       // 장표 맨 아래 안내 줄(예: 07 CHECK 의 "보고 싶은 층을 …"). 비우면 캔버스에서 바로 사라진다.
-      push({ t: 'text', path: ['body'], label: '하단 안내 문구 (장표 맨 아래)', rows: 2, hint: '비우면 하단 줄이 사라짐 · 다시 쓰면 그 자리에 다시 나옴' });
+      push({ t: 'text', path: ['body'], label: '하단 안내 문구', rows: 2, hint: '비우면 장표에서 사라짐' });
     } else if (kind === 'closing') {
       push({ t: 'text', path: ['cta'], label: '저장·공유 유도 문구', rows: 2 });
       push({ t: 'text', path: ['sources_label'], label: '출처 라벨', rows: 1, hint: '기본 SOURCES', seed: 'SOURCES' });
