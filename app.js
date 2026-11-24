@@ -2697,8 +2697,11 @@ var CHARTS = { bar_v: chartBarV, bar_h: chartBarH, table: chartTable, timeline: 
 
 /* --- 본문 B안 (2026-11-24 환희 님 확정) ------------------------------------
    본문 · 반론 · 표를 헤어라인 모듈로 나누고, 모듈마다 13px 트래킹 회색 꼬리표를 단다.
-   꼬리표 줄 우측에는 발간지(본문)·매체명(반론)을 같은 폰트·크기·색으로 나란히 둔다. */
+   꼬리표 줄 우측에는 발간지(본문)·취재 매체(덧붙이는 말)를 같은 폰트·크기·색으로 나란히 둔다.
+   서브 모듈 라벨은 2026-11-24 환희 님 지시로 `덧붙이는 말` 하나로 통일 —
+   JSON에 counter_label(반론 · 유보·유의 · 용어·원 보도 ...)이 남아 있어도 무시한다. */
 var MOD_LABEL_SIZE = 13, MOD_LABEL_TRACK = 3, MOD_LABEL_COLOR = '#A0A0A0';
+var MOD_COUNTER_LABEL = '덧붙이는 말';
 var MOD_TAIL_COLOR = '#9A9A9A', MOD_HAIR = '#E5E7EB';
 var MOD_TOP_GAP = 40, MOD_RULE_GAP = 32, MOD_AFTER_RULE = 32, MOD_TABLE_GAP = 40;
 var TABLE_BOTTOM = 1163, TABLE_HEAD_H = 40, TABLE_MIN_ROW = 46;
@@ -2811,10 +2814,10 @@ function briefSlide(s, idx, total) {
     for (var j = 0; j < L.lines.length; j++) drawText(L.lines[j], MX, L.bFirst + j * L.bgap, L.bs, 'regular', GRAY_BODY, 'ls');
     _ctx.fillStyle = MOD_HAIR; _ctx.fillRect(MX, Math.round(L.rule1), CR - MX, 1);
   }
-  /* 반론 모듈 — 꼬리표 + 매체명 */
+  /* 덧붙이는 말 모듈 — 꼬리표(`덧붙이는 말`) + 취재 매체 */
   if (counterText) {
     var yC = L.ctrTop - inkSpan(MOD_LABEL_SIZE, 'bold').top;
-    tracked(s.counter_label || '반론 · 해명', MX, yC, MOD_LABEL_SIZE, 'bold', MOD_LABEL_COLOR, MOD_LABEL_TRACK);
+    tracked(MOD_COUNTER_LABEL, MX, yC, MOD_LABEL_SIZE, 'bold', MOD_LABEL_COLOR, MOD_LABEL_TRACK);
     tailRight(s.counter_source || '', yC, 14);
     for (var q = 0; q < ctrLines.length; q++) {
       drawText(ctrLines[q], MX, L.ctrTop + ctrOff + q * COUNTER_LEAD, ctrSize, 'regular', GRAY_BODY, 'ls');
