@@ -3633,29 +3633,45 @@ function pickClosing(s, page, total) {
     drawText(s.cta, P_MX + 22, y + 58, ctaSize, 'bold', 'rgba(255,255,255,0.93)', 'ls');
     y += 82;
   }
-  var sy = Math.max(y + 26, 896);
+  /* 아래 블록은 아래에서 위로 앉힌다 (2026-11-24) — 다른 페이지 footer()와 같은
+     기준선(y=1252)을 쓰고, 그 위 disclaimer·SOURCES가 최소 28px 여백을 지킨다. */
+  var FOOT_BASE = 1252;
+  var topRef = Math.max(y + 26, 896);
+  var disc = (D && D.disclaimer) || '';
+  var planC = null, candP = [[15, 20, 16, 20], [14, 19, 15, 19], [13, 18, 14, 18], [13, 17, 14, 17], [12, 16, 13, 16]];
+  for (var ci = 0; ci < candP.length; ci++) {
+    var ss = candP[ci][0], sp = candP[ci][1], ds = candP[ci][2], dp = candP[ci][3];
+    var df2 = ds;
+    var dl = disc ? wrapText(disc, ds, 'regular', P_CW) : [];
+    var discBottom = FOOT_BASE - 40;
+    var discFirst = discBottom - inkSpan(ds, 'regular').bottom - dp * Math.max(0, dl.length - 1);
+    var sl = [];
+    (s.sources || []).forEach(function (src) {
+      wrapText('· ' + src, ss, 'regular', P_CW - 10).forEach(function (ln) { sl.push(ln); });
+    });
+    var needB = topRef + 38 + sp * Math.max(0, sl.length - 1) + inkSpan(ss, 'regular').bottom;
+    var limitB = dl.length ? (discFirst + inkSpan(ds, 'regular').top - 28) : (FOOT_BASE - 40);
+    planC = { ss: ss, sp: sp, ds: ds, dp: dp, dl: dl, discFirst: discFirst, sl: sl };
+    if (needB <= limitB) break;
+  }
+  var sy = topRef;
+  var needB2 = sy + 38 + planC.sp * Math.max(0, planC.sl.length - 1) + inkSpan(planC.ss, 'regular').bottom;
+  var limitB2 = planC.dl.length ? (planC.discFirst + inkSpan(planC.ds, 'regular').top - 28) : (FOOT_BASE - 40);
+  if (needB2 > limitB2 && sy - (needB2 - limitB2) >= y + 20) sy -= (needB2 - limitB2);
   tracked(s.sources_label || 'SOURCES', P_MX, sy, 14, 'medium', 'rgba(255,255,255,0.43)', 4);
   pHLine(P_MX, sy + 11, P_MX + 38, sy + 11, 'rgba(255,255,255,0.31)', 1);
   var yy = sy + 26;
-  (s.sources || []).forEach(function (src) {
-    var lines = wrapText('· ' + src, 15, 'regular', P_CW - 10);
-    for (var j = 0; j < lines.length; j++) {
-      drawText(lines[j], P_MX, yy + 12, 15, 'regular', 'rgba(255,255,255,0.56)', 'ls');
-      yy += 20;
-    }
-  });
-  var disc = (D && D.disclaimer) || '';
-  if (disc) {
-    var dl = wrapText(disc, 15, 'regular', P_CW);
-    var dy = Math.min(Math.max(yy + 22, 1186), 1216);
-    for (var k = 0; k < dl.length; k++) {
-      drawText(dl[k], P_MX, dy + k * 20 + 11, 15, 'regular', 'rgba(255,255,255,0.41)', 'ls');
-    }
+  for (var q0 = 0; q0 < planC.sl.length; q0++) {
+    drawText(planC.sl[q0], P_MX, yy + 12, planC.ss, 'regular', 'rgba(255,255,255,0.56)', 'ls');
+    yy += planC.sp;
+  }
+  for (var k = 0; k < planC.dl.length; k++) {
+    drawText(planC.dl[k], P_MX, planC.discFirst + k * planC.dp, planC.ds, 'regular', 'rgba(255,255,255,0.41)', 'ls');
   }
   var f2 = String((D && D.series) || 'BEAUTY PICK') + ' · ' + String((D && D.date) || '');
-  tracked(f2, P_MX, 1316, 15, 'medium', 'rgba(255,255,255,0.47)', 2);
+  tracked(f2, P_MX, FOOT_BASE, 17, 'medium', 'rgba(255,255,255,0.55)', 2);
   var t2 = page + ' / ' + pad2(total);
-  tracked(t2, P_RIGHT - trackedW(t2, 15, 'medium', 2), 1316, 15, 'medium', 'rgba(255,255,255,0.47)', 2);
+  tracked(t2, P_RIGHT - trackedW(t2, 17, 'medium', 2), FOOT_BASE, 17, 'medium', 'rgba(255,255,255,0.55)', 2);
   pProgress(total, Number(page) || total, true);   // 마무리 장표도 진행 바(100%)
 }
 
