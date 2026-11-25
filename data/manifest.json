@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-25T07:10:00Z",
+  "generatedAt": "2026-11-25T18:14:26+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -200,6 +200,18 @@
       "approvedAt": "2026-11-24T03:19:58.320Z",
       "scheduledUploadAt": "2026-11-24T12:19:00+09:00",
       "instagramUrl": "https://www.instagram.com/p/DgHxuUlE9qP/"
+    },
+    {
+      "id": "beauty-pick-02",
+      "series": "pick",
+      "seriesLabel": "뷰티 픽",
+      "issueNo": 2,
+      "date": "2026-11-25",
+      "title": "콜라겐 주사, 맞기 전에 알아야 할 것",
+      "subtitle": "〈추적 60분〉이 파헤친 콜라겐 부스터의 두 얼굴",
+      "coverThumb": "covers/beauty-pick-02-cover.png",
+      "jsonPath": "data/beauty-pick-02.json",
+      "updatedAt": "2026-11-25T18:14:24+09:00"
     }
   ]
 }

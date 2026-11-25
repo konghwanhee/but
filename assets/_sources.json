@@ -230,6 +230,13 @@
     "h": 118,
     "bytes": 3725
   },
+  "assets/closing-band.png": {
+    "sha1": "87bddd094b00064d89ca0935a4f713d2de09ed7f",
+    "source": "downloads/pick-02-art/closing-band.png",
+    "w": 1080,
+    "h": 470,
+    "bytes": 2550
+  },
   "assets/cosmax_bk.jpg": {
     "sha1": "06075fa627a8a75484f405b90b87b55a196c0657",
     "source": "downloads/beauty-point-07-src/cosmax_bk.jpg",
@@ -313,6 +320,13 @@
     "w": 1536,
     "h": 1024,
     "bytes": 158163
+  },
+  "assets/cover.jpg": {
+    "sha1": "8c968979b9621e18e68e955ad2b006d97bac05d7",
+    "source": "downloads/pick-02-art/cover.png",
+    "w": 1080,
+    "h": 1350,
+    "bytes": 49807
   },
   "assets/cover_fit.jpg": {
     "sha1": "e5aa940985a40084edcbbdee0e43e6ab8fc46ab2",
