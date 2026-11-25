@@ -1,8 +1,21 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-25T03:40:00Z",
+  "generatedAt": "2026-11-25T15:00:00Z",
   "decks": [
+    {
+      "id": "beauty-brief-2026-11-30",
+      "series": "briefing",
+      "seriesLabel": "뷰티 브리핑",
+      "issueNo": 1,
+      "date": "2026-11-30",
+      "title": "검수용 임시 항목",
+      "subtitle": "DAILY BRIEFING · 날짜 표기 검수 (곧 삭제)",
+      "coverThumb": "covers/beauty-brief-2026-11-30-cover.png",
+      "jsonPath": "data/beauty-brief-2026-11-30.json",
+      "updatedAt": "2026-11-25T15:00:00+09:00",
+      "approved": false
+    },
     {
       "id": "beauty-point-01",
       "series": "point",
