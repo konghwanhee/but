@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-25T03:10:00Z",
+  "generatedAt": "2026-11-25T03:25:00Z",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -200,19 +200,6 @@
       "approvedAt": "2026-11-24T03:19:58.320Z",
       "scheduledUploadAt": "2026-11-24T12:19:00+09:00",
       "instagramUrl": "https://www.instagram.com/p/DgHxuUlE9qP/"
-    },
-    {
-      "id": "beauty-brief-test",
-      "series": "briefing",
-      "seriesLabel": "뷰티 브리핑",
-      "issueNo": null,
-      "date": "2026-11-25",
-      "title": "새 형식 검수",
-      "subtitle": "C3 목차 · B3 본문 · 선형 그래프",
-      "coverThumb": "covers/beauty-brief-test-cover.png",
-      "jsonPath": "data/beauty-brief-test.json",
-      "updatedAt": "2026-11-25T12:30:00+09:00",
-      "isTest": true
     }
   ]
 }
