@@ -56,19 +56,6 @@
         }
       ],
       "body": "눈 밑 꺼짐과 꺼진 볼을 채우는 데 씁니다. K-뷰티 열풍과 함께 시술은 늘었고, 부작용 사례도 늘고 있습니다.",
-      "stickers": [
-        {
-          "image": "assets/kbs-02-tourists.jpg",
-          "x": 566,
-          "y": 202,
-          "w": 360,
-          "h": 202,
-          "tilt": 1.5,
-          "focus_x": 0.5,
-          "focus_y": 0.45,
-          "credit": "KBS 1TV"
-        }
-      ],
       "takeaway": "많이 맞는 시술일수록, 무엇을 맞는지가 먼저입니다.",
       "source": "자료 · KBS 1TV 〈추적 60분〉 1481회(2026.11.20)"
     },
@@ -172,32 +159,35 @@
         }
       ],
       "body": "피부과 전·현직 종사자 설문과 내부 증언에서 나온 이야기입니다.",
-      "rule_right": 604,
-      "stickers": [
-        {
-          "image": "assets/kbs-01-syringe.jpg",
-          "x": 620,
-          "y": 458,
-          "w": 320,
-          "h": 180,
-          "tilt": -1.8,
-          "focus_x": 0.46,
-          "focus_y": 0.38,
-          "credit": "KBS 1TV"
-        },
-        {
-          "image": "assets/kbs-03-clinic.jpg",
-          "x": 628,
-          "y": 700,
-          "w": 320,
-          "h": 180,
-          "tilt": 1.6,
-          "focus_x": 0.45,
-          "focus_y": 0.45,
-          "credit": "KBS 1TV"
-        }
-      ],
-      "source": "자료 · KBS 1TV 〈추적 60분〉 1481회(2026.11.20)"
+      "source": "자료 · KBS 1TV 〈추적 60분〉 1481회(2026.11.20)",
+      "photo_pair": {
+        "images": [
+          {
+            "image": "assets/kbs-01-syringe.jpg",
+            "focus_x": 0.46,
+            "focus_y": 0.36,
+            "credit": "KBS 1TV"
+          },
+          {
+            "image": "assets/kbs-03-clinic.jpg",
+            "focus_x": 0.5,
+            "focus_y": 0.42,
+            "credit": "KBS 1TV"
+          }
+        ],
+        "gap": 44,
+        "tilts": [
+          0,
+          0
+        ],
+        "gap_above": 18,
+        "bottom": 1160,
+        "size": [
+          430,
+          176
+        ],
+        "frame": false
+      }
     },
     {
       "kind": "age",
@@ -220,31 +210,35 @@
       ],
       "body": "짧은 시술을 받으려던 환자는 새벽 2시에야 깨어났습니다. 계획에 없던 시술이 이어졌고 1,600만 원이 더 결제돼 있었습니다. 프로포폴은 호흡을 억제할 수 있어, 전담 인력과 응급 장비가 필요합니다. 방송에는 청색증과 심정지 증언도 나옵니다.",
       "takeaway": "마취는 편의가 아니라, 안전 설비가 있어야 하는 의료 행위입니다.",
-      "stickers": [
-        {
-          "image": "assets/kbs-04-sedation.jpg",
-          "x": 686,
-          "y": 206,
-          "w": 268,
-          "h": 151,
-          "tilt": 1.4,
-          "focus_x": 0.45,
-          "focus_y": 0.45,
-          "credit": "KBS 1TV"
-        },
-        {
-          "image": "assets/kbs-05-procedure.jpg",
-          "x": 88,
-          "y": 962,
-          "w": 300,
-          "h": 169,
-          "tilt": -1.4,
-          "focus_x": 0.5,
-          "focus_y": 0.45,
-          "credit": "KBS 1TV"
-        }
-      ],
-      "source": "자료 · KBS 1TV 〈추적 60분〉 1481회(2026.11.20)"
+      "source": "자료 · KBS 1TV 〈추적 60분〉 1481회(2026.11.20)",
+      "photo_pair": {
+        "images": [
+          {
+            "image": "assets/kbs-05-procedure.jpg",
+            "focus_x": 0.45,
+            "focus_y": 0.5,
+            "credit": "KBS 1TV"
+          },
+          {
+            "image": "assets/kbs-04-sedation.jpg",
+            "focus_x": 0.55,
+            "focus_y": 0.44,
+            "credit": "KBS 1TV"
+          }
+        ],
+        "gap": 44,
+        "tilts": [
+          0,
+          0
+        ],
+        "gap_above": 18,
+        "bottom": 1160,
+        "size": [
+          430,
+          176
+        ],
+        "frame": false
+      }
     },
     {
       "kind": "table",
