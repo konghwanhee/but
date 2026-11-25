@@ -3283,19 +3283,53 @@ function pickSlide(s, idx, total) {
   _ctx.fillStyle = pPaper(); _ctx.fillRect(0, 0, W, H);
   var page = s.page || pad2(idx);
   var kind = s.kind || 'story';
-  if (kind === 'stats') return pickStats(s, page, total);
-  if (kind === 'diagram') return pickDiagram(s, page, total);
-  if (kind === 'table') return pickTable(s, page, total);
-  if (kind === 'checks') return pickChecks(s, page, total);
-  if (kind === 'notes') return pickNotes(s, page, total);
-  if (kind === 'how') return pickHow(s, page, total);
-  if (kind === 'spot') return pickSpot(s, page, total);
-  if (kind === 'floor') return pickFloor(s, page, total);
-  if (kind === 'scale') return pickScale(s, page, total);
-  if (kind === 'age') return pickAge(s, page, total);
-  if (kind === 'check') return pickCheck(s, page, total);
-  if (kind === 'closing') return pickClosing(s, page, total);
-  return pickStory(s, page, total);
+  var fn = pickStory;
+  if (kind === 'stats') fn = pickStats;
+  else if (kind === 'diagram') fn = pickDiagram;
+  else if (kind === 'table') fn = pickTable;
+  else if (kind === 'checks') fn = pickChecks;
+  else if (kind === 'notes') fn = pickNotes;
+  else if (kind === 'how') fn = pickHow;
+  else if (kind === 'spot') fn = pickSpot;
+  else if (kind === 'floor') fn = pickFloor;
+  else if (kind === 'scale') fn = pickScale;
+  else if (kind === 'age') fn = pickAge;
+  else if (kind === 'check') fn = pickCheck;
+  else if (kind === 'closing') fn = pickClosing;
+  var out = fn(s, page, total);
+  // 방송 캡처·보도 사진 네모 스티커 — scripts/beauty_pick_carousel.py photo_sticker() 와 같은 규격
+  pPickStickers(s);
+  return out;
+}
+
+function pPickStickers(s) {
+  (s.stickers || []).forEach(function (st) {
+    if (!st || !st.image) return;
+    var w = Number(st.w) || 300, h = Number(st.h) || 170;
+    var matte = 7, creditH = 26;
+    var lw = w + matte * 2, lh = h + matte * 2 + creditH;
+    var x = Number(st.x) || 0, y = Number(st.y) || 0;
+    var tilt = st.tilt === undefined ? -1.6 : Number(st.tilt) || 0;
+    _ctx.save();
+    _ctx.translate(x + lw / 2, y + lh / 2);
+    _ctx.rotate(tilt * Math.PI / 180);
+    _ctx.shadowColor = 'rgba(12,8,14,0.30)';
+    _ctx.shadowBlur = 5;
+    _ctx.shadowOffsetX = 3;
+    _ctx.shadowOffsetY = 8;
+    _ctx.fillStyle = '#FFFFFF';
+    _ctx.fillRect(-lw / 2, -lh / 2, lw, lh);
+    _ctx.shadowColor = 'transparent'; _ctx.shadowBlur = 0;
+    _ctx.shadowOffsetX = 0; _ctx.shadowOffsetY = 0;
+    drawCoverCrop(st.image, -lw / 2 + matte, -lh / 2 + matte, w, h,
+      st.focus_x === undefined ? 0.5 : Number(st.focus_x),
+      st.focus_y === undefined ? 0.5 : Number(st.focus_y), 1);
+    _ctx.strokeStyle = pA(P_INK, 0.55); _ctx.lineWidth = 1;
+    _ctx.strokeRect(-lw / 2 + 0.5, -lh / 2 + 0.5, lw - 1, lh - 1);
+    var credit = (st.credit === undefined ? 'KBS 1TV' : String(st.credit)).toUpperCase();
+    if (credit) tracked(credit, -lw / 2 + matte, -lh / 2 + matte + h + 18, 11, 'medium', pA(P_INK, 0.45), 1.6);
+    _ctx.restore();
+  });
 }
 
 function pickNotes(s, page, total) {
@@ -3472,15 +3506,16 @@ function pickChecks(s, page, total) {
   pHead(page, s.label, false);
   var y = pHeadText(s.headline, 252, 72, P_INK);
   var cy = Math.max(y + 26, 452);
+  var ruleR = s.rule_right ? Number(s.rule_right) : P_RIGHT;   // 사진 스티커 오른쪽 열을 비울 때
   (s.items || []).forEach(function (item, idx) {
-    pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
+    pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
     drawText(pad2(idx + 1), P_MX, cy + 50, 20, 'extrabold', pMix(P_INK, pKey(), 0.6), 'ls');
     drawText(item.title, P_MX + 56, cy + 52, 29, 'extrabold', P_INK, 'ls');
     var lines = wrapText(item.body, 23, 'regular', P_CW - 56);
     for (var j = 0; j < lines.length; j++) drawText(lines[j], P_MX + 56, cy + 98 + j * 34, 23, 'regular', pA(P_INK, 0.74), 'ls');
     cy += 98 + lines.length * 34 + 30;
   });
-  pHLine(P_MX, cy, P_RIGHT, cy, pA(P_INK, 0.18), 1);
+  pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
   pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
   pFooter(page, total, s.source, false);
   pProgress(total, Number(page) || 6, false);
