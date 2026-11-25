@@ -2540,7 +2540,7 @@ function renderIndex(c) {
   });
 
   /* 우측 저널 헤더 */
-  tracked("TODAY'S BRIEFING", IX_COL_X, 210, 19, 'extrabold', '#8A8A8A', 6);
+  tracked("DAILY BRIEFING", IX_COL_X, 210, 19, 'extrabold', '#8A8A8A', 6);
   var hf = fitText(ixHead(cfg), 56, 'extrabold', CR - IX_COL_X, 40);
   drawText(hf.text, IX_COL_X, 276, hf.size, 'extrabold', INK, 'ls');
   var headBot = 276 + inkSpan(56, 'extrabold').bottom;
@@ -4048,11 +4048,20 @@ function deckIsTest(d) {
   if (d.isTest === true) return true;
   return String(d.issueNo || '').toUpperCase() === 'TEST';
 }
-/* 갤러리 배지·상세 헤더에 쓰는 호 표기(영문 코드 + 0 없는 호수): POINT 7 / BRIEF 1 / BRIEF TEST / PICK TEST */
+/* 갤러리 배지·상세 헤더에 쓰는 표기.
+   · 뷰티 브리핑은 호수를 쓰지 않고 발행일로만 부른다 — 배지는 `11/30`, 전체 표기는 `2026.11.30`.
+   · 나머지 챕터는 영문 코드 + 0 없는 호수: POINT 7 / TECH 2 / PICK 1 / BRIEF TEST / PICK TEST */
+function isBriefSeries(d) { return !!(d && d.series === 'briefing'); }
+function briefDateShort(d) {
+  var m = String((d && d.date) || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? m[2] + '/' + m[3] : fmtDate(d && d.date);
+}
+function briefDateFull(d) { return fmtDate(d && d.date); }
 function issueLabel(d) {
   var ch = chapterOf(d && d.series);
   var tag = ch.badge || ch.short;
   if (deckIsTest(d)) return tag + ' TEST';
+  if (isBriefSeries(d)) return briefDateShort(d);
   var raw = (d && d.issueNo !== undefined && d.issueNo !== null) ? String(d.issueNo).trim() : '';
   if (!raw) return tag;
   var n = Number(raw);
@@ -5874,8 +5883,9 @@ function showEditor(id) {
   document.getElementById('viewGallery').hidden = true;
   document.getElementById('viewEditor').hidden = false;
   document.getElementById('deckTitle').textContent = meta.title || meta.id;
-  var bits = [issueLabel(meta)];
-  bits.push(fmtDate(meta.date));
+  var bits;
+  if (isBriefSeries(meta) && !deckIsTest(meta)) bits = ['뷰티 브리핑', briefDateFull(meta)];
+  else { bits = [issueLabel(meta)]; bits.push(fmtDate(meta.date)); }
   document.getElementById('deckSub').textContent = bits.join(' · ');
   document.title = (meta.title || meta.id) + ' · 카드뉴스 허브';
   window.scrollTo(0, 0);
