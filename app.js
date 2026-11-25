@@ -3457,47 +3457,93 @@ function pickDiagram(s, page, total) {
 }
 
 function pickTable(s, page, total) {
+  /* 2026-11-26 환희 님 지시로 `안 되면` 열을 빼고 3열(확인할 것 | 이렇게 확인 |
+     막아야 할 것)로 정리했다. 열 수에 상관없이 그리고, 아래 각주·강조 줄·자료 줄을
+     **아래에서 위로** 먼저 앉힌 뒤 남는 높이를 행에 나눈다 — scripts/beauty_pick_carousel.py
+     의 make_table 과 같은 식이라 미리보기에서 문구가 푸터와 겹치지 않는다. */
   pHead(page, s.label, false);
-  var y = pHeadText(s.headline, 258, 72, P_INK);
+  pHeadText(s.headline, 258, 72, P_INK);
   /* 표 위 여백은 28~56px 범위 고정 — 헤드라인 잉크 아래 끝에서 (2026-11-24) */
   var top = pHeadInkBottom(s) + GAP_DEFAULT;
-  var widths = s.widths || [36, 30, 22, 12];
-  if (widths.length !== 4) widths = [36, 30, 22, 12];
-  widths = widths.map(function (w2) { return Number(w2) || 0; });
+  var cols = s.columns || [];
+  var n = cols.length || 3;
+  var widths = (s.widths || []).map(function (w2) { return Number(w2) || 0; });
+  if (widths.length !== n) widths = [26, 46, 28].slice(0, n);
   var xs = [P_MX];
   for (var i = 0; i < widths.length - 1; i++) xs.push(xs[xs.length - 1] + P_CW * widths[i] / 100);
+  var colW = widths.map(function (w2) { return P_CW * w2 / 100; });
+  var HEAD_H = 66, ROW_CAP = 132;
+
+  /* 열별 글꼴 — 첫 열은 확인할 것(굵게), 마지막 열은 막아야 할 것(키 컬러), 가운데는 설명 */
+  var styles = [];
+  for (var si = 0; si < n; si++) {
+    if (si === 0) styles.push({ size: 23, weight: 'bold', ink: P_INK, lead: 32 });
+    else if (si === n - 1 && n > 2) styles.push({ size: 27, weight: 'extrabold', ink: pMix(P_INK, pKey(), 0.5), lead: 34 });
+    else styles.push({ size: 24, weight: 'regular', ink: pA(P_INK, 0.7), lead: 32 });
+  }
+  var rows = s.rows || [];
+  var cellLines = rows.map(function (row) {
+    return styles.map(function (st, i) {
+      return wrapText(String(row[i] === undefined ? '' : row[i]), st.size, st.weight, colW[i] - 14);
+    });
+  });
+
+  /* --- 하단 세 블록을 아래에서 위로 앉힌다 (파이썬과 같은 식) --- */
+  var nl = s.note ? wrapText(s.note, 19, 'regular', P_CW) : [];
+  var tk = s.takeaway ? wrapText(s.takeaway, 24, 'bold', P_CW - 34) : [];
+  var SRC_INK_TOP = 1190, GAP_TK_SRC = 36, GAP_NOTE_TK = 44, TK_LH = 36;
+  var tkSpan = inkSpan(24, 'bold');
+  var tkInkTopOff = TK_LH * 0.72 + tkSpan.top;
+  var tkInkBotOff = TK_LH * 0.72 + (tk.length - 1) * TK_LH + tkSpan.bottom;
+  var tkInkBottom = SRC_INK_TOP - GAP_TK_SRC;
+  var tkTop = tk.length ? tkInkBottom - tkInkBotOff : tkInkBottom;
+  var noteInkBottom = tk.length ? (tkTop + tkInkTopOff - GAP_NOTE_TK) : tkInkBottom;
+  var noteY, tableBottom;
+  if (nl.length) {
+    noteY = noteInkBottom - ((nl.length - 1) * 28 + 16 + inkSpan(19, 'regular').bottom);
+    tableBottom = noteY - GAP_DEFAULT;
+  } else {
+    noteY = noteInkBottom;
+    tableBottom = noteInkBottom - GAP_DEFAULT;
+  }
+
+  var nRows = Math.max(1, rows.length);
+  var tInk = Math.min.apply(null, styles.map(function (st) { return inkSpan(st.size, st.weight).top; }));
+  var rowInk = cellLines.map(function (lines) {
+    return Math.max.apply(null, lines.map(function (ls, i) {
+      return (ls.length - 1) * styles[i].lead + inkSpan(styles[i].size, styles[i].weight).bottom;
+    })) - tInk;
+  });
+  var rowH = (tableBottom - top - HEAD_H) / nRows;
+  rowH = Math.max(Math.max.apply(null, rowInk) + 40, Math.min(rowH, ROW_CAP));
+
   pHLine(P_MX, top, P_RIGHT, top, pA(P_INK, 0.75), 2);
   /* 열 이름 행 — 괘선과 첫 행 사이에 위·아래 같은 여백 (파이썬 make_table 과 같은 식) */
-  var colBase = cellBase(18, 'medium', top, top + 66);
-  (s.columns || []).forEach(function (col, j) {
+  var colBase = cellBase(18, 'medium', top, top + HEAD_H);
+  cols.forEach(function (col, j) {
     tracked(col, xs[j], colBase, 18, 'medium', pA(P_INK, 0.55), 3);
   });
-  var rowTop = top + 66;
-  var nameLead = 30;
-  var tInk = Math.min(inkSpan(20, 'bold').top, inkSpan(22, 'regular').top,
-                      inkSpan(26, 'extrabold').top, inkSpan(21, 'regular').top);
-  (s.rows || []).forEach(function (row) {
-    var nameLines = wrapText(row[0], 20, 'bold', P_CW * (widths[0] || 36) / 100 - 26);
-    var rowH = nameLines.length < 3 ? 132 : 154;
+  var rowTop = top + HEAD_H;
+
+  /* 한 행의 글자(여러 열·여러 줄)를 한 덩이로 보고 잉크의 위·아래 여백이 같아지게 앉힌다 */
+  rows.forEach(function (row, r) {
     pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
-    var bInk = Math.max((nameLines.length - 1) * nameLead + inkSpan(20, 'bold').bottom,
-                        2 + inkSpan(26, 'extrabold').bottom, inkSpan(22, 'regular').bottom,
-                        inkSpan(21, 'regular').bottom);
+    var bInk = Math.max.apply(null, cellLines[r].map(function (ls, i) {
+      return (ls.length - 1) * styles[i].lead + inkSpan(styles[i].size, styles[i].weight).bottom;
+    }));
     var base = rowTop + (rowH - (bInk - tInk)) / 2 - tInk;
-    for (var k = 0; k < nameLines.length; k++) {
-      drawText(nameLines[k], xs[0], base + k * nameLead, 20, 'bold', P_INK, 'ls');
+    for (var i = 0; i < n; i++) {
+      var st = styles[i], ls = cellLines[r][i];
+      for (var k = 0; k < ls.length; k++) {
+        drawText(ls[k], xs[i], base + k * st.lead, st.size, st.weight, st.ink, 'ls');
+      }
     }
-    drawText(row[1], xs[1], base, 22, 'regular', pA(P_INK, 0.7), 'ls');
-    drawText(row[2], xs[2], base + 2, 26, 'extrabold', pMix(P_INK, pKey(), 0.5), 'ls');
-    drawText(row[3], xs[3], base, 21, 'regular', pA(P_INK, 0.7), 'ls');
     rowTop += rowH;
   });
   pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
-  var gap = GAP_DEFAULT;
-  var noteY = rowTop + gap;
-  var nl = s.note ? wrapText(s.note, 19, 'regular', P_CW) : [];
+
   for (var j = 0; j < nl.length; j++) drawText(nl[j], P_MX, noteY + j * 28 + 16, 19, 'regular', pA(P_INK, 0.52), 'ls');
-  pTakeaway(s.takeaway, noteY + nl.length * 28 + gap - 12, false);
+  pTakeaway(s.takeaway, tkTop, false);
   pFooter(page, total, s.source, false);
   pProgress(total, Number(page) || 5, false);
 }
