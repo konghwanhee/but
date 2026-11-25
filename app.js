@@ -3717,7 +3717,8 @@ function pickAge(s, page, total) {
     var ty = y2 + 48;
     pHLine(P_MX, ty, P_RIGHT, ty, pA(P_INK, 0.22), 2);
     /* 작은 표도 머리글·행 모두 잉크 위·아래 여백을 같게 (2026-11-24) */
-    var mBase = blockBase(16, 'medium', ty, ty + 84, 2, 34);
+    var mb0 = blockBase(16, 'medium', ty, ty + 84, 2, 34);
+    var mBase = [mb0, mb0 + 34];   /* blockBase 는 첫 기준선 하나를 돌려준다 */
     tracked(mini.head || '', P_MX, mBase[0], 16, 'medium', pA(P_INK, 0.55), 2);
     var colx = [];
     var mcols = mini.cols || [];
