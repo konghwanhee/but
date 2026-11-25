@@ -329,11 +329,11 @@
     "bytes": 158163
   },
   "assets/cover.jpg": {
-    "sha1": "8c968979b9621e18e68e955ad2b006d97bac05d7",
+    "sha1": "f4cc7e7342c6075d5f9fcca61ee047117eea8918",
     "source": "downloads/pick-02-art/cover.png",
     "w": 1080,
     "h": 1350,
-    "bytes": 49807
+    "bytes": 43120
   },
   "assets/cover_fit.jpg": {
     "sha1": "e5aa940985a40084edcbbdee0e43e6ab8fc46ab2",
