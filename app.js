@@ -3551,26 +3551,100 @@ function pickTable(s, page, total) {
 function pickChecks(s, page, total) {
   pHead(page, s.label, false);
   var y = pHeadText(s.headline, 252, 72, P_INK);
+  // 하단에 사진 두 장이 들어가는 장표는 목록 줄 간격을 조금 조인다(2026-11-26)
+  var pair = s.photo_pair || {};
+  var tight = !!(pair.images && pair.images.length);
   var cy;
   if (s.lead) {   // 앞 장과 이어 주는 설명 한 줄 (scripts/beauty_pick_carousel.make_checks 와 동일)
     y = pLead(s.lead, Math.max(y + 14, 424), 900, false, 26);
-    cy = Math.max(y + 30, 452);
+    cy = Math.max(y + (tight ? 18 : 30), 452);
   } else {
     cy = Math.max(y + 26, 452);
   }
-  var ruleR = s.rule_right ? Number(s.rule_right) : P_RIGHT;   // 사진 스티커 오른쪽 열을 비울 때
+  var rowIn = tight ? 88 : 98, rowTail = tight ? 22 : 30;
+  var ruleR = s.rule_right ? Number(s.rule_right) : P_RIGHT;   // 사진이 붙는 오른쪽 열을 비울 때
   (s.items || []).forEach(function (item, idx) {
     pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
     drawText(pad2(idx + 1), P_MX, cy + 50, 20, 'extrabold', pMix(P_INK, pKey(), 0.6), 'ls');
     drawText(item.title, P_MX + 56, cy + 52, 29, 'extrabold', P_INK, 'ls');
     var lines = wrapText(item.body, 23, 'regular', P_CW - 56);
     for (var j = 0; j < lines.length; j++) drawText(lines[j], P_MX + 56, cy + 98 + j * 34, 23, 'regular', pA(P_INK, 0.74), 'ls');
-    cy += 98 + lines.length * 34 + 30;
+    cy += rowIn + lines.length * 34 + rowTail;
   });
   pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
-  pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
+  var y2 = pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
+  if (tight) pPickPhotoPair(s, y2 + (pair.gap_above === undefined ? 20 : Number(pair.gap_above)));
   pFooter(page, total, s.source, false);
   pProgress(total, Number(page) || 6, false);
+}
+
+/* ---- 뷰티 픽: 하단 방송 스틸컷 2장 (scripts/beauty_pick_carousel.photo_pair 와 같은 규격) ----
+   2026-11-26: 제목 옆 좁은 틈·항목 사이에 끼던 사진을 걷어 내고, 목록·문장 아래 남는
+   여백에 두 장을 **같은 크기로 좌우 정렬**해 앉힌다(기본은 매트·기울기 없이 사진만). */
+function pPickPhotoPair(s, top) {
+  var pp = s.photo_pair || {};
+  var items = pp.images || [];
+  if (!items.length) return;
+  var frame = pp.frame === undefined ? true : !!pp.frame;
+  var matte = frame ? 7 : 0, creditH = frame ? 26 : 0;
+  var tilts = pp.tilts || [-1.2, 1.2];
+  var t = Math.max(Math.abs(tilts[0] || 0), Math.abs(tilts[1] || 0)) * Math.PI / 180;
+  var cosT = Math.cos(t), sinT = Math.sin(t);
+  var bottom = pp.bottom === undefined ? 1176 : Number(pp.bottom);
+  var gap = pp.gap === undefined ? 44 : Number(pp.gap);
+  var availH = bottom - top;
+  if (availH < 70) return;
+  var lwMax = items.length > 1 ? (P_CW - gap) / 2 : P_CW;
+  function foot(w, h) {
+    var lw = w + matte * 2, lh = h + matte * 2 + creditH;
+    return [lw * cosT + lh * sinT, lw * sinT + lh * cosT];
+  }
+  var pick = null;
+  if (pp.size && pp.size.length === 2) {   // 페이지마다 같은 크기로 맞출 때
+    var f0 = foot(Number(pp.size[0]), Number(pp.size[1]));
+    if (f0[0] <= lwMax && f0[1] <= availH) pick = [Number(pp.size[1]), Number(pp.size[0]), f0[0], f0[1]];
+  }
+  if (!pick) {
+    var ideal = (lwMax - matte * 2) / Math.max(1, availH - creditH - matte * 2);
+    var aspect = Math.min(Math.max(ideal, 1.45), 2.30);
+    for (var hh = Math.floor(availH); hh > 79; hh--) {
+      var f1 = foot(hh * aspect, hh);
+      if (f1[0] <= lwMax && f1[1] <= availH) { pick = [hh, hh * aspect, f1[0], f1[1]]; break; }
+    }
+  }
+  if (!pick) return;
+  var h = pick[0], w = pick[1], rw = pick[2], rh = pick[3];
+  var xs = [];
+  if (items.length === 1) { xs = [P_MX + (P_CW - rw) / 2]; tilts = [0]; }
+  else {
+    var total = rw * items.length + gap * (items.length - 1), x0 = P_MX + (P_CW - total) / 2;
+    for (var i = 0; i < items.length; i++) xs.push(x0 + i * (rw + gap));
+  }
+  var y = Math.round(bottom - rh);
+  items.forEach(function (st, i) {
+    if (!st || !st.image) return;
+    var tilt = tilts[i] || 0;
+    if (!frame) {
+      drawCoverCrop(st.image, Math.round(xs[i]), y, Math.round(w), Math.round(h),
+        st.focus_x === undefined ? 0.5 : Number(st.focus_x),
+        st.focus_y === undefined ? 0.5 : Number(st.focus_y), 1);
+      return;
+    }
+    var lw = w + matte * 2, lh = h + matte * 2 + creditH;
+    _ctx.save();
+    _ctx.translate(xs[i] + lw / 2, y + lh / 2);
+    _ctx.rotate(tilt * Math.PI / 180);
+    _ctx.fillStyle = '#FFFFFF';
+    _ctx.fillRect(-lw / 2, -lh / 2, lw, lh);
+    drawCoverCrop(st.image, -lw / 2 + matte, -lh / 2 + matte, w, h,
+      st.focus_x === undefined ? 0.5 : Number(st.focus_x),
+      st.focus_y === undefined ? 0.5 : Number(st.focus_y), 1);
+    _ctx.strokeStyle = pA(P_INK, 0.55); _ctx.lineWidth = 1;
+    _ctx.strokeRect(-lw / 2 + 0.5, -lh / 2 + 0.5, lw - 1, lh - 1);
+    tracked((st.credit === undefined ? 'KBS 1TV' : String(st.credit)).toUpperCase(),
+      -lw / 2 + matte, -lh / 2 + matte + h + 18, 11, 'medium', pA(P_INK, 0.45), 1.6);
+    _ctx.restore();
+  });
 }
 
 /* ---- 뷰티 픽: 매대 비교 도해(02 HOW) ---- */
@@ -3800,6 +3874,11 @@ function pickAge(s, page, total) {
   pHLine(P_MX, bodyTop - 40, P_RIGHT, bodyTop - 40, pA(P_INK, 0.14), 1);
   var y2 = pPara(s.body, P_MX, bodyTop, 25, 40, 900, pA(P_INK, 0.84));
   y2 = pTakeaway(s.takeaway, y2 + 28, false);
+  var pair = s.photo_pair || {};
+  if (pair.images && pair.images.length) {
+    // 강조 문구 아래 남는 여백에 방송 스틸컷 두 장을 같은 크기로 나란히 (2026-11-26)
+    pPickPhotoPair(s, y2 + (pair.gap_above === undefined ? 24 : Number(pair.gap_above)));
+  }
   var mini = s.mini;
   if (mini) {
     var ty = y2 + 48;
