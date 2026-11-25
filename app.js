@@ -4054,7 +4054,7 @@ function deckIsTest(d) {
 function isBriefSeries(d) { return !!(d && d.series === 'briefing'); }
 function briefDateShort(d) {
   var m = String((d && d.date) || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-  return m ? m[2] + '/' + m[3] : fmtDate(d && d.date);
+  return m ? m[2] + '/' + m[3] : (fmtDate(d && d.date) || 'BRIEF');
 }
 function briefDateFull(d) { return fmtDate(d && d.date); }
 function issueLabel(d) {
@@ -5884,8 +5884,10 @@ function showEditor(id) {
   document.getElementById('viewEditor').hidden = false;
   document.getElementById('deckTitle').textContent = meta.title || meta.id;
   var bits;
-  if (isBriefSeries(meta) && !deckIsTest(meta)) bits = ['뷰티 브리핑', briefDateFull(meta)];
-  else { bits = [issueLabel(meta)]; bits.push(fmtDate(meta.date)); }
+  if (isBriefSeries(meta) && !deckIsTest(meta)) {
+    bits = ['뷰티 브리핑'];
+    if (briefDateFull(meta)) bits.push(briefDateFull(meta));
+  } else { bits = [issueLabel(meta)]; bits.push(fmtDate(meta.date)); }
   document.getElementById('deckSub').textContent = bits.join(' · ');
   document.title = (meta.title || meta.id) + ' · 카드뉴스 허브';
   window.scrollTo(0, 0);
