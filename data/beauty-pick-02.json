@@ -9,7 +9,7 @@
   "cover": {
     "page": "01",
     "label": "PICK",
-    "image": "assets/cover.jpg",
+    "image": "assets/cover-8c9689.jpg",
     "focus_y": 0.5,
     "focus_x": 0.5,
     "header_dark": true,
@@ -325,7 +325,7 @@
         "COLLAGEN BOOSTER",
         "CHECK FIRST"
       ],
-      "bg_image": "assets/closing-band-b81390.png",
+      "bg_image": "assets/closing-band-86fcf9.png",
       "bg_focus": 0.5,
       "sources_label": "SOURCES"
     }

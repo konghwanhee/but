@@ -230,6 +230,13 @@
     "h": 118,
     "bytes": 3725
   },
+  "assets/closing-band-86fcf9.png": {
+    "sha1": "86fcf9cdc9b5b4dcd3b07041f10e715239b65c22",
+    "source": "downloads/pick-02-art/closing-band.png",
+    "w": 1080,
+    "h": 470,
+    "bytes": 30582
+  },
   "assets/closing-band-b81390.png": {
     "sha1": "b81390725be71045ea9bc3ac81b4cff9c1d7d5d0",
     "source": "downloads/pick-02-art/closing-band.png",
@@ -313,6 +320,13 @@
     "w": 272,
     "h": 706,
     "bytes": 33951
+  },
+  "assets/cover-8c9689.jpg": {
+    "sha1": "8c968979b9621e18e68e955ad2b006d97bac05d7",
+    "source": "downloads/pick-02-art/cover.png",
+    "w": 1080,
+    "h": 1350,
+    "bytes": 49807
   },
   "assets/cover-label-raw2.jpg": {
     "sha1": "c19954dd7583d090a721052b65a74ee3c5078f99",
