@@ -9,7 +9,7 @@
   "cover": {
     "page": "01",
     "label": "PICK",
-    "image": "assets/cover-8c9689.jpg",
+    "image": "assets/cover.jpg",
     "focus_y": 0.5,
     "focus_x": 0.5,
     "header_dark": true,
