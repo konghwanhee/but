@@ -3505,7 +3505,13 @@ function pickTable(s, page, total) {
 function pickChecks(s, page, total) {
   pHead(page, s.label, false);
   var y = pHeadText(s.headline, 252, 72, P_INK);
-  var cy = Math.max(y + 26, 452);
+  var cy;
+  if (s.lead) {   // 앞 장과 이어 주는 설명 한 줄 (scripts/beauty_pick_carousel.make_checks 와 동일)
+    y = pLead(s.lead, Math.max(y + 14, 424), 900, false, 26);
+    cy = Math.max(y + 30, 452);
+  } else {
+    cy = Math.max(y + 26, 452);
+  }
   var ruleR = s.rule_right ? Number(s.rule_right) : P_RIGHT;   // 사진 스티커 오른쪽 열을 비울 때
   (s.items || []).forEach(function (item, idx) {
     pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
@@ -3735,7 +3741,8 @@ function pickScale(s, page, total) {
 function pickAge(s, page, total) {
   pHead(page, s.label, false);
   var y = pHeadText(s.headline, 250, 70, P_INK);
-  var top = Math.max(y + 40, 452), colGap = 56, cw = (P_CW - colGap) / 2;
+  if (s.lead) y = pLead(s.lead, Math.max(y + 16, 418), 900, false, 26);
+  var top = Math.max(s.lead ? y + 34 : y + 40, 452), colGap = 56, cw = (P_CW - colGap) / 2;
   (s.stats || []).forEach(function (st, i) {
     var cx = P_MX + i * (cw + colGap), size = i === 0 ? 108 : 74;
     while (measure(st.value, size, 'extrabold') > cw - 6 && size > 34) size -= 2;
