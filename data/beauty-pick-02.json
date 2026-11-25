@@ -56,6 +56,19 @@
         }
       ],
       "body": "눈 밑 꺼짐과 꺼진 볼을 채우는 데 씁니다. K-뷰티 열풍과 함께 시술은 늘었고, 부작용 호소도 늘었습니다.",
+      "stickers": [
+        {
+          "image": "assets/kbs-02-tourists.jpg",
+          "x": 566,
+          "y": 202,
+          "w": 360,
+          "h": 202,
+          "tilt": 1.5,
+          "focus_x": 0.5,
+          "focus_y": 0.45,
+          "credit": "KBS 1TV"
+        }
+      ],
       "takeaway": "많이 맞는 시술일수록, 무엇을 맞는지가 먼저입니다.",
       "source": "자료 · KBS 1TV 〈추적 60분〉 1481회(2026.11.20)"
     },
@@ -156,6 +169,31 @@
         }
       ],
       "body": "피부과 전·현직 종사자 설문과 내부 증언에서 나온 이야기입니다.",
+      "rule_right": 604,
+      "stickers": [
+        {
+          "image": "assets/kbs-01-syringe.jpg",
+          "x": 628,
+          "y": 446,
+          "w": 320,
+          "h": 180,
+          "tilt": -1.8,
+          "focus_x": 0.46,
+          "focus_y": 0.38,
+          "credit": "KBS 1TV"
+        },
+        {
+          "image": "assets/kbs-06-review.jpg",
+          "x": 636,
+          "y": 690,
+          "w": 320,
+          "h": 180,
+          "tilt": 1.6,
+          "focus_x": 0.3,
+          "focus_y": 0.42,
+          "credit": "KBS 1TV"
+        }
+      ],
       "source": "자료 · KBS 1TV 〈추적 60분〉 1481회(2026.11.20)"
     },
     {
@@ -178,6 +216,19 @@
       ],
       "body": "짧은 시술을 받으려던 환자는 새벽 2시에야 깨어났습니다. 계획에 없던 시술이 이어졌고 1,600만 원이 더 결제돼 있었습니다. 프로포폴은 호흡을 억제할 수 있어, 전담 인력과 응급 장비가 필요합니다. 방송에는 청색증과 심정지 증언도 나옵니다.",
       "takeaway": "마취는 편의가 아니라, 안전 설비가 있어야 하는 의료 행위입니다.",
+      "stickers": [
+        {
+          "image": "assets/kbs-04-sedation.jpg",
+          "x": 686,
+          "y": 206,
+          "w": 268,
+          "h": 151,
+          "tilt": 1.4,
+          "focus_x": 0.45,
+          "focus_y": 0.45,
+          "credit": "KBS 1TV"
+        }
+      ],
       "mini": {
         "head": "방송에서 지적된 것",
         "cols": [
@@ -277,7 +328,7 @@
         "COLLAGEN BOOSTER",
         "CHECK FIRST"
       ],
-      "bg_image": "assets/closing-band.png",
+      "bg_image": "assets/closing-band-b81390.png",
       "bg_focus": 0.5,
       "sources_label": "SOURCES"
     }

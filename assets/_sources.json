@@ -230,6 +230,13 @@
     "h": 118,
     "bytes": 3725
   },
+  "assets/closing-band-b81390.png": {
+    "sha1": "b81390725be71045ea9bc3ac81b4cff9c1d7d5d0",
+    "source": "downloads/pick-02-art/closing-band.png",
+    "w": 1080,
+    "h": 470,
+    "bytes": 30724
+  },
   "assets/closing-band.png": {
     "sha1": "87bddd094b00064d89ca0935a4f713d2de09ed7f",
     "source": "downloads/pick-02-art/closing-band.png",
@@ -509,6 +516,34 @@
     "w": 715,
     "h": 116,
     "bytes": 8682
+  },
+  "assets/kbs-01-syringe.jpg": {
+    "sha1": "bd9f4bfca991c1d63cc63982e78bf950d5559bc9",
+    "source": "downloads/pick-02-stills/kbs-01-syringe.jpg",
+    "w": 1280,
+    "h": 720,
+    "bytes": 85793
+  },
+  "assets/kbs-02-tourists.jpg": {
+    "sha1": "ed1682a6b6ade8bfbd69edf9a97d2058817486b1",
+    "source": "downloads/pick-02-stills/kbs-02-tourists.jpg",
+    "w": 1280,
+    "h": 720,
+    "bytes": 107047
+  },
+  "assets/kbs-04-sedation.jpg": {
+    "sha1": "e55096f389b1694b02f63e42c323f6fcc640a36f",
+    "source": "downloads/pick-02-stills/kbs-04-sedation.jpg",
+    "w": 1280,
+    "h": 720,
+    "bytes": 63593
+  },
+  "assets/kbs-06-review.jpg": {
+    "sha1": "f54bda0ae45b48f311d3ab48016a04b0cb5c2dcc",
+    "source": "downloads/pick-02-stills/kbs-06-review.jpg",
+    "w": 1280,
+    "h": 720,
+    "bytes": 81230
   },
   "assets/kda_chains.png": {
     "sha1": "663ba389d2c4a86781379337139ac2d6e925d8cf",
