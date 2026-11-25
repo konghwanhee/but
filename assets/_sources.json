@@ -531,12 +531,26 @@
     "h": 720,
     "bytes": 107047
   },
+  "assets/kbs-03-clinic.jpg": {
+    "sha1": "fa9cfb99f84222abf33bb56dc97bb84948e42ea5",
+    "source": "downloads/pick-02-stills/kbs-03-clinic.jpg",
+    "w": 1280,
+    "h": 720,
+    "bytes": 106980
+  },
   "assets/kbs-04-sedation.jpg": {
     "sha1": "e55096f389b1694b02f63e42c323f6fcc640a36f",
     "source": "downloads/pick-02-stills/kbs-04-sedation.jpg",
     "w": 1280,
     "h": 720,
     "bytes": 63593
+  },
+  "assets/kbs-05-procedure.jpg": {
+    "sha1": "a4471ae66ceb318ae24cc81486a83ac0b39116c1",
+    "source": "downloads/pick-02-stills/kbs-05-procedure.jpg",
+    "w": 1280,
+    "h": 720,
+    "bytes": 62707
   },
   "assets/kbs-06-review.jpg": {
     "sha1": "f54bda0ae45b48f311d3ab48016a04b0cb5c2dcc",
