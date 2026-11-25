@@ -200,6 +200,19 @@
       "approvedAt": "2026-11-24T03:19:58.320Z",
       "scheduledUploadAt": "2026-11-24T12:19:00+09:00",
       "instagramUrl": "https://www.instagram.com/p/DgHxuUlE9qP/"
+    },
+    {
+      "id": "beauty-brief-test",
+      "series": "briefing",
+      "seriesLabel": "뷰티 브리핑",
+      "issueNo": null,
+      "date": "2026-11-25",
+      "title": "18건 목차 검수",
+      "subtitle": "카드 축소 확인",
+      "coverThumb": "covers/beauty-brief-test-cover.png",
+      "jsonPath": "data/beauty-brief-test.json",
+      "updatedAt": "2026-11-25T12:35:00+09:00",
+      "isTest": true
     }
   ]
 }
