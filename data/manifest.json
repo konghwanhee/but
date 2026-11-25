@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-25T18:34:38+09:00",
+  "generatedAt": "2026-11-25T18:37:49+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -211,7 +211,7 @@
       "subtitle": "〈추적 60분〉이 파헤친 콜라겐 부스터의 두 얼굴",
       "coverThumb": "covers/beauty-pick-02-cover.png",
       "jsonPath": "data/beauty-pick-02.json",
-      "updatedAt": "2026-11-25T18:34:37+09:00"
+      "updatedAt": "2026-11-25T18:37:47+09:00"
     }
   ]
 }
