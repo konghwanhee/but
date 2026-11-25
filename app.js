@@ -2374,6 +2374,10 @@ function tLineage(s, headLast) {
    scripts/cardnews_carousel.py 와 같은 좌표·같은 식을 쓴다.
    2페이지 목차 = C3 인덱스 카드 블록형 · 본문 = B3 캡슐 라벨 · 세로 악센트형
    (2026-11-25 환희 님 확정). */
+/* ---------------------------------------------------------------- 8. 뷰티 브리핑
+   scripts/cardnews_carousel.py 와 같은 좌표·같은 식을 쓴다.
+   2페이지 목차 = C3 인덱스 카드 블록형 · 본문 = B3 캡슐 라벨 · 세로 악센트형
+   (2026-11-25 환희 님 확정). */
 function frameBrief(page, progress) {
   drawLogo('black', MX, 78, 44);
   if (page) drawText(page, CR, 96, 25, 'medium', GRAY_SOFT, 'rs');
@@ -2719,13 +2723,11 @@ function chartLine(spec, box) {
   var inf = (infRaw !== null && infRaw !== '' && infRaw !== undefined && isFinite(infNum) && infNum >= 0 && infNum < n)
     ? Math.floor(infNum) : null;
 
-  /* 0 기준선 — 음수가 있을 때만 점선 + 좌측 `0` 라벨 */
+  /* 0 기준선 — 음수가 있을 때만 실선(#B0B0B0 2px) + 좌측 `0` 라벨 (점선·세로선 없음) */
   if (hasNeg) {
     var zy = Math.round(ypos(0));
-    for (var zx = x0; zx < x0 + w; zx += 14) {
-      _ctx.fillStyle = '#9A9A9A';
-      _ctx.fillRect(zx, zy, Math.min(8, x0 + w - zx), 1);
-    }
+    _ctx.fillStyle = '#B0B0B0';
+    _ctx.fillRect(x0, zy, w, 2);
     drawText('0', x0 + 2, zy - 7, 14, 'bold', '#9A9A9A', 'ls');
   }
 
