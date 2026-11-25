@@ -2378,6 +2378,10 @@ function tLineage(s, headLast) {
    scripts/cardnews_carousel.py 와 같은 좌표·같은 식을 쓴다.
    2페이지 목차 = C3 인덱스 카드 블록형 · 본문 = B3 캡슐 라벨 · 세로 악센트형
    (2026-11-25 환희 님 확정). */
+/* ---------------------------------------------------------------- 8. 뷰티 브리핑
+   scripts/cardnews_carousel.py 와 같은 좌표·같은 식을 쓴다.
+   2페이지 목차 = C3 인덱스 카드 블록형 · 본문 = B3 캡슐 라벨 · 세로 악센트형
+   (2026-11-25 환희 님 확정). */
 function frameBrief(page, progress) {
   drawLogo('black', MX, 78, 44);
   if (page) drawText(page, CR, 96, 25, 'medium', GRAY_SOFT, 'rs');
@@ -2544,22 +2548,30 @@ function renderIndex(c) {
   drawText(leadFit.text, IX_COL_X, cellBase(18, 'regular', headBot + 4, 344),
     leadFit.size, 'regular', '#5A5A5A', 'ls');
 
-  /* 우측 저널 목차 — 라운드 카드(#F7F7F8), 수치는 우측 정렬 */
+  /* 우측 저널 목차 — 라운드 카드(#F7F7F8), 수치는 우측 정렬.
+     기사 수가 10건을 넘으면 카드 높이·간격을 줄이고, 62px 아래면 분야 줄을 뺀
+     한 줄 카드로 바꿔 18건까지 푸터를 침범하지 않게 한다(Python과 같은 식). */
   if (!n) return;
-  var cardH = 74, gap = 8, total = cardH * n + gap * Math.max(0, n - 1);
-  var top0 = IX_LIST_TOP + Math.max(0, (IX_LIST_BOT - IX_LIST_TOP - total) / 2);
+  var avail = IX_LIST_BOT - IX_LIST_TOP;
+  var gap = n <= 12 ? 8 : 6;
+  var cardH = Math.min(74, (avail - gap * Math.max(0, n - 1)) / Math.max(1, n));
+  var compact = cardH < 62;
+  var tSz = compact ? Math.max(14, Math.min(20, Math.round(cardH * 0.42))) : 22;
+  var total = cardH * n + gap * Math.max(0, n - 1);
+  var top0 = IX_LIST_TOP + Math.max(0, (avail - total) / 2);
   rows.forEach(function (r, i) {
     var top = top0 + (cardH + gap) * i;
     _ctx.fillStyle = '#F7F7F8';
-    _ctx.beginPath(); roundRect(_ctx, IX_COL_X, top, CR - IX_COL_X, cardH, 8); _ctx.fill();
-    var fig = r.figure ? fitText(r.figure, 14, 'bold', 200, 10) : null;
+    _ctx.beginPath(); roundRect(_ctx, IX_COL_X, top, CR - IX_COL_X, cardH, compact ? 6 : 8); _ctx.fill();
+    var fig = r.figure ? fitText(r.figure, compact ? 12 : 14, 'bold', 200, 10) : null;
     var figW = fig ? measure(fig.text, fig.size, 'bold') : 0;
-    var base = r.cat ? blockBase(22, 'bold', top + 6, top + cardH - 6, 2, 26, 13, 'medium')
-      : cellBase(22, 'bold', top + 6, top + cardH - 6);
-    drawText(r.num, IX_COL_X + 22, base, 14, 'extrabold', '#9E9E9E', 'ls');
-    var tf = fitText(r.title, 22, 'bold', CR - 24 - figW - 18 - (IX_COL_X + 54), 12);
+    var base = (r.cat && !compact)
+      ? blockBase(tSz, 'bold', top + 6, top + cardH - 6, 2, 26, 13, 'medium')
+      : cellBase(tSz, 'bold', top + 4, top + cardH - 4);
+    drawText(r.num, IX_COL_X + 22, base, compact ? 12 : 14, 'extrabold', '#9E9E9E', 'ls');
+    var tf = fitText(r.title, tSz, 'bold', CR - 24 - figW - 18 - (IX_COL_X + 54), 12);
     drawText(tf.text, IX_COL_X + 54, base, tf.size, 'bold', INK, 'ls');
-    if (r.cat) {
+    if (r.cat && !compact) {
       var cf = fitText(r.cat, 13, 'medium', CR - (IX_COL_X + 54) - 22, 10);
       drawText(cf.text, IX_COL_X + 54, base + 26, cf.size, 'medium', '#9E9E9E', 'ls');
     }
