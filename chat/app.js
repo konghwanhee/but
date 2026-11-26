@@ -18,7 +18,7 @@ var LS_PAT = 'agentchat:pat';
 var LS_SENDER = 'agentchat:sender';
 var AUTO_MS = 30000;
 
-var SENDERS = { hwanhee: '환희 님', keyring: '키링', pickle: '삐꾸' };
+var SENDERS = { hwanhee: '환희 님', keyring: '끼릿', pickle: '삐꾸' };
 var TYPES = {
   chat: '대화', draft_ready: '요청서 준비', review_done: '검수 완료',
   revision_applied: '수정 반영', hub_ready: '허브 반영', published: '게시 완료'
@@ -260,7 +260,7 @@ function renderList() {
     var me = m.sender === 'hwanhee';
     var cls = 'msg ' + (me ? 'me' : 'them') + (m.sender === 'pickle' ? ' pickle' : '');
     var badge = me ? '' : '<span class="badge ' + (m.sender === 'keyring' ? 'keyring' : 'pickle') + '">' +
-      (m.sender === 'keyring' ? 'KEYRING' : 'PICKLE') + '</span>';
+      (m.sender === 'keyring' ? 'KKIRIT' : 'PPIKKU') + '</span>';
     var tags = '';
     if (m.type && m.type !== 'chat') tags += '<span class="tag type">' + esc(TYPES[m.type] || m.type) + '</span>';
     if (m.stage) tags += '<span class="tag stage">' + esc(STAGES[m.stage] || m.stage) + '</span>';
