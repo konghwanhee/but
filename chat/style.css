@@ -26,7 +26,7 @@ body{
 }
 ::selection{background:rgba(100,33,40,.16)}
 button,select,textarea,input{font-family:inherit;font-size:inherit;color:inherit}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:var(--tint);color:#5f3a3e;padding:1px 5px;border-radius:5px;word-break:break-all}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:var(--tint);color:#5f3a3e;padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
 a{color:var(--accent)}
 
 /* ---------------------------------------------------------------- 공통 버튼 */
@@ -109,8 +109,9 @@ button[disabled]{opacity:.45;cursor:default}
 .chipBtn:hover{border-color:var(--accent-line);color:var(--accent)}
 .chipBtn.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .chipBtn .cnt{opacity:.6;font-weight:700;margin-left:3px}
-.switch{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--muted);
-  flex:0 0 auto;cursor:pointer;user-select:none}
+.switch{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:700;color:var(--muted);
+  flex:0 0 auto;cursor:pointer;user-select:none;white-space:nowrap}
+.switch span{white-space:nowrap}
 .switch input{appearance:none;-webkit-appearance:none;width:30px;height:18px;border-radius:999px;background:#ddd0ce;
   position:relative;cursor:pointer;transition:background .15s;flex:0 0 auto}
 .switch input::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
@@ -176,10 +177,11 @@ button[disabled]{opacity:.45;cursor:default}
   padding:6px 9px;font-size:11.8px}
 .composerRow{display:flex;gap:8px;align-items:flex-end}
 #msgInput{
-  flex:1 1 auto;min-width:0;resize:none;max-height:132px;overflow-y:auto;
+  flex:1 1 auto;min-width:0;resize:none;max-height:132px;overflow-y:auto;scrollbar-width:none;
   border:1px solid var(--line);border-radius:14px;background:var(--card);padding:10px 12px;
   font-size:14px;line-height:1.5;
 }
+#msgInput::-webkit-scrollbar{display:none;width:0;height:0}
 #msgInput:focus{border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(100,33,40,.07)}
 .send{
   background:var(--accent);border-color:var(--accent);color:#fff;border-radius:12px;
