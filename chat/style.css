@@ -207,7 +207,7 @@ button[disabled]{opacity:.45;cursor:default}
 /* ---------------------------------------------------------------- 허브 팝업(iframe) 안에서 */
 body.embed .loginHead,body.embed .backLink{display:none}
 body.embed .top{padding-top:10px}
-body.embed .login{padding-top:12px}
+body.embed .login{padding-top:12px;justify-content:center}
 body.embed .topTitle h1{display:none}
 body.embed .topSub{font-size:11.5px}
 body.embed .loginCard{margin-top:0}
