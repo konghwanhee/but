@@ -60,7 +60,8 @@
       "__visFloor": 0,
       "__visRect": null,
       "__limit": 0,
-      "__bodyRight": 0
+      "__bodyRight": 0,
+      "__headSize": 56
     },
     {
       "kind": "band",
@@ -121,7 +122,8 @@
       "__visFloor": 0,
       "__visRect": null,
       "__limit": 0,
-      "__bodyRight": 0
+      "__bodyRight": 0,
+      "__headSize": 58
     },
     {
       "kind": "points",
@@ -159,7 +161,12 @@
         }
       ],
       "takeaway": "용기와 보관이 성분의 절반을 지킵니다.",
-      "source": "SCCS/1639/21(2022) · Temova Rakuša et al., J Cosmet Dermatol 2021"
+      "source": "SCCS/1639/21(2022) · Temova Rakuša et al., J Cosmet Dermatol 2021",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0,
+      "__headSize": 58
     },
     {
       "kind": "quad",
@@ -205,7 +212,12 @@
         }
       ],
       "takeaway": "효과는 바른 양보다 바른 기간이 만듭니다.",
-      "source": "Milosheska & Roškar, Adv Ther 2022 · 「기능성화장품 심사에 관한 규정」"
+      "source": "Milosheska & Roškar, Adv Ther 2022 · 「기능성화장품 심사에 관한 규정」",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0,
+      "__headSize": 58
     },
     {
       "kind": "split",
@@ -249,7 +261,12 @@
       ],
       "takeaway": "처음에는 강한 것보다 오래 쓸 수 있는 것이 낫습니다.",
       "source": "Milosheska & Roškar, Adv Ther 2022",
-      "block_gap": 40
+      "block_gap": 40,
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0,
+      "__headSize": 58
     },
     {
       "kind": "products",
@@ -304,7 +321,12 @@
         }
       ],
       "takeaway": "브랜드 안내는 매일이지만, 처음에는 격일 밤에 소량으로 시작합니다.",
-      "source": "각 사 공식몰·보도자료 · 수치는 자사 인체시험 결과"
+      "source": "각 사 공식몰·보도자료 · 수치는 자사 인체시험 결과",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0,
+      "__headSize": 58
     },
     {
       "kind": "quad",
@@ -352,7 +374,12 @@
         }
       ],
       "takeaway": "따가움은 효과가 아닙니다. 세기가 아니라 적응의 문제입니다.",
-      "source": "AAD 임신 중 피부관리 안내 · 식약처 이소트레티노인 임신예방프로그램"
+      "source": "AAD 임신 중 피부관리 안내 · 식약처 이소트레티노인 임신예방프로그램",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0,
+      "__headSize": 58
     },
     {
       "kind": "steps",
@@ -389,7 +416,12 @@
       ],
       "step_height": 210,
       "takeaway": "판단은 12주 뒤입니다. 4주 만에 포기하지 않습니다.",
-      "source": "제품 사용 지침 · Milosheska & Roškar, Adv Ther 2022"
+      "source": "제품 사용 지침 · Milosheska & Roškar, Adv Ther 2022",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0,
+      "__headSize": 58
     },
     {
       "kind": "closing",
@@ -428,8 +460,17 @@
       ],
       "note_band": "3일 넘게 화끈거리거나 이상이 있으면 중단하고 진료합니다.",
       "takeaway": "적게 시작해 12주를 기다립니다. 다음 세럼은 농도 숫자보다, 얼마나 오래 쓸 수 있는지로 고릅니다.",
-      "source": "제품 사용 지침 · Milosheska & Roškar, Adv Ther 2022"
+      "source": "제품 사용 지침 · Milosheska & Roškar, Adv Ther 2022",
+      "__visFloor": 0,
+      "__visRect": null,
+      "__limit": 0,
+      "__bodyRight": 0,
+      "__headSize": 58
     }
   ],
-  "caption": "주름·탄력·결, 왜 다 레티놀일까\n\n레티놀은 독한 필링 성분이 아니라, 나이 들며 느려진 피부의 일을 다시 시작하게 하는 신호에 가깝습니다.\n빛·공기·열에 약한 레티놀을 어떻게 담고 보관하는지, 처음 2~4주 적응 기간과 초보자 루틴까지 쉽게 풀었습니다.\n\n#레티놀 #아이오페 #키엘"
+  "caption": "주름·탄력·결, 왜 다 레티놀일까\n\n레티놀은 독한 필링 성분이 아니라, 나이 들며 느려진 피부의 일을 다시 시작하게 하는 신호에 가깝습니다.\n빛·공기·열에 약한 레티놀을 어떻게 담고 보관하는지, 처음 2~4주 적응 기간과 초보자 루틴까지 쉽게 풀었습니다.\n\n#레티놀",
+  "approved": true,
+  "approvedAt": "2026-11-26T23:51:50.798Z",
+  "scheduledUploadAt": "2026-11-28T08:00:00+09:00",
+  "publishedAt": null
 }
