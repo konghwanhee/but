@@ -521,8 +521,11 @@ function init() {
   elList.innerHTML = '<p class="empty">대화를 불러오는 중입니다…</p>';
   load().then(function () { startAuto(); }).catch(function (err) {
     if (/401|404/.test(err.message)) {
-      elList.innerHTML = '<p class="empty">토큰으로 대화를 읽지 못했습니다.<br>' + esc(err.message) +
-        '<br><br>오른쪽 위 <b>⚙</b>에서 토큰을 다시 연결해 주세요.</p>';
+      /* 저장된 토큰이 만료·폐기됐거나 저장소 접근이 빠졌다 — 지우고 다시 연결하게 한다. */
+      state.token = '';
+      lsDel(LS_PAT);
+      showLogin();
+      elLoginMsg.textContent = '저장된 토큰으로 대화를 읽지 못했습니다. 토큰을 다시 연결해 주세요.';
     } else {
       elList.innerHTML = '<p class="empty">대화를 불러오지 못했습니다.<br>' + esc(err.message) +
         '<br><br><b>↻</b>로 다시 시도해 주세요.</p>';
