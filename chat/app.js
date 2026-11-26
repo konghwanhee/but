@@ -52,6 +52,7 @@ var elLogin = $('loginView'), elChat = $('chatView');
 var elToken = $('tokenInput'), elConnect = $('btnConnect'), elLoginMsg = $('loginMsg');
 var elLogout = $('btnLogout'), elCancelLogin = $('btnCancelLogin');
 var elList = $('list'), elFilters = $('filters'), elSync = $('syncInfo');
+var elFilterbar = $('filterbar');
 var elRefresh = $('btnRefresh'), elClear = $('btnClearAll');
 var elSeg = $('senderSeg');
 var elChapter = $('chapterSel'), elDeckSel = $('deckSel');
@@ -451,11 +452,19 @@ function renderFilters() {
     if (!counts[d]) { counts[d] = 0; order.push(d); }
     counts[d]++;
   });
-  var html = '<button type="button" class="chipBtn' + (state.filterDeck === 'all' ? ' on' : '') +
-    '" data-deck="all">전체<span class="cnt">' + state.msgs.length + '</span></button>';
+  /* 덱별 칩이 하나도 없으면 필터 줄 자체를 감춘다(전체 보기와 다름이 없다). */
+  if (!order.length) {
+    if (state.filterDeck !== 'all') state.filterDeck = 'all';
+    elFilters.innerHTML = '';
+    if (elFilterbar) elFilterbar.style.display = 'none';
+    return;
+  }
+  if (elFilterbar) elFilterbar.style.display = '';
+  var html = '';
   order.forEach(function (d) {
     html += '<button type="button" class="chipBtn' + (state.filterDeck === d ? ' on' : '') +
-      '" data-deck="' + esc(d) + '" title="' + esc(d) + '">' + esc(deckLabel(d)) +
+      '" data-deck="' + esc(d) + '" aria-pressed="' + (state.filterDeck === d ? 'true' : 'false') +
+      '" title="' + esc(d) + '">' + esc(deckLabel(d)) +
       '<span class="cnt">' + counts[d] + '</span></button>';
   });
   elFilters.innerHTML = html;
@@ -830,7 +839,9 @@ elList.addEventListener('click', function (e) {
 elFilters.addEventListener('click', function (e) {
   var b = e.target.closest ? e.target.closest('button[data-deck]') : null;
   if (!b) return;
-  state.filterDeck = b.getAttribute('data-deck');
+  /* 눌려 있던 칩을 다시 누르면 해제하고 전체 보기로 돌아온다. */
+  var next = b.getAttribute('data-deck');
+  state.filterDeck = (state.filterDeck === next) ? 'all' : next;
   renderFilters();
   renderList();
   scrollBottom();
