@@ -1,7 +1,7 @@
 /* =============================================================================
    공용 채팅 · konghwanhee/but/chat
    끼릿 · 삐꾸 · 환희 / 대화 기록은 비공개 저장소 konghwanhee/Agent/chat/messages.json
-   허브와 같은 팔레트: 블랙 · 화이트 + Deep Burgundy(#642128) + Dusty Burgundy(#734549)
+   허브와 같은 팔레트: 블랙 · 화이트 · 그레이 (버건디 제거, 2026-11-27)
    ============================================================================= */
 @font-face{font-family:Pretendard;src:url("../assets/fonts/Pretendard-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
 @font-face{font-family:Pretendard;src:url("../assets/fonts/Pretendard-Medium.woff2") format("woff2");font-weight:500;font-style:normal;font-display:swap}
@@ -9,10 +9,12 @@
 @font-face{font-family:Pretendard;src:url("../assets/fonts/Pretendard-ExtraBold.woff2") format("woff2");font-weight:800;font-style:normal;font-display:swap}
 
 :root{
-  --ink:#111111; --muted:#756867; --line:#e8dedb; --bg:#f5f1f0; --card:#ffffff;
-  --accent:#642128; --accent-strong:#521a20; --accent-2:#734549;
-  --accent-line:#dcc6c8; --tint:#f7ecee; --soft:#fbf8f6;
-  --keyring-bg:#f1e8e7; --keyring-ink:#6d4145; --pickle-bg:#642128;
+  /* --bar: 상단 검정띠(#15110E — beauty 로고 바탕색) */
+  --ink:#111111; --muted:#737373; --line:#e5e5e5; --bg:#f5f5f5; --card:#ffffff;
+  --accent:#111111; --accent-strong:#000000; --accent-2:#404040;
+  --accent-line:#e5e5e5; --tint:#f5f5f5; --soft:#fafafa;
+  --keyring-bg:#f5f5f5; --keyring-ink:#404040; --pickle-bg:#111111;
+  --bar:#15110E; --bar-ink:#ffffff; --bar-muted:#b8b4ae; --cream:#f6f3ee;
   --font:Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",system-ui,-apple-system,sans-serif;
   --radius:14px;
 }
@@ -24,9 +26,9 @@ body{
   -webkit-font-smoothing:antialiased; font-size:14px; line-height:1.5;
   overscroll-behavior-y:none;
 }
-::selection{background:rgba(100,33,40,.16)}
+::selection{background:rgba(17,17,17,.16)}
 button,select,textarea,input{font-family:inherit;font-size:inherit;color:inherit}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:var(--tint);color:#5f3a3e;padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.9em;background:var(--tint);color:#404040;padding:1px 5px;border-radius:5px;overflow-wrap:anywhere}
 a{color:var(--accent)}
 
 /* ---------------------------------------------------------------- 공통 버튼 */
@@ -39,19 +41,19 @@ button[disabled]{opacity:.45;cursor:default}
 .primary:hover{background:var(--accent-strong);border-color:var(--accent-strong)}
 .ghost{background:var(--card);border-color:var(--line);color:var(--ink);width:100%;padding:10px 12px;font-size:12.5px;margin-top:8px}
 .ghost:hover{border-color:var(--accent-line);background:var(--soft)}
-#btnLogout{color:#8a2019;border-color:#e6c9c6}
-#btnLogout:hover{background:#fbf1f0;border-color:#d9b3af}
+#btnLogout{color:#111111;border-color:#d4d4d4}
+#btnLogout:hover{background:#f5f5f5;border-color:#d4d4d4}
 .iconBtn{background:var(--card);border:1px solid var(--line);color:var(--ink);width:36px;height:34px;padding:0;display:inline-flex;align-items:center;justify-content:center;font-size:15px;line-height:1}
 .iconBtn:hover{border-color:var(--accent-line);background:var(--soft)}
 .iconBtn.wide{width:auto;padding:0 8px;font-size:11.5px;font-weight:700;gap:4px}
-.iconBtn.danger{color:#8a2019;border-color:#e6c9c6}
-.iconBtn.danger:hover{background:#fbf1f0;border-color:#d9b3af}
+.iconBtn.danger{color:#111111;border-color:#d4d4d4}
+.iconBtn.danger:hover{background:#f5f5f5;border-color:#d4d4d4}
 .iconBtn.spin{animation:spin 1s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ---------------------------------------------------------------- 토큰 연결 */
 .login{min-height:100%;display:flex;flex-direction:column;padding:14px 16px 36px;background:
-  radial-gradient(1200px 420px at 50% -120px, #f7ecee 0%, rgba(247,236,238,0) 62%), var(--bg)}
+  radial-gradient(1200px 420px at 50% -120px, #e8e8e8 0%, rgba(232,232,232,0) 62%), var(--bg)}
 .loginHead{display:flex;align-items:center}
 .backLink{
   display:inline-flex;align-items:center;gap:5px;text-decoration:none;color:var(--muted);
@@ -59,7 +61,8 @@ button[disabled]{opacity:.45;cursor:default}
 }
 .backLink:hover{color:var(--accent);background:var(--tint)}
 .loginCard{width:100%;max-width:430px;margin:8px auto 0}
-.loginEyebrow{margin:18px 0 6px;font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--accent-2)}
+.loginLogo{display:block;height:24px;width:auto;margin:16px 0 10px}
+.loginEyebrow{margin:0 0 6px;font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--accent-2)}
 .loginCard h1{margin:0 0 6px;font-size:26px;font-weight:800;letter-spacing:-.02em}
 .loginLead{margin:0 0 18px;color:var(--muted);font-size:13.5px}
 .leadCrew{display:flex;align-items:center;gap:0;margin:10px 0 8px}
@@ -67,10 +70,10 @@ button[disabled]{opacity:.45;cursor:default}
 .leadCrew .avatar+.avatar{margin-left:-10px}
 .leadCrewName{margin-left:9px;font-size:12px;font-weight:800;color:var(--accent-2)}
 .loginBox{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 16px 16px;
-  box-shadow:0 10px 28px -22px rgba(100,33,40,.5)}
+  box-shadow:0 10px 28px -22px rgba(17,17,17,.5)}
 .loginBox h2{margin:0 0 8px;font-size:15px;font-weight:800}
-.loginBox p{margin:0 0 12px;font-size:12.8px;color:#4d4342;line-height:1.6}
-.steps{margin:0 0 16px;padding-left:18px;font-size:12.8px;color:#4d4342;line-height:1.7}
+.loginBox p{margin:0 0 12px;font-size:12.8px;color:#404040;line-height:1.6}
+.steps{margin:0 0 16px;padding-left:18px;font-size:12.8px;color:#404040;line-height:1.7}
 .steps li{margin-bottom:3px}
 .field{display:block;margin-bottom:12px}
 .fieldLabel{display:block;font-size:11.5px;font-weight:800;letter-spacing:.02em;color:var(--accent-2);margin-bottom:6px}
@@ -78,9 +81,9 @@ button[disabled]{opacity:.45;cursor:default}
   width:100%;padding:12px 12px;border:1px solid var(--line);border-radius:11px;background:var(--soft);
   font-size:14px;letter-spacing:.01em;
 }
-.field input:focus{background:#fff;border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(100,33,40,.08)}
-.loginMsg{margin:10px 0 0!important;font-size:12.5px;font-weight:700;color:#8a2019;min-height:0}
-.loginMsg.ok{color:#2f6b45}
+.field input:focus{background:#fff;border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(17,17,17,.08)}
+.loginMsg{margin:10px 0 0!important;font-size:12.5px;font-weight:700;color:#111111;min-height:0}
+.loginMsg.ok{color:#111111}
 .loginMsg:empty{display:none}
 .loginNote{margin:14px 0 0!important;font-size:11.6px;color:var(--muted);line-height:1.6}
 
@@ -92,17 +95,26 @@ button[disabled]{opacity:.45;cursor:default}
 }
 .top{
   position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;flex:0 0 auto;
-  padding:10px 12px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);
-  border-bottom:1px solid var(--line);
+  padding:10px 12px;background:var(--bar);color:var(--bar-ink);
+  border-bottom:1px solid rgba(255,255,255,.09);
   padding-top:calc(10px + env(safe-area-inset-top));
 }
 .topTitle{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:1px}
-.topTitle h1{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.topSub{font-size:10.5px;letter-spacing:-.01em;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.topTitle h1{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+.topSub{font-size:10.5px;letter-spacing:-.01em;color:var(--bar-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topAct{display:flex;gap:6px;flex:0 0 auto}
+/* 검정띠 안의 아이콘 버튼 */
+.top .iconBtn{background:transparent;border-color:rgba(255,255,255,.32);color:#fff}
+.top .iconBtn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.55)}
+.top .iconBtn:focus-visible{outline-color:#fff}
+.top .iconBtn.danger{color:#fff;border-color:rgba(255,255,255,.32)}
+.top .iconBtn.danger:hover{background:#fff;color:var(--bar);border-color:#fff}
+.top .backLink{color:var(--bar-muted)}
+.top .backLink:hover{color:#fff;background:rgba(255,255,255,.1)}
+.top .backLink:focus-visible{outline-color:#fff}
 .topPair{display:flex;align-items:center;flex:0 0 auto}
-.topPair img{width:27px;height:27px;border-radius:50%;object-fit:cover;background:#f3f4f6;
-  border:2px solid #fff;box-shadow:0 0 0 1px var(--line);display:block}
+.topPair img{width:27px;height:27px;border-radius:50%;object-fit:cover;background:#f5f5f5;
+  border:2px solid var(--bar);box-shadow:0 0 0 1px rgba(255,255,255,.4);display:block}
 .topPair img+img{margin-left:-9px}
 
 /* ---------------------------------------------------------------- 필터 */
@@ -139,11 +151,11 @@ button[disabled]{opacity:.45;cursor:default}
 .msgBody{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
 .msg.me .msgBody{align-items:flex-end;flex:1 1 auto}
 .avatar{
-  width:30px;height:30px;flex:0 0 auto;border-radius:50%;overflow:hidden;background:#f3f4f6;
+  width:30px;height:30px;flex:0 0 auto;border-radius:50%;overflow:hidden;background:#f5f5f5;
   border:1px solid var(--line);box-shadow:0 1px 2px rgba(17,17,17,.05);margin-top:1px;
 }
 .avatar img{display:block;width:100%;height:100%;object-fit:cover}
-.avatar.pickle{background:#eaf6fd;border-color:#d5e9f7}
+.avatar.pickle{background:#f5f5f5;border-color:#e5e5e5}
 .msg.me .who{justify-content:flex-end;color:var(--accent)}
 .badge{font-size:9.5px;font-weight:800;letter-spacing:.08em;padding:2px 6px;border-radius:999px;line-height:1.4}
 .badge.keyring{background:var(--keyring-bg);color:var(--keyring-ink);border:1px solid var(--accent-line)}
@@ -157,13 +169,13 @@ button[disabled]{opacity:.45;cursor:default}
   background:var(--accent);border-color:var(--accent);color:#fff;border-bottom-right-radius:6px;
 }
 .msg.them .bubble{border-bottom-left-radius:6px}
-.msg.pickle .bubble{border-color:var(--accent-line);background:#fffdfc}
+.msg.pickle .bubble{border-color:var(--accent-line);background:#ffffff}
 .bubble a{color:inherit;text-decoration:underline;text-underline-offset:2px}
 .msg.me .bubble a{color:#fff}
 .msg .tags{display:flex;flex-wrap:wrap;gap:5px;margin:6px 2px 0;align-items:center}
 .msg.me .tags{justify-content:flex-end}
 .tag{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--soft);
-  border:1px solid var(--line);color:#5f504f;line-height:1.5;white-space:nowrap}
+  border:1px solid var(--line);color:#525252;line-height:1.5;white-space:nowrap}
 .tag.deck{font-size:10px;font-weight:700}
 .tag.time{background:none;border:none;color:var(--muted);font-weight:600;padding:2px 2px}
 .reads{display:inline-flex;align-items:center;gap:1px;padding:0 1px;line-height:1.4}
@@ -176,7 +188,7 @@ button[disabled]{opacity:.45;cursor:default}
   background:none;border:none;padding:2px 4px;border-radius:5px;line-height:1.5;
   font-size:10.5px;font-weight:700;color:var(--muted);opacity:.72;
 }
-.delBtn:hover,.delBtn:active{color:#8a2019;background:#fbf1f0;opacity:1}
+.delBtn:hover,.delBtn:active{color:#111111;background:#f5f5f5;opacity:1}
 .empty{margin:auto;text-align:center;color:var(--muted);font-size:13px;line-height:1.7;padding:40px 16px}
 .empty b{color:var(--accent)}
 .emptyBtn{width:auto;display:inline-block;margin:14px auto 0;padding:8px 14px}
@@ -204,7 +216,7 @@ button[disabled]{opacity:.45;cursor:default}
 .composerDirect[hidden]{display:none}
 .composerDirect input{flex:1 1 auto;min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--card);
   padding:6px 9px;font-size:11.8px}
-.composerDirect input:focus{border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(100,33,40,.07)}
+.composerDirect input:focus{border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(17,17,17,.07)}
 .composerRow{display:flex;gap:8px;align-items:flex-end}
 #msgInput{
   flex:1 1 auto;min-width:0;resize:none;max-height:132px;overflow-y:auto;scrollbar-width:none;
@@ -212,7 +224,7 @@ button[disabled]{opacity:.45;cursor:default}
   font-size:14px;line-height:1.5;
 }
 #msgInput::-webkit-scrollbar{display:none;width:0;height:0}
-#msgInput:focus{border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(100,33,40,.07)}
+#msgInput:focus{border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(17,17,17,.07)}
 .send{
   background:var(--accent);border-color:var(--accent);color:#fff;border-radius:12px;
   padding:10px 16px;font-size:13px;font-weight:800;flex:0 0 auto;height:40px;
@@ -231,7 +243,7 @@ button[disabled]{opacity:.45;cursor:default}
 /* ---------------------------------------------------------------- 데스크톱 */
 @media (min-width:761px){
   body{background:var(--bg)}
-  .app{border-left:1px solid var(--line);border-right:1px solid var(--line);box-shadow:0 0 40px -30px rgba(100,33,40,.4)}
+  .app{border-left:1px solid var(--line);border-right:1px solid var(--line);box-shadow:0 0 40px -30px rgba(17,17,17,.4)}
 }
 
 /* ---------------------------------------------------------------- 허브 팝업(iframe) 안에서 */
@@ -241,4 +253,5 @@ body.embed .login{padding-top:12px;justify-content:center}
 body.embed .topTitle h1{display:none}
 body.embed .topSub{font-size:11.5px}
 body.embed .loginCard{margin-top:0}
-body.embed .loginEyebrow{margin-top:6px}
+body.embed .loginEyebrow{margin-top:0}
+body.embed .loginLogo{margin-top:4px}
