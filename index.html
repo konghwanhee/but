@@ -8,7 +8,7 @@
 <meta name="description" content="뷰티 포인트 · 뷰티 테크 · 뷰티 브리핑 · 뷰티 픽 카드뉴스를 한곳에서 보고, 문구를 고치고, PNG로 내려받고, GitHub에 저장·결재하는 허브.">
 <link rel="icon" href="assets/logo-black.png">
 <meta name="theme-color" content="#642128">
-<link rel="stylesheet" href="style.css?v=20261123e">
+<link rel="stylesheet" href="style.css?v=20261126a">
 </head>
 <body>
 
@@ -22,6 +22,7 @@
     <div class="headRight">
       <span class="ghChip" id="ghChipHome" hidden></span>
       <button class="ghost" id="btnPatHome" type="button">GitHub 연결</button>
+      <button class="chatLink" type="button" data-chat-open aria-haspopup="dialog">💬 Chat</button>
       <a class="igLink" href="https://www.instagram.com/butfriends/" target="_blank" rel="noopener noreferrer">@butfriends</a>
     </div>
   </header>
@@ -70,6 +71,7 @@
       <button class="ghost" id="btnPngAll" type="button">전체 장표 PNG</button>
       <button class="solid" id="btnPng" type="button">현재 장표 PNG</button>
       <button class="ghost" id="btnJson" type="button">JSON 내보내기</button>
+      <button class="ghost chatLinkGhost" type="button" data-chat-open aria-haspopup="dialog">💬 Chat</button>
     </div>
   </header>
 
@@ -139,5 +141,53 @@
 </div>
 
 <script src="app.js?v=20261126a"></script>
+
+<!-- ============================================================ 공용 채팅 팝업 (페이지 안에서 열림) -->
+<div class="chatModal" id="chatModal" hidden>
+  <div class="chatBackdrop" data-chat-close></div>
+  <section class="chatPanel" role="dialog" aria-modal="true" aria-label="공용 채팅">
+    <div class="chatBar">
+      <h2><span aria-hidden="true">💬</span> 공용 채팅</h2>
+      <span class="chatHint">키링 · 삐꾸 · 환희 님</span>
+      <button class="chatClose" id="chatClose" type="button" aria-label="채팅 닫기" title="닫기 (Esc)">×</button>
+    </div>
+    <iframe class="chatFrame" id="chatFrame" title="공용 채팅" referrerpolicy="same-origin"></iframe>
+  </section>
+</div>
+
+<script>
+/* 채팅 팝업: 버튼을 누르면 페이지를 떠나지 않고 이 창 안에서 연다. */
+(function () {
+  var modal = document.getElementById('chatModal');
+  var frame = document.getElementById('chatFrame');
+  var closeBtn = document.getElementById('chatClose');
+  var SRC = './chat/?embed=1';
+  if (!modal || !frame) return;
+
+  function openChat() {
+    if (!frame.getAttribute('src')) frame.setAttribute('src', SRC);
+    modal.hidden = false;
+    document.body.classList.add('chatOpen');
+    try { closeBtn.focus({ preventScroll: true }); } catch (e) { closeBtn.focus(); }
+  }
+  function closeChat() {
+    modal.hidden = true;
+    document.body.classList.remove('chatOpen');
+    var last = document.querySelector('[data-chat-open]');
+    if (last) { try { last.focus({ preventScroll: true }); } catch (e) { } }
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('[data-chat-open]'), function (b) {
+    b.addEventListener('click', openChat);
+  });
+  closeBtn.addEventListener('click', closeChat);
+  modal.addEventListener('click', function (e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-chat-close')) closeChat();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modal.hidden) closeChat();
+  });
+})();
+</script>
 </body>
 </html>

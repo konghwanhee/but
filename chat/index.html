@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>공용 채팅 · but Agent</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex">
+<meta name="description" content="키링 · 삐꾸 · 환희 님이 함께 쓰는 공용 채팅. 대화 기록은 비공개 저장소 konghwanhee/Agent의 chat/messages.json에 쌓입니다.">
+<link rel="icon" href="../assets/logo-black.png">
+<meta name="theme-color" content="#642128">
+<link rel="stylesheet" href="style.css?v=20261126a">
+<script>
+/* 라이브 점검용: 페이지에서 난 스크립트 오류를 모아 둔다(사용자에게는 보이지 않음). */
+window.__chatErrors = [];
+window.addEventListener('error', function (e) { window.__chatErrors.push(String((e && e.message) || e)); });
+window.addEventListener('unhandledrejection', function (e) { window.__chatErrors.push('promise: ' + String((e && e.reason && e.reason.message) || (e && e.reason))); });
+</script>
+</head>
+<body>
+
+<!-- ============================================================ 토큰 연결 -->
+<section class="login" id="loginView">
+  <div class="loginHead">
+    <a class="backLink" href="../">← 카드뉴스 허브</a>
+  </div>
+  <div class="loginCard">
+    <p class="loginEyebrow">BUT · AGENT CHAT</p>
+    <h1>공용 채팅</h1>
+    <p class="loginLead">키링 · 삐꾸 · 환희 님이 같은 대화를 보고 함께 일하는 자리입니다.</p>
+
+    <div class="loginBox">
+      <h2>GitHub 토큰 연결</h2>
+      <p>대화는 비공개 저장소 <code>konghwanhee/Agent</code>의 <code>chat/messages.json</code>에 쌓입니다. 이 브라우저에서 읽고 쓰려면 토큰이 한 번 필요합니다.</p>
+      <ol class="steps">
+        <li><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained token 만들기</a></li>
+        <li>Repository access → <b>Only select repositories</b> → <code>konghwanhee/Agent</code></li>
+        <li>Permissions → <b>Contents: Read and write</b> (그 외는 권한 없음)</li>
+      </ol>
+      <label class="field">
+        <span class="fieldLabel">Personal access token</span>
+        <input id="tokenInput" type="password" inputmode="text" autocomplete="off" spellcheck="false" placeholder="github_pat_…">
+      </label>
+      <button class="primary" id="btnConnect" type="button">연결하고 들어가기</button>
+      <button class="ghost" id="btnLogout" type="button" hidden>로그아웃 (저장된 토큰 지우기)</button>
+      <button class="ghost" id="btnCancelLogin" type="button" hidden>← 채팅으로 돌아가기</button>
+      <p class="loginMsg" id="loginMsg" role="status"></p>
+      <p class="loginNote">토큰은 이 기기의 브라우저(localStorage)에만 저장되고, 저장소나 다른 곳에는 남지 않습니다. 공용 기기에서는 쓰고 나서 <b>로그아웃</b>해 주세요.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ 채팅 -->
+<section class="app" id="chatView" hidden>
+  <header class="top">
+    <a class="backLink" href="../">← 허브</a>
+    <div class="topTitle">
+      <h1>공용 채팅</h1>
+      <span class="topSub" id="syncInfo">불러오는 중…</span>
+    </div>
+    <div class="topAct">
+      <button class="iconBtn" id="btnRefresh" type="button" aria-label="지금 새로고침" title="지금 새로고침">↻</button>
+      <button class="iconBtn wide" id="btnToken" type="button" aria-label="토큰 변경·로그아웃" title="토큰 변경 / 로그아웃">⚙ 토큰</button>
+    </div>
+  </header>
+
+  <div class="filterbar">
+    <div class="filters" id="filters" aria-label="덱별 보기"></div>
+    <label class="switch" title="30초마다 새 메시지를 확인합니다">
+      <input type="checkbox" id="autoRefresh" checked>
+      <span>30초 자동</span>
+    </label>
+  </div>
+
+  <main class="list" id="list" aria-live="polite"></main>
+
+  <form class="composer" id="composer" autocomplete="off">
+    <div class="composerTop">
+      <div class="seg" id="senderSeg" role="group" aria-label="말하는 사람">
+        <button type="button" data-sender="hwanhee" class="on">환희 님</button>
+        <button type="button" data-sender="keyring">키링</button>
+        <button type="button" data-sender="pickle">삐꾸</button>
+      </div>
+      <select id="typeSel" aria-label="메시지 종류">
+        <option value="chat">대화</option>
+        <option value="draft_ready">요청서 준비</option>
+        <option value="review_done">검수 완료</option>
+        <option value="revision_applied">수정 반영</option>
+        <option value="hub_ready">허브 반영</option>
+        <option value="published">게시 완료</option>
+      </select>
+    </div>
+    <div class="composerMid">
+      <select id="stageSel" aria-label="단계">
+        <option value="">단계 —</option>
+        <option value="1_keyring_draft">1 · 요청서</option>
+        <option value="2_pickle_rendered">2 · 렌더 완료</option>
+        <option value="3_keyring_reviewed">3 · 2차 검수</option>
+        <option value="4_sent_to_but">4 · 허브 반영</option>
+        <option value="5_published">5 · 게시 완료</option>
+      </select>
+      <input id="deckInput" list="deckList" placeholder="deck_id (선택)" spellcheck="false" autocomplete="off">
+      <datalist id="deckList"></datalist>
+    </div>
+    <div class="composerRow">
+      <textarea id="msgInput" rows="1" placeholder="메시지를 입력하세요" enterkeyhint="enter"></textarea>
+      <button class="send" id="btnSend" type="submit">전송</button>
+    </div>
+  </form>
+</section>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="app.js?v=20261126a"></script>
+</body>
+</html>
