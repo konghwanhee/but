@@ -16,9 +16,8 @@ var FILE = 'chat/messages.json';
 var API = 'https://api.github.com';
 var LS_PAT = 'agentchat:pat';
 var LS_SENDER = 'agentchat:sender';
-var AUTO_MS = 30000;
 
-var SENDERS = { hwanhee: '환희 님', keyring: '끼릿', pickle: '삐꾸' };
+var SENDERS = { hwanhee: '환희', keyring: '끼릿', pickle: '삐꾸' };
 var AVATARS = { keyring: 'assets/kkirit-avatar.png', pickle: 'assets/ppikku-avatar.png' };
 var READ_ORDER = ['keyring', 'pickle', 'hwanhee'];
 
@@ -42,11 +41,9 @@ var state = {
   msgs: [],
   filterDeck: 'all',
   sender: 'hwanhee',
-  auto: true,
   busy: false,
   marking: false,
-  lastSync: 0,
-  timer: null
+  lastSync: 0
 };
 
 /* ---------------------------------------------------------------- 2. DOM */
@@ -55,7 +52,7 @@ var elLogin = $('loginView'), elChat = $('chatView');
 var elToken = $('tokenInput'), elConnect = $('btnConnect'), elLoginMsg = $('loginMsg');
 var elLogout = $('btnLogout'), elCancelLogin = $('btnCancelLogin');
 var elList = $('list'), elFilters = $('filters'), elSync = $('syncInfo');
-var elAuto = $('autoRefresh'), elRefresh = $('btnRefresh'), elClear = $('btnClearAll');
+var elRefresh = $('btnRefresh'), elClear = $('btnClearAll');
 var elSeg = $('senderSeg');
 var elChapter = $('chapterSel'), elDeckSel = $('deckSel');
 var elDirect = $('directWrap'), elDeckInput = $('deckInput');
@@ -408,7 +405,6 @@ function writeFile(token, text, sha, message) {
 function showLogin() {
   elLogin.hidden = false;
   elChat.hidden = true;
-  stopAuto();
   var has = !!state.token;
   elLogout.hidden = !has;
   elCancelLogin.hidden = !has;
@@ -433,7 +429,7 @@ function readersOf(m) {
   if (Array.isArray(m.read_by)) return m.read_by;
   return m.sender ? [m.sender] : [];
 }
-/* 끼릿(핑크) · 삐꾸(파랑) · 환희 님(검정) 체크 — 안 읽은 사람은 연회색 */
+/* 끼릿(핑크) · 삐꾸(파랑) · 환희(검정) 체크 — 안 읽은 사람은 연회색 */
 function readMarkup(m) {
   var read = readersOf(m);
   var names = READ_ORDER.map(function (who) {
@@ -472,7 +468,7 @@ function renderList() {
   if (!msgs.length) {
     elList.innerHTML = '<p class="empty">' +
       (state.filterDeck === 'all'
-        ? '아직 메시지가 없습니다.<br><b>환희 님</b>으로 첫 메시지를 남겨 보세요.'
+        ? '아직 메시지가 없습니다.<br><b>환희</b>로 첫 메시지를 남겨 보세요.'
         : '이 덱(<b>' + esc(deckLabel(state.filterDeck)) + '</b>)에 쌓인 메시지가 없습니다.') +
       '</p>';
     return;
@@ -555,19 +551,6 @@ function load(opts) {
     if (/401/.test(err.message)) { /* 토큰 만료 — 설정으로 안내 */ }
     throw err;
   });
-}
-
-function startAuto() {
-  stopAuto();
-  if (!state.auto) return;
-  state.timer = setInterval(function () {
-    if (document.visibilityState !== 'visible') return;
-    if (state.busy) return;
-    load({ silent: true, keepScroll: true }).catch(function () { });
-  }, AUTO_MS);
-}
-function stopAuto() {
-  if (state.timer) { clearInterval(state.timer); state.timer = null; }
 }
 
 /* ---------------------------------------------------------------- 8. 전송 */
@@ -757,6 +740,15 @@ function autoGrow() {
   elInput.style.height = h + 'px';
 }
 
+/* 받침에 따라 '으로/로' — 환희 → 환희로, 끼릿 → 끼릿으로 */
+function withRo(name) {
+  var n = String(name == null ? '' : name);
+  if (!n) return '로';
+  var c = n.charCodeAt(n.length - 1);
+  var hasJong = c >= 0xAC00 && c <= 0xD7A3 && ((c - 0xAC00) % 28) !== 0;
+  return (hasJong ? '으로' : '로');
+}
+
 function setSender(s) {
   if (!SENDERS[s]) s = 'hwanhee';
   state.sender = s;
@@ -766,7 +758,7 @@ function setSender(s) {
     b.classList.toggle('on', on);
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
-  elInput.placeholder = (SENDERS[s] || '') + '으로 보내기';
+  elInput.placeholder = (SENDERS[s] || '') + withRo(SENDERS[s]) + ' 보내기';
 }
 
 /* ---------------------------------------------------------------- 10. 이벤트 */
@@ -795,7 +787,6 @@ elConnect.addEventListener('click', function () {
     showChat();
     render();
     syncLabel();
-    startAuto();
   }).catch(function (err) {
     elLoginMsg.className = 'loginMsg';
     elLoginMsg.textContent = err.message;
@@ -818,7 +809,6 @@ elCancelLogin.addEventListener('click', function () {
   if (!state.token) return;
   showChat();
   render();
-  startAuto();
 });
 
 elRefresh.addEventListener('click', function () {
@@ -835,12 +825,6 @@ elList.addEventListener('click', function (e) {
   var b = e.target.closest('button[data-del]');
   if (!b) return;
   deleteMessage(b.getAttribute('data-del'));
-});
-
-elAuto.addEventListener('change', function () {
-  state.auto = elAuto.checked;
-  startAuto();
-  toast(state.auto ? '30초마다 새 메시지를 확인합니다' : '자동 새로고침을 껐습니다');
 });
 
 elFilters.addEventListener('click', function (e) {
@@ -874,13 +858,11 @@ elInput.addEventListener('keydown', function (e) {
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); }
 });
 
-/* 허브 팝업이 닫히면 자동 새로고침을 멈추고, 다시 열면 재개한다(부모 창에서 postMessage). */
+/* 허브 팝업을 다시 열 때 한 번 새로 읽어 온다(부모 창에서 postMessage). 자동 주기는 없다 — 갱신은 ↻ 버튼으로만. */
 window.addEventListener('message', function (e) {
   if (e.origin !== location.origin) return;
-  if (e.data === 'agentchat:pause') { stopAuto(); }
-  else if (e.data === 'agentchat:resume') {
+  if (e.data === 'agentchat:resume') {
     if (!state.token || elChat.hidden) return;
-    startAuto();
     load({ silent: true, keepScroll: true }).catch(function () { });
   }
 });
@@ -897,7 +879,6 @@ function init() {
   if (/[?&]embed=1(&|$)/.test(location.search)) document.body.classList.add('embed');
   state.token = lsGet(LS_PAT) || '';
   setSender(lsGet(LS_SENDER) || 'hwanhee');
-  elAuto.checked = state.auto;
   buildChapterOptions();
   buildDeckOptions();
   loadManifest();
@@ -905,7 +886,7 @@ function init() {
   if (!state.token) { showLogin(); return; }
   showChat();
   elList.innerHTML = '<p class="empty">대화를 불러오는 중입니다…</p>';
-  load().then(function () { startAuto(); }).catch(function (err) {
+  load().catch(function (err) {
     if (/401|404/.test(err.message)) {
       /* 저장된 토큰이 만료·폐기됐거나 저장소 접근이 빠졌다 — 지우고 다시 연결하게 한다. */
       state.token = '';
