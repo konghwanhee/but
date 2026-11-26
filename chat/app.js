@@ -19,6 +19,7 @@ var LS_SENDER = 'agentchat:sender';
 var AUTO_MS = 30000;
 
 var SENDERS = { hwanhee: '환희 님', keyring: '끼릿', pickle: '삐꾸' };
+var AVATARS = { keyring: 'assets/kkirit-avatar.png', pickle: 'assets/ppikku-avatar.png' };
 var TYPES = {
   chat: '대화', draft_ready: '요청서 준비', review_done: '검수 완료',
   revision_applied: '수정 반영', hub_ready: '허브 반영', published: '게시 완료'
@@ -259,18 +260,22 @@ function renderList() {
     }
     var me = m.sender === 'hwanhee';
     var cls = 'msg ' + (me ? 'me' : 'them') + (m.sender === 'pickle' ? ' pickle' : '');
-    var badge = me ? '' : '<span class="badge ' + (m.sender === 'keyring' ? 'keyring' : 'pickle') + '">' +
+    var who = m.sender === 'keyring' ? 'keyring' : 'pickle';
+    var badge = me ? '' : '<span class="badge ' + who + '">' +
       (m.sender === 'keyring' ? 'KKIRIT' : 'PPIKKU') + '</span>';
+    var avatar = me ? '' : '<span class="avatar ' + who + '"><img src="' + (AVATARS[m.sender] || AVATARS.pickle) +
+      '" alt="" loading="lazy" decoding="async"></span>';
     var tags = '';
     if (m.type && m.type !== 'chat') tags += '<span class="tag type">' + esc(TYPES[m.type] || m.type) + '</span>';
     if (m.stage) tags += '<span class="tag stage">' + esc(STAGES[m.stage] || m.stage) + '</span>';
     if (m.deck_id) tags += '<span class="tag deck">' + esc(m.deck_id) + '</span>';
     tags += '<span class="tag time">' + esc(hhmm(m.timestamp)) + '</span>';
-    html += '<div class="' + cls + '">' +
+    html += '<div class="' + cls + '">' + avatar +
+      '<div class="msgBody">' +
       '<div class="who"><span>' + esc(senderLabel(m)) + '</span>' + badge + '</div>' +
       '<div class="bubble">' + linkify(m.text) + '</div>' +
       '<div class="tags">' + tags + '</div>' +
-      '</div>';
+      '</div></div>';
   });
   elList.innerHTML = html;
 }

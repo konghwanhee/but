@@ -478,7 +478,8 @@ body.chatOpen{overflow:hidden}
   background:#fff;border-bottom:1px solid var(--line);
 }
 .chatBar h2{margin:0;font-size:13.5px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:6px;white-space:nowrap}
-.chatBar .chatHint{font-size:11px;color:var(--muted);font-weight:600;margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chatBar .chatHint{font-size:11px;color:var(--muted);font-weight:600;margin-left:auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-flex;align-items:center;gap:4px}
+.chatBar .chatHint img{width:18px;height:18px;border-radius:50%;object-fit:cover;background:#f3f4f6;box-shadow:0 0 0 1px var(--line);display:block}
 .chatClose{
   flex:0 0 auto;width:32px;height:32px;padding:0;border-radius:9px;border:1px solid var(--line);
   background:#fff;color:var(--ink);font-size:17px;line-height:1;display:inline-flex;align-items:center;justify-content:center;

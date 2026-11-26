@@ -9,7 +9,7 @@
 <meta name="description" content="끼릿 · 삐꾸 · 환희 님이 함께 쓰는 공용 채팅. 대화 기록은 비공개 저장소 konghwanhee/Agent의 chat/messages.json에 쌓입니다.">
 <link rel="icon" href="../assets/logo-black.png">
 <meta name="theme-color" content="#642128">
-<link rel="stylesheet" href="style.css?v=20261126d">
+<link rel="stylesheet" href="style.css?v=20261126e">
 <script>
 /* 라이브 점검용: 페이지에서 난 스크립트 오류를 모아 둔다(사용자에게는 보이지 않음). */
 window.__chatErrors = [];
@@ -27,6 +27,11 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
   <div class="loginCard">
     <p class="loginEyebrow">BUT · AGENT CHAT</p>
     <h1>공용 채팅</h1>
+    <div class="leadCrew">
+      <span class="avatar keyring"><img src="assets/kkirit-avatar.png" alt="끼릿"></span>
+      <span class="avatar pickle"><img src="assets/ppikku-avatar.png" alt="삐꾸"></span>
+      <span class="leadCrewName">끼릿 · 삐꾸 · 환희 님</span>
+    </div>
     <p class="loginLead">끼릿 · 삐꾸 · 환희 님이 같은 대화를 보고 함께 일하는 자리입니다.</p>
 
     <div class="loginBox">
@@ -54,6 +59,10 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
 <section class="app" id="chatView" hidden>
   <header class="top">
     <a class="backLink" href="../">← 허브</a>
+    <div class="topPair" aria-hidden="true">
+      <img src="assets/kkirit-avatar.png" alt="">
+      <img src="assets/ppikku-avatar.png" alt="">
+    </div>
     <div class="topTitle">
       <h1>공용 채팅</h1>
       <span class="topSub" id="syncInfo">불러오는 중…</span>
@@ -78,8 +87,8 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
     <div class="composerTop">
       <div class="seg" id="senderSeg" role="group" aria-label="말하는 사람">
         <button type="button" data-sender="hwanhee" class="on">환희 님</button>
-        <button type="button" data-sender="keyring">끼릿</button>
-        <button type="button" data-sender="pickle">삐꾸</button>
+        <button type="button" data-sender="keyring"><img class="chipAv" src="assets/kkirit-avatar.png" alt="">끼릿</button>
+        <button type="button" data-sender="pickle"><img class="chipAv" src="assets/ppikku-avatar.png" alt="">삐꾸</button>
       </div>
       <select id="typeSel" aria-label="메시지 종류">
         <option value="chat">대화</option>
@@ -111,6 +120,6 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="app.js?v=20261126d"></script>
+<script src="app.js?v=20261126e"></script>
 </body>
 </html>

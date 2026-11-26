@@ -60,6 +60,10 @@ button[disabled]{opacity:.45;cursor:default}
 .loginEyebrow{margin:18px 0 6px;font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--accent-2)}
 .loginCard h1{margin:0 0 6px;font-size:26px;font-weight:800;letter-spacing:-.02em}
 .loginLead{margin:0 0 18px;color:var(--muted);font-size:13.5px}
+.leadCrew{display:flex;align-items:center;gap:0;margin:10px 0 8px}
+.leadCrew .avatar{width:34px;height:34px;margin-top:0;border:2px solid #fff;box-shadow:0 0 0 1px var(--line)}
+.leadCrew .avatar+.avatar{margin-left:-10px}
+.leadCrewName{margin-left:9px;font-size:12px;font-weight:800;color:var(--accent-2)}
 .loginBox{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px 16px 16px;
   box-shadow:0 10px 28px -22px rgba(100,33,40,.5)}
 .loginBox h2{margin:0 0 8px;font-size:15px;font-weight:800}
@@ -94,6 +98,10 @@ button[disabled]{opacity:.45;cursor:default}
 .topTitle h1{margin:0;font-size:15px;font-weight:800;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topSub{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .topAct{display:flex;gap:6px;flex:0 0 auto}
+.topPair{display:flex;align-items:center;flex:0 0 auto}
+.topPair img{width:27px;height:27px;border-radius:50%;object-fit:cover;background:#f3f4f6;
+  border:2px solid #fff;box-shadow:0 0 0 1px var(--line);display:block}
+.topPair img+img{margin-left:-9px}
 
 /* ---------------------------------------------------------------- 필터 */
 .filterbar{
@@ -126,9 +134,17 @@ button[disabled]{opacity:.45;cursor:default}
 }
 .dayDivider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;font-weight:700;margin:4px 2px}
 .dayDivider::before,.dayDivider::after{content:"";height:1px;background:var(--line);flex:1 1 auto}
-.msg{display:flex;flex-direction:column;max-width:100%;min-width:0}
+.msg{display:flex;flex-direction:row;gap:8px;max-width:100%;min-width:0}
 .msg .who{display:flex;align-items:center;gap:6px;margin:0 2px 5px;font-size:11.5px;font-weight:800;color:var(--muted)}
-.msg.me{align-items:flex-end}
+.msg.me{justify-content:flex-end}
+.msgBody{display:flex;flex-direction:column;min-width:0;flex:1 1 auto}
+.msg.me .msgBody{align-items:flex-end;flex:0 1 auto}
+.avatar{
+  width:30px;height:30px;flex:0 0 auto;border-radius:50%;overflow:hidden;background:#f3f4f6;
+  border:1px solid var(--line);box-shadow:0 1px 2px rgba(17,17,17,.05);margin-top:1px;
+}
+.avatar img{display:block;width:100%;height:100%;object-fit:cover}
+.avatar.pickle{background:#eaf6fd;border-color:#d5e9f7}
 .msg.me .who{justify-content:flex-end;color:var(--accent)}
 .badge{font-size:9.5px;font-weight:800;letter-spacing:.08em;padding:2px 6px;border-radius:999px;line-height:1.4}
 .badge.keyring{background:var(--keyring-bg);color:var(--keyring-ink);border:1px solid var(--accent-line)}
@@ -166,6 +182,7 @@ button[disabled]{opacity:.45;cursor:default}
 .seg{display:flex;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:2px;flex:0 0 auto}
 .seg button{background:none;border:none;border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:700;color:var(--muted)}
 .seg button.on{background:var(--accent);color:#fff}
+.seg button .chipAv{width:15px;height:15px;border-radius:50%;object-fit:cover;vertical-align:-3px;margin-right:4px;display:inline-block}
 .composer select{
   border:1px solid var(--line);border-radius:9px;background:var(--card);padding:6px 8px;
   font-size:11.8px;font-weight:600;min-width:0;max-width:100%;
