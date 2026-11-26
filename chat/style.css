@@ -169,8 +169,7 @@ button[disabled]{opacity:.45;cursor:default}
 .msg.me .tags{justify-content:flex-end}
 .tag{font-size:10.5px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--soft);
   border:1px solid var(--line);color:#5f504f;line-height:1.5;white-space:nowrap}
-.tag.type{background:var(--tint);border-color:var(--accent-line);color:var(--accent)}
-.tag.deck{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px}
+.tag.deck{font-size:10px;font-weight:700}
 .tag.time{background:none;border:none;color:var(--muted);font-weight:600;padding:2px 2px}
 .reads{display:inline-flex;align-items:center;gap:1px;padding:0 1px;line-height:1.4}
 .reads .rd{font-size:11.5px;font-weight:800;line-height:1.4;letter-spacing:-.04em}
@@ -194,18 +193,23 @@ button[disabled]{opacity:.45;cursor:default}
   display:flex;flex-direction:column;gap:7px;
 }
 .composerTop{display:flex;align-items:center;gap:8px}
-.seg{display:flex;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:2px;flex:0 0 auto}
+.seg{display:flex;align-items:center;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:2px;flex:0 1 auto;min-width:0}
 .seg button{background:none;border:none;border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:700;color:var(--muted)}
 .seg button.on{background:var(--accent);color:#fff}
 .seg button .chipAv{width:15px;height:15px;border-radius:50%;object-fit:cover;vertical-align:-3px;margin-right:4px;display:inline-block}
 .composer select{
   border:1px solid var(--line);border-radius:9px;background:var(--card);padding:6px 8px;
   font-size:11.8px;font-weight:600;min-width:0;max-width:100%;
+  text-overflow:ellipsis;
 }
-.composerTop select{margin-left:auto;flex:0 0 auto}
+.composer select:disabled{color:var(--muted);background:var(--soft);opacity:.75}
 .composerMid{display:flex;gap:6px}
-.composerMid input{flex:1 1 auto;min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--card);
+.composerMid select{flex:1 1 0;width:0;min-width:0}
+.composerDirect{display:flex}
+.composerDirect[hidden]{display:none}
+.composerDirect input{flex:1 1 auto;min-width:0;border:1px solid var(--line);border-radius:9px;background:var(--card);
   padding:6px 9px;font-size:11.8px}
+.composerDirect input:focus{border-color:var(--accent-line);outline:none;box-shadow:0 0 0 3px rgba(100,33,40,.07)}
 .composerRow{display:flex;gap:8px;align-items:flex-end}
 #msgInput{
   flex:1 1 auto;min-width:0;resize:none;max-height:132px;overflow-y:auto;scrollbar-width:none;

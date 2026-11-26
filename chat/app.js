@@ -21,10 +21,19 @@ var AUTO_MS = 30000;
 var SENDERS = { hwanhee: '환희 님', keyring: '끼릿', pickle: '삐꾸' };
 var AVATARS = { keyring: 'assets/kkirit-avatar.png', pickle: 'assets/ppikku-avatar.png' };
 var READ_ORDER = ['keyring', 'pickle', 'hwanhee'];
-var TYPES = {
-  chat: '대화', draft_ready: '요청서 준비', review_done: '검수 완료',
-  revision_applied: '수정 반영', hub_ready: '허브 반영', published: '게시 완료'
-};
+
+/* 챕터·호수 선택 — deck_id 는 지금처럼 문자열 그대로 저장하고, 화면에는 사람이 읽는 라벨로 보여준다. */
+var CHAPTERS = [
+  { series: 'briefing', label: '뷰티 브리핑', prefix: 'beauty-brief-' },
+  { series: 'point', label: '뷰티 포인트', prefix: 'beauty-point-' },
+  { series: 'tech', label: '뷰티 테크', prefix: 'beauty-tech-' },
+  { series: 'pick', label: '뷰티 픽', prefix: 'beauty-pick-' }
+];
+var CUSTOM = '__custom__';
+/* 브리핑 재개일 — 이 날보다 앞선 날짜는 일자 목록에 넣지 않는다(지나면 영향 없음). */
+var BRIEFING_START = '2026-11-30';
+var MANIFEST = { decks: [] };
+var DECK_META = {};
 
 /* ---------------------------------------------------------------- 1. 상태 */
 var state = {
@@ -47,8 +56,9 @@ var elToken = $('tokenInput'), elConnect = $('btnConnect'), elLoginMsg = $('logi
 var elLogout = $('btnLogout'), elCancelLogin = $('btnCancelLogin');
 var elList = $('list'), elFilters = $('filters'), elSync = $('syncInfo');
 var elAuto = $('autoRefresh'), elRefresh = $('btnRefresh'), elClear = $('btnClearAll');
-var elSeg = $('senderSeg'), elType = $('typeSel');
-var elDeck = $('deckInput'), elDeckList = $('deckList');
+var elSeg = $('senderSeg');
+var elChapter = $('chapterSel'), elDeckSel = $('deckSel');
+var elDirect = $('directWrap'), elDeckInput = $('deckInput');
 var elInput = $('msgInput'), elSend = $('btnSend'), elForm = $('composer');
 var elToast = $('toast');
 
@@ -111,6 +121,203 @@ function dayLabel(ts) {
   if (k === today) return '오늘';
   if (k === ykey) return '어제';
   return d.getFullYear() + '. ' + (d.getMonth() + 1) + '. ' + d.getDate() + '. (' + w + ')';
+}
+
+/* ---------------------------------------------------------------- 3-1. 챕터·호수 */
+function padNum(n) { return (n < 10 ? '0' : '') + n; }
+function isoDate(d) {
+  return d.getFullYear() + '-' + padNum(d.getMonth() + 1) + '-' + padNum(d.getDate());
+}
+function parseISO(s) {
+  var m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return m ? new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])) : null;
+}
+/* 2026-11-30 → 2026.11.30 */
+function fmtFullDate(s) {
+  var m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return m ? m[1] + '.' + m[2] + '.' + m[3] : String(s || '');
+}
+function chapterOf(series) {
+  for (var i = 0; i < CHAPTERS.length; i++) if (CHAPTERS[i].series === series) return CHAPTERS[i];
+  return null;
+}
+function chapterLabel(series) {
+  var c = chapterOf(series);
+  return c ? c.label : String(series || '');
+}
+function issueNoText(d) {
+  var raw = (d && d.issueNo !== undefined && d.issueNo !== null) ? String(d.issueNo).trim() : '';
+  if (!raw) return '';
+  var n = Number(raw);
+  return (isNaN(n) ? raw : n) + '호';
+}
+/* 목록에 들어가는 짧은 제목 — 쉼표·가운뎃점 앞까지만 쓴다. 예: '전성분표, 이 순서만 알면 읽힌다' → '전성분표…' */
+function shortTitle(t) {
+  var s = String(t || '').replace(/\s+/g, ' ').trim();
+  if (!s) return '';
+  var cut = s.split(/,\s+|·/)[0].trim() || s;
+  if (cut.length > 18) {
+    var head = cut.slice(0, 18);
+    var sp = head.lastIndexOf(' ');
+    if (sp >= 8) head = head.slice(0, sp);
+    return head.trim() + '…';
+  }
+  return cut.length < s.length ? cut + '…' : cut;
+}
+/* 덱 메타(manifest) 기준 라벨 — '뷰티 포인트 10호', 브리핑은 '뷰티 브리핑 2026.11.30' */
+function deckMetaLabel(d) {
+  var ch = chapterLabel(d && d.series);
+  if (d && d.series === 'briefing') return ch + ' ' + fmtFullDate(d.date);
+  var no = issueNoText(d);
+  return ch + (no ? ' ' + no : '');
+}
+function indexManifest(decks) {
+  DECK_META = {};
+  (decks || []).forEach(function (d) {
+    if (!d || !d.id) return;
+    DECK_META[d.id] = { series: d.series || '', label: deckMetaLabel(d) };
+  });
+}
+/* 말풍선·필터 칩에 쓰는 사람이 읽는 라벨. manifest 에 없으면 id 규칙으로 풀어 본다. */
+function deckLabel(id) {
+  if (!id) return '';
+  var s = String(id);
+  if (DECK_META[s]) return DECK_META[s].label;
+  var m = s.match(/^beauty-(point|tech|pick|brief)-(\d{4}-\d{2}-\d{2}|\d+)$/);
+  if (m) {
+    var ch = chapterLabel(m[1] === 'brief' ? 'briefing' : m[1]);
+    if (m[1] === 'brief') return ch + ' ' + fmtFullDate(m[2]);
+    var n = Number(m[2]);
+    return ch + ' ' + (isNaN(n) ? m[2] : n) + '호';
+  }
+  return s;
+}
+function nextDeckId(series) {
+  var c = chapterOf(series);
+  if (!c) return '';
+  if (series === 'briefing') return c.prefix + isoDate(new Date());
+  var max = 0;
+  (MANIFEST.decks || []).forEach(function (d) {
+    if (!d || d.series !== series) return;
+    var n = Number(d.issueNo);
+    if (!isNaN(n) && n > max) max = n;
+  });
+  return c.prefix + padNum(max + 1);
+}
+/* 브리핑은 호수 대신 날짜 — 최근 3일부터 10일 뒤까지(재개일 이전은 제외) */
+function briefDates() {
+  var out = [];
+  var today = new Date();
+  today.setHours(0, 0, 0, 0);
+  var start = new Date(today.getTime() - 3 * 86400000);
+  var floor = parseISO(BRIEFING_START);
+  if (floor && start < floor) start = floor;
+  var last = new Date(today.getTime() + 10 * 86400000);
+  for (var i = 0; i < 40; i++) {
+    var d = new Date(start.getTime() + i * 86400000);
+    if (d > last) break;
+    out.push(isoDate(d));
+  }
+  return out;
+}
+function buildChapterOptions() {
+  var cur = elChapter.value;
+  var html = '<option value="">선택 안 함 (일반)</option>';
+  CHAPTERS.forEach(function (c) {
+    html += '<option value="' + esc(c.series) + '">' + esc(c.label) + '</option>';
+  });
+  elChapter.innerHTML = html;
+  elChapter.value = (cur && chapterOf(cur)) ? cur : '';
+}
+function syncDirect(focus) {
+  var custom = elDeckSel.value === CUSTOM;
+  elDirect.hidden = !custom;
+  if (!custom) return;
+  var hint = nextDeckId(elChapter.value);
+  elDeckInput.placeholder = hint ? '예: ' + hint : 'deck_id 직접 입력';
+  if (focus) elDeckInput.focus();
+}
+/* 1번 드롭다운(챕터)에 맞춰 2번 드롭다운(호수·일자)을 채운다. */
+function buildDeckOptions() {
+  var series = elChapter.value;
+  var prev = elDeckSel.value;
+  if (!series) {
+    elDeckSel.innerHTML = '<option value="">일반 대화</option>';
+    elDeckSel.value = '';
+    elDeckSel.disabled = true;
+    syncDirect(false);
+    return;
+  }
+  var items = [];
+  if (series === 'briefing') {
+    var byDate = {};
+    (MANIFEST.decks || []).forEach(function (d) {
+      if (d && d.id && d.series === 'briefing' && d.date) byDate[String(d.date).slice(0, 10)] = d.id;
+    });
+    briefDates().forEach(function (dt) { if (!byDate[dt]) byDate[dt] = 'beauty-brief-' + dt; });
+    Object.keys(byDate).sort().reverse().forEach(function (dt) {
+      items.push({ value: byDate[dt], label: fmtFullDate(dt), title: '' });
+    });
+  } else {
+    (MANIFEST.decks || []).filter(function (d) { return d && d.id && d.series === series; })
+      .sort(function (a, b) {
+        var na = Number(a.issueNo), nb = Number(b.issueNo);
+        if (isNaN(na) || isNaN(nb)) return String(b.date || '').localeCompare(String(a.date || ''));
+        return nb - na;
+      })
+      .forEach(function (d) {
+        var no = issueNoText(d), tt = shortTitle(d.title);
+        items.push({ value: d.id, label: no + (tt ? ' · ' + tt : ''), title: d.title || '' });
+      });
+  }
+  var html = '<option value="">' + (series === 'briefing' ? '일자 선택' : '호수 선택') + '</option>';
+  items.forEach(function (it) {
+    html += '<option value="' + esc(it.value) + '"' + (it.title ? ' title="' + esc(it.title) + '"' : '') + '>' +
+      esc(it.label) + '</option>';
+  });
+  html += '<option value="' + CUSTOM + '">+ 직접 입력</option>';
+  elDeckSel.innerHTML = html;
+  elDeckSel.disabled = false;
+  var keep = false;
+  if (prev) {
+    for (var i = 0; i < elDeckSel.options.length; i++) {
+      if (elDeckSel.options[i].value === prev) { keep = true; break; }
+    }
+  }
+  elDeckSel.value = keep ? prev : '';
+  syncDirect(false);
+}
+/* ../data/manifest.json — 실패·오프라인·지연이어도 선택 자체는 그대로 쓸 수 있게 넘긴다. */
+function loadManifest() {
+  var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+  var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 6000);
+  function settle(decks) {
+    clearTimeout(timer);
+    MANIFEST.decks = decks || [];
+    indexManifest(MANIFEST.decks);
+    buildDeckOptions();
+    if (!elChat.hidden) { renderFilters(); renderList(); }
+  }
+  return fetch('../data/manifest.json', { cache: 'no-store', signal: ctrl ? ctrl.signal : undefined })
+    .then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function (j) {
+      settle((j && Array.isArray(j.decks)) ? j.decks : []);
+    })
+    .catch(function (err) {
+      console.warn('[chat] manifest 를 불러오지 못했습니다:', err && err.message);
+      settle([]);
+    });
+}
+/* 지금 선택된 deck_id — '선택 안 함'이나 비어 있으면 null */
+function currentDeckId() {
+  if (!elChapter.value) return null;
+  var v = elDeckSel.value;
+  if (!v) return null;
+  if (v === CUSTOM) return elDeckInput.value.trim() || null;
+  return v;
 }
 
 /* ---------------------------------------------------------------- 4. GitHub */
@@ -246,13 +453,10 @@ function renderFilters() {
     '" data-deck="all">전체<span class="cnt">' + state.msgs.length + '</span></button>';
   order.forEach(function (d) {
     html += '<button type="button" class="chipBtn' + (state.filterDeck === d ? ' on' : '') +
-      '" data-deck="' + esc(d) + '">' + esc(d) + '<span class="cnt">' + counts[d] + '</span></button>';
+      '" data-deck="' + esc(d) + '" title="' + esc(d) + '">' + esc(deckLabel(d)) +
+      '<span class="cnt">' + counts[d] + '</span></button>';
   });
   elFilters.innerHTML = html;
-
-  var dl = '';
-  order.forEach(function (d) { dl += '<option value="' + esc(d) + '"></option>'; });
-  elDeckList.innerHTML = dl;
 }
 
 function renderList() {
@@ -263,7 +467,7 @@ function renderList() {
     elList.innerHTML = '<p class="empty">' +
       (state.filterDeck === 'all'
         ? '아직 메시지가 없습니다.<br><b>환희 님</b>으로 첫 메시지를 남겨 보세요.'
-        : '이 덱(<b>' + esc(state.filterDeck) + '</b>)에 쌓인 메시지가 없습니다.') +
+        : '이 덱(<b>' + esc(deckLabel(state.filterDeck)) + '</b>)에 쌓인 메시지가 없습니다.') +
       '</p>';
     return;
   }
@@ -283,8 +487,9 @@ function renderList() {
     var avatar = me ? '' : '<span class="avatar ' + who + '"><img src="' + (AVATARS[m.sender] || AVATARS.pickle) +
       '" alt="" loading="lazy" decoding="async"></span>';
     var tags = '';
-    if (m.type && m.type !== 'chat') tags += '<span class="tag type">' + esc(TYPES[m.type] || m.type) + '</span>';
-    if (m.deck_id) tags += '<span class="tag deck">' + esc(m.deck_id) + '</span>';
+    if (m.deck_id) {
+      tags += '<span class="tag deck" title="' + esc(m.deck_id) + '">' + esc(deckLabel(m.deck_id)) + '</span>';
+    }
     tags += '<span class="tag time">' + esc(hhmm(m.timestamp)) + '</span>';
     tags += readMarkup(m);
     tags += '<button class="delBtn" type="button" data-del="' + esc(m.id) + '" aria-label="이 메시지 삭제" title="이 메시지 삭제">삭제</button>';
@@ -372,8 +577,8 @@ function send() {
     id: newId(),
     timestamp: nowStamp(),
     sender: state.sender,
-    type: elType.value || 'chat',
-    deck_id: elDeck.value.trim() || null,
+    type: 'chat',
+    deck_id: currentDeckId(),
     stage: null,
     read_by: [state.sender],
     text: text
@@ -394,7 +599,7 @@ function send() {
       if (!dup) arr.push(msg);
       arr.sort(function (a, b) { return String(a.timestamp || '').localeCompare(String(b.timestamp || '')); });
       return writeFile(state.token, JSON.stringify(arr, null, 2) + '\n', cur.sha,
-        'chat: ' + senderBadgeLabel() + ' · ' + (TYPES[msg.type] || msg.type) +
+        'chat: ' + senderBadgeLabel() + ' · 대화' +
         (msg.deck_id ? ' · ' + msg.deck_id : '') + ' — ' + text.replace(/\s+/g, ' ').slice(0, 48)
       ).then(function (res) {
         if (res.conflict) {
@@ -647,6 +852,13 @@ elSeg.addEventListener('click', function (e) {
   setSender(b.getAttribute('data-sender'));
 });
 
+elChapter.addEventListener('change', function () {
+  buildDeckOptions();
+});
+elDeckSel.addEventListener('change', function () {
+  syncDirect(true);
+});
+
 elForm.addEventListener('submit', function (e) {
   e.preventDefault();
   send();
@@ -680,6 +892,9 @@ function init() {
   state.token = lsGet(LS_PAT) || '';
   setSender(lsGet(LS_SENDER) || 'hwanhee');
   elAuto.checked = state.auto;
+  buildChapterOptions();
+  buildDeckOptions();
+  loadManifest();
 
   if (!state.token) { showLogin(); return; }
   showChat();

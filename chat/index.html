@@ -9,7 +9,7 @@
 <meta name="description" content="끼릿 · 삐꾸 · 환희 님이 함께 쓰는 공용 채팅. 대화 기록은 비공개 저장소 konghwanhee/Agent의 chat/messages.json에 쌓입니다.">
 <link rel="icon" href="../assets/logo-black.png">
 <meta name="theme-color" content="#642128">
-<link rel="stylesheet" href="style.css?v=20261126f">
+<link rel="stylesheet" href="style.css?v=20261126g">
 <script>
 /* 라이브 점검용: 페이지에서 난 스크립트 오류를 모아 둔다(사용자에게는 보이지 않음). */
 window.__chatErrors = [];
@@ -90,18 +90,21 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
         <button type="button" data-sender="keyring"><img class="chipAv" src="assets/kkirit-avatar.png" alt="">끼릿</button>
         <button type="button" data-sender="pickle"><img class="chipAv" src="assets/ppikku-avatar.png" alt="">삐꾸</button>
       </div>
-      <select id="typeSel" aria-label="메시지 종류">
-        <option value="chat">대화</option>
-        <option value="draft_ready">요청서 준비</option>
-        <option value="review_done">검수 완료</option>
-        <option value="revision_applied">수정 반영</option>
-        <option value="hub_ready">허브 반영</option>
-        <option value="published">게시 완료</option>
-      </select>
     </div>
     <div class="composerMid">
-      <input id="deckInput" list="deckList" placeholder="deck_id (선택)" spellcheck="false" autocomplete="off">
-      <datalist id="deckList"></datalist>
+      <select id="chapterSel" aria-label="챕터 선택">
+        <option value="">선택 안 함 (일반)</option>
+        <option value="briefing">뷰티 브리핑</option>
+        <option value="point">뷰티 포인트</option>
+        <option value="tech">뷰티 테크</option>
+        <option value="pick">뷰티 픽</option>
+      </select>
+      <select id="deckSel" aria-label="호수 또는 일자 선택" disabled>
+        <option value="">일반 대화</option>
+      </select>
+    </div>
+    <div class="composerDirect" id="directWrap" hidden>
+      <input id="deckInput" placeholder="deck_id 직접 입력" spellcheck="false" autocomplete="off" autocapitalize="off">
     </div>
     <div class="composerRow">
       <textarea id="msgInput" rows="1" placeholder="메시지를 입력하세요" enterkeyhint="enter"></textarea>
@@ -112,6 +115,6 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="app.js?v=20261126f"></script>
+<script src="app.js?v=20261126g"></script>
 </body>
 </html>
