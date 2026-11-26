@@ -409,6 +409,121 @@ table.grid tr.headRow input,table.grid tr.headRow textarea{font-weight:700;backg
 .modalFoot{display:flex;align-items:center;gap:8px;margin-top:12px}
 .modalFoot .spacer{flex:1}
 
+/* =============================================================================
+   ☰ 메뉴 (2026-11-27) — 홈 상단 오른쪽
+   결재·발행 상태 / 챕터 / @butfriends / 운영 안내를 한 패널에 담는다.
+   데스크톱은 상단띠 아래 드롭다운, 모바일은 오른쪽에서 올라오는 시트.
+   ============================================================================= */
+.menuBtn{
+  position:relative;flex:0 0 auto;width:38px;height:34px;padding:0;border-radius:999px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid rgba(255,255,255,.32);color:#fff;
+}
+.menuBtn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.55)}
+.menuBtn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.menuIco{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;width:16px}
+.menuIco i{display:block;width:16px;height:1.5px;border-radius:2px;background:currentColor}
+.menuDot{display:none;position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#fff}
+.menuBtn.on .menuDot{display:block}
+
+body.menuOpen{overflow:hidden}
+.menuLayer{position:fixed;inset:0;z-index:95}
+.menuLayer[hidden]{display:none}
+.menuScrim{position:absolute;inset:0;background:rgba(17,17,17,.44);backdrop-filter:blur(2px);opacity:0;transition:opacity .18s ease}
+.menuLayer.on .menuScrim{opacity:1}
+.menuPanel{
+  position:absolute;top:0;right:0;bottom:0;width:min(348px,88vw);
+  display:flex;flex-direction:column;background:var(--card);color:var(--ink);
+  border-left:1px solid var(--line);box-shadow:-24px 0 60px -30px rgba(17,17,17,.45);
+  transform:translateX(100%);transition:transform .2s ease-out;
+}
+.menuLayer.on .menuPanel{transform:none}
+@media (min-width:721px){
+  .menuPanel{top:58px;right:14px;bottom:auto;width:362px;max-height:calc(100dvh - 74px);
+    border:1px solid var(--line);border-radius:16px;
+    box-shadow:0 26px 64px -26px rgba(17,17,17,.4)}
+}
+.menuHead{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:12px 14px;
+  background:var(--bar);color:#fff;border-bottom:1px solid rgba(255,255,255,.09)}
+.menuHead h2{margin:0;flex:1 1 auto;font-size:13.5px;font-weight:800;letter-spacing:-.2px;color:#fff}
+@media (min-width:721px){ .menuHead{border-radius:15px 15px 0 0} }
+.iconClose{
+  flex:0 0 auto;width:30px;height:30px;padding:0;border-radius:9px;background:transparent;
+  border:1px solid currentColor;color:inherit;opacity:.72;font-size:17px;line-height:1;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+.iconClose:hover{opacity:1;background:rgba(127,127,127,.14)}
+.menuBody{flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:2px 0 10px}
+.menuSec{padding:13px 14px 8px;border-bottom:1px solid var(--line)}
+.menuSec:last-of-type{border-bottom:none}
+.menuSec h3{margin:0 0 7px;font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--muted)}
+.menuList{display:flex;flex-direction:column;gap:2px}
+.menuItem{
+  display:flex;align-items:center;gap:9px;width:100%;text-align:left;text-decoration:none;
+  background:none;border:1px solid transparent;border-radius:10px;padding:9px 10px;
+  font-size:13px;font-weight:700;color:var(--ink);
+}
+.menuItem:hover{background:var(--tint)}
+.menuItem .mk{flex:0 0 15px;width:15px;text-align:center;font-size:10.5px;color:var(--muted);opacity:0}
+.menuItem .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menuItem .num{flex:0 0 auto;font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.menuItem .ext{flex:0 0 auto;font-size:11px;font-weight:800;color:var(--muted)}
+.menuItem[aria-pressed="true"]{background:#111;border-color:#111;color:#fff}
+.menuItem[aria-pressed="true"] .mk{opacity:1;color:#fff}
+.menuItem[aria-pressed="true"] .num{color:#fff;opacity:.8}
+.menuItem[aria-pressed="true"]:hover{background:#000;border-color:#000}
+.menuItem.noMk{padding-left:34px}   /* ✓ 자리(15px)+간격(9px)에 본문을 맞춘다 */
+.menuNote{margin:0;padding:12px 14px 4px;font-size:10.5px;line-height:1.55;color:var(--muted);word-break:keep-all}
+
+/* 홈 : 활성 상태 필터 표시 */
+.filterNote{
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 2px 0;padding:7px 10px 7px 7px;
+  background:var(--card);border:1px solid var(--line);border-radius:11px;
+  font-size:12px;font-weight:700;color:#404040;
+}
+.filterNote .fnBadge{display:inline-flex;align-items:center;gap:5px;background:#111;color:#fff;
+  border-radius:999px;padding:4px 10px;font-size:11px;font-weight:800;letter-spacing:.01em}
+.filterNote .fnCnt{font-size:11px;font-weight:700;color:var(--muted)}
+.filterNote .fnReset{margin-left:auto;background:var(--card);border:1px solid var(--line);border-radius:999px;
+  padding:4px 10px;font-size:11px;font-weight:800;color:#525252}
+.filterNote .fnReset:hover{border-color:#d4d4d4;color:#111}
+
+/* 운영 일정 · 규칙 모달 */
+.modalCard.guide{width:min(520px,100%);padding:0;overflow:hidden}
+.guideHead{display:flex;align-items:center;gap:10px;flex:0 0 auto;padding:12px 14px;
+  background:var(--bar);color:#fff}
+.guideHead h2{margin:0;flex:1 1 auto;font-size:13.5px;font-weight:800;letter-spacing:-.2px;color:#fff;display:block}
+.guideBody{flex:1 1 auto;min-height:0;overflow-y:auto;padding:2px 16px 16px;-webkit-overflow-scrolling:touch}
+.guideLead{margin:12px 0 2px;font-size:12px;line-height:1.6;color:#404040;word-break:keep-all}
+.guideLead b{font-weight:800;color:#111}
+.guideRow{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 9px;padding:11px 0;border-top:1px solid var(--line)}
+.guideLead+.guideRow{margin-top:10px}
+.guideBadge{align-self:start;max-width:56px;font-size:9px;font-weight:800;letter-spacing:.05em;color:#fff;background:#111;
+  border-radius:6px;padding:3px 7px;white-space:nowrap}
+.guideTitle{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;font-size:12.5px;font-weight:800;letter-spacing:-.1px}
+.guideTitle .when{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:0}
+.guideText{grid-column:2;margin:1px 0 0;font-size:11.5px;line-height:1.62;color:#525252;word-break:keep-all}
+.guideText code{font-size:.92em}
+@media (max-width:520px){
+  .modalCard.guide{width:100%}
+  .guideBody{padding:0 14px 14px}
+  .guideLead{font-size:11.5px}
+  .guideRow{gap:2px 8px;padding:9px 0}
+  .guideTitle{font-size:12px}
+  .guideText{font-size:11px;line-height:1.58}
+}
+
+/* 좁은 폰(360~390px): 상단 버튼 한 줄 유지 */
+@media (max-width:430px){
+  .top{padding:9px 10px;gap:8px}
+  .brandLogo{height:23px}
+  .headRight{flex-wrap:nowrap;gap:6px;margin-left:auto}
+  .top button.ghost{padding:6px 9px;font-size:11px}
+  .chatLink{padding:6px 10px;font-size:11.5px}
+  .menuBtn{width:34px;height:31px}
+  .heroHead h2{font-size:21px}
+}
+
 /* ---------- 반응형 ---------- */
 @media (max-width:999px){
   .top{position:static; padding:10px 12px 8px; gap:8px}

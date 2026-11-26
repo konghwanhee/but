@@ -4196,6 +4196,14 @@ var CHAPTERS = [
   { series: 'pick', label: '뷰티 픽', short: '픽', badge: 'PICK', desc: '한 편으로 읽는 제품·트렌드 큐레이션' }
 ];
 var filterSeries = 'all';
+/* ☰ 메뉴의 결재 · 발행 상태 필터 — 챕터 필터와 함께 걸린다. */
+var filterStatus = 'all';
+var STATUS_FILTERS = [
+  { key: 'all', label: '전체' },
+  { key: 'pending', label: '결재 대기' },     /* !approved && !uploaded */
+  { key: 'ready', label: '업로드 대기' },     /* approved && !uploaded */
+  { key: 'done', label: '업로드 완료' }       /* uploaded */
+];
 var currentDeck = null;
 
 function indexDecks() {
@@ -5984,12 +5992,92 @@ function galChapter(c, list) {
   return sec;
 }
 
+/* -------------------- ☰ 메뉴 · 결재/발행 상태 필터 (2026-11-27)
+   상태는 manifest 의 approved · publishedAt 으로 정해진다.
+     결재 대기 = !approved && !publishedAt · 업로드 대기 = approved && !publishedAt · 업로드 완료 = publishedAt
+   테스트 항목(deckIsTest)은 결재·업로드 대상이 아니므로 세 상태에서 빠진다. */
+function statusKeyOf(d) {
+  if (!d) return 'pending';
+  if (d.publishedAt) return 'done';
+  if (d.approved) return 'ready';
+  return 'pending';
+}
+function statusLabelOf(key) {
+  for (var i = 0; i < STATUS_FILTERS.length; i++) if (STATUS_FILTERS[i].key === key) return STATUS_FILTERS[i].label;
+  return '전체';
+}
+function deckPassesStatus(d) {
+  if (filterStatus === 'all') return true;
+  if (deckIsTest(d)) return false;
+  return statusKeyOf(d) === filterStatus;
+}
+/* 메뉴의 숫자 = 그 항목을 눌렀을 때 보이는 건수(나머지 한쪽 필터는 그대로 둔 채) */
+function statusCount(key, series) {
+  var n = 0;
+  (MANIFEST.decks || []).forEach(function (d) {
+    if (!d) return;
+    if (series && series !== 'all' && d.series !== series) return;
+    if (key !== 'all') { if (deckIsTest(d)) return; if (statusKeyOf(d) !== key) return; }
+    n++;
+  });
+  return n;
+}
+function chapterCount(series) {
+  var n = 0;
+  (MANIFEST.decks || []).forEach(function (d) {
+    if (!d) return;
+    if (series !== 'all' && d.series !== series) return;
+    if (!deckPassesStatus(d)) return;
+    n++;
+  });
+  return n;
+}
+function shownDeckCount() {
+  var n = 0;
+  (MANIFEST.decks || []).forEach(function (d) {
+    if (!deckPassesStatus(d)) return;
+    if (filterSeries !== 'all' && d.series !== filterSeries) return;
+    n++;
+  });
+  return n;
+}
+
+/* 홈 상단의 '지금 걸린 상태 필터' 표시 + ☰ 버튼 점 */
+function updateFilterNote() {
+  var btn = document.getElementById('btnMenu');
+  if (btn) btn.classList.toggle('on', filterStatus !== 'all');
+  var el = document.getElementById('filterNote');
+  if (!el) return;
+  if (filterStatus === 'all') { el.hidden = true; el.innerHTML = ''; return; }
+  var label = statusLabelOf(filterStatus);
+  if (filterSeries !== 'all') label += ' · ' + chapterOf(filterSeries).label;
+  el.hidden = false;
+  el.innerHTML = '<span class="fnBadge">' + esc(label) + '</span>' +
+    '<span class="fnCnt">' + shownDeckCount() + '건</span>' +
+    '<button class="fnReset" type="button" id="fnReset">필터 초기화 ✕</button>';
+  document.getElementById('fnReset').addEventListener('click', resetGalleryFilters);
+}
+function resetGalleryFilters() {
+  filterStatus = 'all';
+  filterSeries = 'all';
+  GAL.page = {};
+  renderGallery();
+}
+function scrollToGalleryTop() {
+  var nav = document.getElementById('chapters');
+  if (!nav) return;
+  var top = nav.getBoundingClientRect().top + (window.pageYOffset || 0) - 56;
+  if (top > 0 && (window.pageYOffset || 0) > top) {
+    try { window.scrollTo({ top: top, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, top); }
+  }
+}
+
 function renderGallery() {
   var all = MANIFEST.decks || [];
   var host = document.getElementById('chapters');
   host.innerHTML = '';
-  var filters = [{ key: 'all', label: '전체', n: all.length }].concat(CHAPTERS.map(function (c) {
-    return { key: c.series, label: c.label, n: decksOf(c.series).length };
+  var filters = [{ key: 'all', label: '전체', n: chapterCount('all') }].concat(CHAPTERS.map(function (c) {
+    return { key: c.series, label: c.label, n: chapterCount(c.series) };
   }));
   filters.forEach(function (f) {
     var b = document.createElement('button');
@@ -6009,7 +6097,7 @@ function renderGallery() {
   var shown = 0;
   CHAPTERS.forEach(function (c) {
     if (filterSeries !== 'all' && filterSeries !== c.series) return;
-    var list = sortDecks(decksOf(c.series));
+    var list = sortDecks(decksOf(c.series).filter(deckPassesStatus));
     if (!list.length) return;
     shown += list.length;
     sections.appendChild(galChapter(c, list));
@@ -6019,8 +6107,13 @@ function renderGallery() {
     for (var i = 0; i < rails.length; i++) galWireRail(rails[i]);
   }
   if (!shown) {
-    sections.innerHTML = '<p class="empty">아직 올라온 카드뉴스가 없습니다 · <code>scripts/sync_to_github.py</code>로 올려 주세요.</p>';
+    sections.innerHTML = (filterStatus !== 'all' || filterSeries !== 'all')
+      ? '<p class="empty">이 조건에 맞는 카드뉴스가 없습니다 · <button class="link" type="button" id="emptyReset">필터 초기화</button></p>'
+      : '<p class="empty">아직 올라온 카드뉴스가 없습니다 · <code>scripts/sync_to_github.py</code>로 올려 주세요.</p>';
+    var er = document.getElementById('emptyReset');
+    if (er) er.addEventListener('click', resetGalleryFilters);
   }
+  updateFilterNote();
   galSyncRails();
 }
 
@@ -6034,6 +6127,130 @@ function galWatch() {
   }
   window.addEventListener('resize', onChange);
   window.addEventListener('orientationchange', onChange);
+}
+
+/* -------------------- ☰ 메뉴 드로어 · 운영 안내 모달 */
+var menuUI = { open: false, timer: 0 };
+
+function menuRow(o) {
+  var b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'menuItem';
+  b.setAttribute('aria-pressed', o.on ? 'true' : 'false');
+  b.innerHTML = '<span class="mk" aria-hidden="true">✓</span><span class="nm">' + esc(o.label) + '</span>' +
+    '<span class="num">' + o.num + '</span>';
+  b.addEventListener('click', o.onClick);
+  return b;
+}
+function renderMenu() {
+  var st = document.getElementById('menuStatus');
+  var ch = document.getElementById('menuChapter');
+  if (!st || !ch) return;
+  st.innerHTML = '';
+  STATUS_FILTERS.forEach(function (f) {
+    st.appendChild(menuRow({
+      label: f.label, num: statusCount(f.key, filterSeries), on: filterStatus === f.key,
+      onClick: function () { applyStatusFilter(f.key); }
+    }));
+  });
+  ch.innerHTML = '';
+  [{ key: 'all', label: '전체' }].concat(CHAPTERS.map(function (c) { return { key: c.series, label: c.label }; }))
+    .forEach(function (r) {
+      ch.appendChild(menuRow({
+        label: r.label, num: chapterCount(r.key), on: filterSeries === r.key,
+        onClick: function () { applyChapterFilter(r.key); }
+      }));
+    });
+}
+function applyStatusFilter(key) {
+  filterStatus = key;
+  GAL.page = {};
+  closeMenu();
+  renderGallery();
+  scrollToGalleryTop();
+}
+function applyChapterFilter(key) {
+  filterSeries = key;
+  GAL.page = {};
+  closeMenu();
+  renderGallery();
+  scrollToGalleryTop();
+}
+function openMenu() {
+  renderMenu();
+  var layer = document.getElementById('menuLayer');
+  if (!layer) return;
+  clearTimeout(menuUI.timer);
+  layer.hidden = false;
+  menuUI.open = true;
+  document.body.classList.add('menuOpen');
+  var btn = document.getElementById('btnMenu');
+  if (btn) btn.setAttribute('aria-expanded', 'true');
+  requestAnimationFrame(function () { if (menuUI.open) layer.classList.add('on'); });
+  var c = document.getElementById('menuClose');
+  if (c) { try { c.focus({ preventScroll: true }); } catch (e) { c.focus(); } }
+}
+function closeMenu() {
+  var layer = document.getElementById('menuLayer');
+  if (!layer || !menuUI.open) return;
+  menuUI.open = false;
+  layer.classList.remove('on');
+  document.body.classList.remove('menuOpen');
+  var btn = document.getElementById('btnMenu');
+  if (btn) { btn.setAttribute('aria-expanded', 'false'); try { btn.focus({ preventScroll: true }); } catch (e) { } }
+  clearTimeout(menuUI.timer);
+  menuUI.timer = setTimeout(function () { if (!menuUI.open) layer.hidden = true; }, 220);
+}
+function openGuide() {
+  closeMenu();
+  var m = document.getElementById('guideModal');
+  if (!m) return;
+  m.hidden = false;
+  var b = document.getElementById('guideClose');
+  if (b) { try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); } }
+}
+function closeGuide() {
+  var m = document.getElementById('guideModal');
+  if (!m || m.hidden) return;
+  m.hidden = true;
+  var b = document.getElementById('btnMenu');
+  if (b) { try { b.focus({ preventScroll: true }); } catch (e) { } }
+}
+function trapTab(e, root) {
+  if (e.key !== 'Tab') return;
+  var f = root.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (!f.length) return;
+  var first = f[0], last = f[f.length - 1];
+  if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+}
+function wireMenu() {
+  var btn = document.getElementById('btnMenu');
+  var layer = document.getElementById('menuLayer');
+  var panel = document.getElementById('menuDrawer');
+  var closeBtn = document.getElementById('menuClose');
+  var guideBtn = document.getElementById('btnGuide');
+  var guide = document.getElementById('guideModal');
+  if (btn) btn.addEventListener('click', function () { menuUI.open ? closeMenu() : openMenu(); });
+  if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+  if (layer) layer.addEventListener('click', function (e) {
+    if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-menu-close')) closeMenu();
+  });
+  if (panel) panel.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { e.preventDefault(); closeMenu(); return; }
+    trapTab(e, panel);
+  });
+  if (guideBtn) guideBtn.addEventListener('click', openGuide);
+  var gClose = document.getElementById('guideClose');
+  if (gClose) gClose.addEventListener('click', closeGuide);
+  if (guide) {
+    guide.addEventListener('click', function (e) { if (e.target === guide) closeGuide(); });
+    guide.addEventListener('keydown', function (e) {
+      var card = guide.querySelector('.modalCard');
+      if (e.key === 'Escape') { e.preventDefault(); closeGuide(); return; }
+      if (card) trapTab(e, card);
+    });
+  }
 }
 
 function showGallery() {
@@ -6065,6 +6282,8 @@ function showEditor(id) {
 }
 
 function route() {
+  closeMenu();
+  closeGuide();
   var m = String(location.hash || '').match(/^#\/edit\/(.+)$/);
   if (m) showEditor(decodeURIComponent(m[1]));
   else { showGallery(); renderGallery(); }
@@ -6151,6 +6370,8 @@ function wireChrome() {
     if (e.key === 'Escape') {
       closeConfirm(false);
       closePat();
+      closeGuide();
+      closeMenu();
       if (stageEl.classList.contains('big')) { stageEl.classList.remove('big'); zoomBtn.textContent = '크게 보기'; }
     }
     if (typing || document.getElementById('viewEditor').hidden) return;
@@ -6169,6 +6390,7 @@ function boot() {
   IMGS['__logo_black__'] = 'assets/logo-black.png';
   IMGS['__logo_white__'] = 'assets/logo-white.png';
   wireChrome();
+  wireMenu();
   galWatch();
   updateGhChip();
   showGallery();

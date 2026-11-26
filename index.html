@@ -11,7 +11,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="stylesheet" href="style.css?v=20261127e">
+<link rel="stylesheet" href="style.css?v=20261127f">
 </head>
 <body>
 
@@ -26,6 +26,11 @@
       <span class="ghChip" id="ghChipHome" hidden></span>
       <button class="ghost" id="btnPatHome" type="button">GitHub 연결</button>
       <button class="chatLink" type="button" data-chat-open aria-haspopup="dialog">💬 Chat</button>
+      <button class="menuBtn" id="btnMenu" type="button" aria-label="메뉴" aria-haspopup="dialog"
+        aria-expanded="false" aria-controls="menuDrawer" title="메뉴">
+        <span class="menuIco" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span class="menuDot" aria-hidden="true"></span>
+      </button>
     </div>
   </header>
 
@@ -43,6 +48,7 @@
     </section>
 
     <nav class="chapters" id="chapters" aria-label="챕터 필터"></nav>
+    <div class="filterNote" id="filterNote" role="status" hidden></div>
 
     <div id="sections" class="sections">
       <p class="empty">카드뉴스 목록을 불러오는 중입니다…</p>
@@ -142,7 +148,86 @@
   </div>
 </div>
 
-<script src="app.js?v=20261127e"></script>
+<!-- ============================================================ ☰ 메뉴 드로어 -->
+<div class="menuLayer" id="menuLayer" hidden>
+  <div class="menuScrim" data-menu-close></div>
+  <aside class="menuPanel" id="menuDrawer" role="dialog" aria-modal="true" aria-labelledby="menuTitle">
+    <div class="menuHead">
+      <h2 id="menuTitle">메뉴</h2>
+      <button class="iconClose" id="menuClose" type="button" aria-label="메뉴 닫기" title="닫기 (Esc)">×</button>
+    </div>
+    <div class="menuBody">
+      <section class="menuSec">
+        <h3>결재 · 발행 상태</h3>
+        <div class="menuList" id="menuStatus"></div>
+      </section>
+      <section class="menuSec">
+        <h3>챕터</h3>
+        <div class="menuList" id="menuChapter"></div>
+      </section>
+      <section class="menuSec">
+        <h3>바로가기</h3>
+        <a class="menuItem noMk" href="https://www.instagram.com/butfriends/" target="_blank" rel="noopener">
+          <span class="nm">@butfriends</span>
+          <span class="ext">인스타그램 ↗</span>
+        </a>
+      </section>
+      <section class="menuSec">
+        <h3>운영 안내</h3>
+        <button class="menuItem noMk" id="btnGuide" type="button" aria-haspopup="dialog">
+          <span class="nm">매거진 소개 · 운영 일정/규칙</span>
+          <span class="ext" aria-hidden="true">›</span>
+        </button>
+      </section>
+      <p class="menuNote">표시된 숫자는 지금 선택한 조건에서 보이는 카드뉴스 수입니다. 테스트 항목은 결재·업로드 상태에서 빠집니다.</p>
+    </div>
+  </aside>
+</div>
+
+<!-- ============================================================ 운영 일정 · 규칙 -->
+<div class="modal" id="guideModal" hidden>
+  <div class="modalCard guide" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="guideHead">
+      <h2 id="guideTitle">매거진 소개 · 운영 일정</h2>
+      <button class="iconClose" id="guideClose" type="button" aria-label="닫기" title="닫기 (Esc)">×</button>
+    </div>
+    <div class="guideBody">
+      <p class="guideLead"><b>@butfriends</b> — 뷰티·코스메틱·에스테틱 산업과 성분을 다루는 4개 챕터 매거진</p>
+
+      <div class="guideRow">
+        <span class="guideBadge">BRIEF</span>
+        <div class="guideTitle">뷰티 브리핑 <span class="when">11/30(월) 재개</span></div>
+        <p class="guideText">평일 17:00 제작 → 끼릿 검수 → 삐꾸 보완 → 결재&nbsp;즉시&nbsp;5분&nbsp;업로드<br>더마 코스메틱 · 국내 뷰티 이슈 포함</p>
+      </div>
+
+      <div class="guideRow">
+        <span class="guideBadge">POINT</span>
+        <div class="guideTitle">뷰티 포인트 <span class="when">월·수·금 08:00 발행</span></div>
+        <p class="guideText">4부작 주엔 토 08:00 포함, 테크 휴재<br>토 10:00 주간 제안 → 주말&nbsp;일괄&nbsp;제작</p>
+      </div>
+
+      <div class="guideRow">
+        <span class="guideBadge">TECH</span>
+        <div class="guideTitle">뷰티 테크 <span class="when">토 08:00 발행</span></div>
+        <p class="guideText">성분 / 제형 / EBD 원리·기전 심층</p>
+      </div>
+
+      <div class="guideRow">
+        <span class="guideBadge">PICK</span>
+        <div class="guideTitle">뷰티 픽 <span class="when">수시</span></div>
+        <p class="guideText">B2C 화제 이슈 · 브리핑 후속 가벼운 이슈 수시 제안 → 결재&nbsp;즉시&nbsp;5분&nbsp;업로드</p>
+      </div>
+
+      <div class="guideRow">
+        <span class="guideBadge">공통</span>
+        <div class="guideTitle">결재 후 업로드</div>
+        <p class="guideText">결재(<code>approved: true</code>) 후 업로드는 삐꾸&nbsp;단독&nbsp;5분&nbsp;자동&nbsp;감지&nbsp;실행</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="app.js?v=20261127f"></script>
 
 <!-- ============================================================ 공용 채팅 팝업 (페이지 안에서 열림) -->
 <div class="chatModal" id="chatModal" hidden>
@@ -163,7 +248,7 @@
   var modal = document.getElementById('chatModal');
   var frame = document.getElementById('chatFrame');
   var closeBtn = document.getElementById('chatClose');
-  var BUILD = '20261127e';
+  var BUILD = '20261127f';
   var SRC = './chat/?embed=1&v=' + BUILD;
   if (!modal || !frame) return;
 
