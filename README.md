@@ -69,6 +69,19 @@ GitHub → Settings → Developer settings → **Fine-grained tokens** 에서
 로 만든 토큰을 상세 화면의 `GitHub 연결`에 붙여넣으면 됩니다.
 토큰은 그 브라우저(localStorage)에만 남고, 연결하지 않아도 편집·PNG 저장·JSON 내보내기는 모두 동작합니다.
 
+## 캐시 갱신 (배포 후 옛 화면이 남을 때)
+
+GitHub Pages 는 HTML 을 `Cache-Control: max-age=600` 으로 내려주고, 아이폰 사파리는 그보다 오래 들고 있는 경우가 있습니다.
+그래서 `index.html` · `chat/index.html` 은 `<link>`/`<script>` 와 허브의 채팅 iframe `src` 에 **`?v=YYYYMMDDx` 버전 쿼리**를 달고,
+두 HTML `<head>` 에 `no-cache, no-store, must-revalidate` 메타를 둡니다.
+
+규칙: **`app.js` · `style.css` 를 고치면 반드시 버전을 한 글자 올립니다.**
+
+- 허브: `index.html` 의 `style.css?v=`, `app.js?v=`, 그리고 채팅 팝업 `BUILD` 상수(→ `./chat/?embed=1&v=`)를 같은 값으로.
+- 채팅: `chat/index.html` 의 `style.css?v=`(안쪽), `app.js?v=`(안쪽)를 같은 값으로.
+
+버전을 올리지 않고 파일만 고치면 그 URL 의 옛 사본이 그대로 쓰여 수정이 화면에 뜨지 않습니다.
+
 ## 로컬에서 열기
 
 ```bash
