@@ -8,7 +8,10 @@
 <meta name="description" content="뷰티 포인트 · 뷰티 테크 · 뷰티 브리핑 · 뷰티 픽 카드뉴스를 한곳에서 보고, 문구를 고치고, PNG로 내려받고, GitHub에 저장·결재하는 허브.">
 <link rel="icon" href="assets/logo-black.png">
 <meta name="theme-color" content="#642128">
-<link rel="stylesheet" href="style.css?v=20261126a">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="stylesheet" href="style.css?v=20261127c">
 </head>
 <body>
 
@@ -140,7 +143,7 @@
   </div>
 </div>
 
-<script src="app.js?v=20261126a"></script>
+<script src="app.js?v=20261127c"></script>
 
 <!-- ============================================================ 공용 채팅 팝업 (페이지 안에서 열림) -->
 <div class="chatModal" id="chatModal" hidden>
@@ -161,7 +164,8 @@
   var modal = document.getElementById('chatModal');
   var frame = document.getElementById('chatFrame');
   var closeBtn = document.getElementById('chatClose');
-  var SRC = './chat/?embed=1&v=20261127a';
+  var BUILD = '20261127c';
+  var SRC = './chat/?embed=1&v=' + BUILD;
   if (!modal || !frame) return;
 
   function post(msg) {
