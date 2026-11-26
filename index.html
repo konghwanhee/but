@@ -164,13 +164,18 @@
   var SRC = './chat/?embed=1';
   if (!modal || !frame) return;
 
+  function post(msg) {
+    try { if (frame.contentWindow) frame.contentWindow.postMessage(msg, location.origin); } catch (err) { }
+  }
   function openChat() {
     if (!frame.getAttribute('src')) frame.setAttribute('src', SRC);
     modal.hidden = false;
     document.body.classList.add('chatOpen');
+    post('agentchat:resume');
     try { closeBtn.focus({ preventScroll: true }); } catch (e) { closeBtn.focus(); }
   }
   function closeChat() {
+    post('agentchat:pause');
     modal.hidden = true;
     document.body.classList.remove('chatOpen');
     var last = document.querySelector('[data-chat-open]');
@@ -182,6 +187,7 @@
   });
   /* 팝업 안(iframe)에 포커스가 있어도 Esc로 닫힌다 — 같은 출처라 안쪽 문서에 직접 건다. */
   frame.addEventListener('load', function () {
+    if (!modal.hidden) post('agentchat:resume');
     try {
       frame.contentDocument.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') closeChat();

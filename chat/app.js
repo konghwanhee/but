@@ -502,6 +502,17 @@ elInput.addEventListener('keydown', function (e) {
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); send(); }
 });
 
+/* 허브 팝업이 닫히면 자동 새로고침을 멈추고, 다시 열면 재개한다(부모 창에서 postMessage). */
+window.addEventListener('message', function (e) {
+  if (e.origin !== location.origin) return;
+  if (e.data === 'agentchat:pause') { stopAuto(); }
+  else if (e.data === 'agentchat:resume') {
+    if (!state.token || elChat.hidden) return;
+    startAuto();
+    load({ silent: true, keepScroll: true }).catch(function () { });
+  }
+});
+
 document.addEventListener('visibilitychange', function () {
   if (document.visibilityState === 'visible' && state.token && !elChat.hidden) {
     load({ silent: true, keepScroll: true }).catch(function () { });
