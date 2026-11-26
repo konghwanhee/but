@@ -201,6 +201,25 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !modal.hidden) closeChat();
   });
+
+  /* 아이폰에서 키보드가 올라오면 팝업 아랫부분(입력창)이 가려지지 않게 높이를 맞춘다. */
+  var vv = window.visualViewport;
+  if (vv) {
+    var fitKeyboard = function () {
+      var panel = modal.querySelector('.chatPanel');
+      if (!panel) return;
+      var gap = window.innerHeight - vv.height;
+      if (!modal.hidden && gap > 120) {
+        panel.style.height = Math.max(260, vv.height - 12) + 'px';
+        panel.style.marginBottom = gap + 'px';
+      } else {
+        panel.style.height = '';
+        panel.style.marginBottom = '';
+      }
+    };
+    vv.addEventListener('resize', fitKeyboard);
+    vv.addEventListener('scroll', fitKeyboard);
+  }
 })();
 </script>
 </body>
