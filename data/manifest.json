@@ -46,11 +46,12 @@
       "subtitle": "다이소 전용 세컨드 브랜드 8개",
       "coverThumb": "covers/beauty-point-03-cover.png",
       "jsonPath": "data/beauty-point-03.json",
-      "updatedAt": "2026-11-24T17:18:42+09:00",
+      "updatedAt": "2026-11-27T08:08:00+09:00",
       "approved": true,
-      "publishedAt": null,
+      "publishedAt": "2026-11-27T08:08:00+09:00",
       "approvedAt": "2026-11-22T11:07:25.364Z",
-      "scheduledUploadAt": "2026-11-27T08:00:00+09:00"
+      "scheduledUploadAt": "2026-11-27T08:00:00+09:00",
+      "instagramUrl": "https://www.instagram.com/p/DgOQGJvkxlx/"
     },
     {
       "id": "beauty-point-04",
