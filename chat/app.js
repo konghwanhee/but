@@ -195,7 +195,13 @@ function deckLabel(id) {
 function nextDeckId(series) {
   var c = chapterOf(series);
   if (!c) return '';
-  if (series === 'briefing') return c.prefix + isoDate(new Date());
+  if (series === 'briefing') {
+    var floor = parseISO(BRIEFING_START);
+    var t = new Date();
+    t.setHours(0, 0, 0, 0);
+    if (floor && t < floor) t = floor;
+    return c.prefix + isoDate(t);
+  }
   var max = 0;
   (MANIFEST.decks || []).forEach(function (d) {
     if (!d || d.series !== series) return;
