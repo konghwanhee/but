@@ -9,7 +9,7 @@
 <meta name="description" content="끼릿 · 삐꾸 · 환희 님이 함께 쓰는 공용 채팅. 대화 기록은 비공개 저장소 konghwanhee/Agent의 chat/messages.json에 쌓입니다.">
 <link rel="icon" href="../assets/logo-black.png">
 <meta name="theme-color" content="#642128">
-<link rel="stylesheet" href="style.css?v=20261126e">
+<link rel="stylesheet" href="style.css?v=20261126f">
 <script>
 /* 라이브 점검용: 페이지에서 난 스크립트 오류를 모아 둔다(사용자에게는 보이지 않음). */
 window.__chatErrors = [];
@@ -69,7 +69,7 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
     </div>
     <div class="topAct">
       <button class="iconBtn" id="btnRefresh" type="button" aria-label="지금 새로고침" title="지금 새로고침">↻</button>
-      <button class="iconBtn wide" id="btnToken" type="button" aria-label="토큰 변경·로그아웃" title="토큰 변경 / 로그아웃">⚙ 토큰</button>
+      <button class="iconBtn wide danger" id="btnClearAll" type="button" aria-label="대화 전체 삭제" title="대화 전체 삭제">전체 삭제</button>
     </div>
   </header>
 
@@ -100,14 +100,6 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
       </select>
     </div>
     <div class="composerMid">
-      <select id="stageSel" aria-label="단계">
-        <option value="">단계 —</option>
-        <option value="1_keyring_draft">1 · 요청서</option>
-        <option value="2_pickle_rendered">2 · 렌더 완료</option>
-        <option value="3_keyring_reviewed">3 · 2차 검수</option>
-        <option value="4_sent_to_but">4 · 허브 반영</option>
-        <option value="5_published">5 · 게시 완료</option>
-      </select>
       <input id="deckInput" list="deckList" placeholder="deck_id (선택)" spellcheck="false" autocomplete="off">
       <datalist id="deckList"></datalist>
     </div>
@@ -120,6 +112,6 @@ window.addEventListener('unhandledrejection', function (e) { window.__chatErrors
 
 <div class="toast" id="toast" role="status"></div>
 
-<script src="app.js?v=20261126e"></script>
+<script src="app.js?v=20261126f"></script>
 </body>
 </html>

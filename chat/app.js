@@ -20,13 +20,10 @@ var AUTO_MS = 30000;
 
 var SENDERS = { hwanhee: '환희 님', keyring: '끼릿', pickle: '삐꾸' };
 var AVATARS = { keyring: 'assets/kkirit-avatar.png', pickle: 'assets/ppikku-avatar.png' };
+var READ_ORDER = ['keyring', 'pickle', 'hwanhee'];
 var TYPES = {
   chat: '대화', draft_ready: '요청서 준비', review_done: '검수 완료',
   revision_applied: '수정 반영', hub_ready: '허브 반영', published: '게시 완료'
-};
-var STAGES = {
-  '1_keyring_draft': '① 요청서', '2_pickle_rendered': '② 렌더 완료',
-  '3_keyring_reviewed': '③ 2차 검수', '4_sent_to_but': '④ 허브 반영', '5_published': '⑤ 게시 완료'
 };
 
 /* ---------------------------------------------------------------- 1. 상태 */
@@ -38,6 +35,7 @@ var state = {
   sender: 'hwanhee',
   auto: true,
   busy: false,
+  marking: false,
   lastSync: 0,
   timer: null
 };
@@ -48,8 +46,8 @@ var elLogin = $('loginView'), elChat = $('chatView');
 var elToken = $('tokenInput'), elConnect = $('btnConnect'), elLoginMsg = $('loginMsg');
 var elLogout = $('btnLogout'), elCancelLogin = $('btnCancelLogin');
 var elList = $('list'), elFilters = $('filters'), elSync = $('syncInfo');
-var elAuto = $('autoRefresh'), elRefresh = $('btnRefresh'), elTokenBtn = $('btnToken');
-var elSeg = $('senderSeg'), elType = $('typeSel'), elStage = $('stageSel');
+var elAuto = $('autoRefresh'), elRefresh = $('btnRefresh'), elClear = $('btnClearAll');
+var elSeg = $('senderSeg'), elType = $('typeSel');
 var elDeck = $('deckInput'), elDeckList = $('deckList');
 var elInput = $('msgInput'), elSend = $('btnSend'), elForm = $('composer');
 var elToast = $('toast');
@@ -216,6 +214,25 @@ function showChat() {
 /* ---------------------------------------------------------------- 6. 렌더 */
 function senderLabel(m) { return SENDERS[m && m.sender] || (m && m.sender) || '알 수 없음'; }
 
+/* 읽은 사람 — read_by 가 없으면 발신자만 읽은 것으로 본다. */
+function readersOf(m) {
+  if (!m) return [];
+  if (Array.isArray(m.read_by)) return m.read_by;
+  return m.sender ? [m.sender] : [];
+}
+/* 끼릿(핑크) · 삐꾸(파랑) · 환희 님(검정) 체크 — 안 읽은 사람은 연회색 */
+function readMarkup(m) {
+  var read = readersOf(m);
+  var names = READ_ORDER.map(function (who) {
+    return SENDERS[who] + ' ' + (read.indexOf(who) >= 0 ? '읽음' : '안 읽음');
+  }).join(' · ');
+  var html = '<span class="reads" role="img" aria-label="' + esc(names) + '" title="' + esc(names) + '">';
+  READ_ORDER.forEach(function (who) {
+    html += '<span class="rd ' + who + (read.indexOf(who) >= 0 ? ' on' : ' off') + '">✓</span>';
+  });
+  return html + '</span>';
+}
+
 function renderFilters() {
   var counts = {};
   var order = [];
@@ -267,9 +284,10 @@ function renderList() {
       '" alt="" loading="lazy" decoding="async"></span>';
     var tags = '';
     if (m.type && m.type !== 'chat') tags += '<span class="tag type">' + esc(TYPES[m.type] || m.type) + '</span>';
-    if (m.stage) tags += '<span class="tag stage">' + esc(STAGES[m.stage] || m.stage) + '</span>';
     if (m.deck_id) tags += '<span class="tag deck">' + esc(m.deck_id) + '</span>';
     tags += '<span class="tag time">' + esc(hhmm(m.timestamp)) + '</span>';
+    tags += readMarkup(m);
+    tags += '<button class="delBtn" type="button" data-del="' + esc(m.id) + '" aria-label="이 메시지 삭제" title="이 메시지 삭제">삭제</button>';
     html += '<div class="' + cls + '">' + avatar +
       '<div class="msgBody">' +
       '<div class="who"><span>' + esc(senderLabel(m)) + '</span>' + badge + '</div>' +
@@ -296,8 +314,10 @@ function render(keepScroll) {
 function syncLabel() {
   if (!state.lastSync) { elSync.textContent = '불러오는 중…'; return; }
   var d = new Date(state.lastSync);
-  elSync.textContent = '마지막 확인 ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) +
+  var full = '마지막 확인 ' + pad(d.getHours()) + ':' + pad(d.getMinutes()) +
     ' · 메시지 ' + state.msgs.length + '개';
+  elSync.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ' 확인 · 메시지 ' + state.msgs.length + '개';
+  elSync.title = full;
 }
 
 /* ---------------------------------------------------------------- 7. 불러오기 */
@@ -313,6 +333,7 @@ function load(opts) {
         return String(a.timestamp || '').localeCompare(String(b.timestamp || ''));
       });
       render(!!opts.keepScroll);
+      if (!elChat.hidden) markRead();
     }
     syncLabel();
     return res;
@@ -353,12 +374,14 @@ function send() {
     sender: state.sender,
     type: elType.value || 'chat',
     deck_id: elDeck.value.trim() || null,
-    stage: elStage.value || null,
+    stage: null,
+    read_by: [state.sender],
     text: text
   };
 
   state.busy = true;
   elSend.disabled = true;
+  elClear.disabled = true;
   elSend.textContent = '보내는 중';
 
   var attempt = 0;
@@ -392,10 +415,128 @@ function send() {
     }).then(function () {
       state.busy = false;
       elSend.disabled = false;
+      elClear.disabled = false;
       elSend.textContent = '전송';
     });
   }
   tryWrite();
+}
+
+/* ---------------------------------------------------------------- 8-1. 삭제 */
+function shortSha(sha) { return sha ? String(sha).slice(0, 7) : '커밋 완료'; }
+
+/* 최신 파일을 먼저 읽어 transform 으로 고친 뒤 PUT — 409면 새 SHA로 다시 시도한다.
+   transform 이 null 을 돌려주면 저장하지 않는다(이미 지워졌거나 이미 비어 있음). */
+function mutateFile(transform, message) {
+  var attempt = 0;
+  function tryOnce() {
+    attempt++;
+    return readFile(state.token).then(function (cur) {
+      var next = transform(cur.items.slice());
+      if (!next) {
+        state.sha = cur.sha;
+        state.msgs = cur.items.slice().sort(function (a, b) {
+          return String(a.timestamp || '').localeCompare(String(b.timestamp || ''));
+        });
+        state.lastSync = Date.now();
+        render(true);
+        syncLabel();
+        return { ok: true, skipped: true };
+      }
+      return writeFile(state.token, JSON.stringify(next, null, 2) + '\n', cur.sha, message).then(function (res) {
+        if (res.conflict) {
+          if (attempt < 3) return sleep(350).then(tryOnce);
+          throw new Error('다른 곳에서 동시에 저장하고 있습니다. 잠시 뒤 다시 시도해 주세요.');
+        }
+        state.sha = res.sha;
+        state.msgs = next;
+        state.lastSync = Date.now();
+        render(true);
+        syncLabel();
+        return res;
+      });
+    });
+  }
+  return tryOnce();
+}
+
+function deleteMessage(id) {
+  if (!state.token || state.busy) return;
+  var target = null;
+  state.msgs.forEach(function (m) { if (!target && m && m.id === id) target = m; });
+  if (!target) return;
+  var preview = String(target.text || '').replace(/\s+/g, ' ').slice(0, 40);
+  if (!confirm('이 메시지를 삭제할까요?\n\n' + senderLabel(target) + ' · ' + preview +
+    (String(target.text || '').length > 40 ? '…' : '') + '\n\n삭제하면 되돌릴 수 없습니다.')) return;
+
+  state.busy = true;
+  elClear.disabled = true;
+  elRefresh.disabled = true;
+  mutateFile(function (arr) {
+    var kept = arr.filter(function (m) { return !(m && m.id === id); });
+    return kept.length === arr.length ? null : kept;
+  }, 'chat: 메시지 삭제 — ' + preview).then(function (res) {
+    toast(res && res.skipped ? '이미 삭제된 메시지입니다' : '메시지를 삭제했습니다 · ' + shortSha(res && res.commit));
+  }).catch(function (err) {
+    toast('삭제하지 못했습니다 · ' + err.message);
+  }).then(function () {
+    state.busy = false;
+    elClear.disabled = false;
+    elRefresh.disabled = false;
+  });
+}
+
+function clearAll() {
+  if (!state.token || state.busy) return;
+  var n = state.msgs.length;
+  if (!n) { toast('이미 비어 있습니다'); return; }
+  if (!confirm('대화를 전체 삭제할까요?\n\n메시지 ' + n + '개를 모두 지우고 빈 대화로 되돌립니다.\n삭제하면 되돌릴 수 없습니다.')) return;
+
+  state.busy = true;
+  elClear.disabled = true;
+  elRefresh.disabled = true;
+  mutateFile(function (arr) {
+    return arr.length ? [] : null;
+  }, 'chat: 대화 전체 삭제').then(function (res) {
+    toast(res && res.skipped ? '이미 비어 있습니다' : '대화를 전체 삭제했습니다 · ' + shortSha(res && res.commit));
+  }).catch(function (err) {
+    toast('전체 삭제하지 못했습니다 · ' + err.message);
+  }).then(function () {
+    state.busy = false;
+    elClear.disabled = false;
+    elRefresh.disabled = false;
+  });
+}
+
+/* ---------------------------------------------------------------- 8-2. 읽음 표시 */
+/* 지금 선택된 발신자가 아직 읽지 않은 메시지에 read_by 를 더해 조용히 커밋한다. */
+function markRead() {
+  if (!state.token || state.busy || state.marking) return;
+  var who = state.sender;
+  var need = state.msgs.some(function (m) {
+    return m && readersOf(m).indexOf(who) < 0;
+  });
+  if (!need) return;
+  state.marking = true;
+  mutateFile(function (arr) {
+    var changed = false;
+    var next = arr.map(function (m) {
+      if (!m) return m;
+      var list = readersOf(m).slice();
+      if (list.indexOf(who) >= 0) return m;
+      list.push(who);
+      changed = true;
+      var copy = {};
+      Object.keys(m).forEach(function (k) { copy[k] = m[k]; });
+      copy.read_by = list;
+      return copy;
+    });
+    return changed ? next : null;
+  }, 'chat: 읽음 표시 — ' + (SENDERS[who] || who)).catch(function () {
+    /* 읽음 표시 실패는 조용히 넘긴다(대화는 그대로 보인다). */
+  }).then(function () {
+    state.marking = false;
+  });
 }
 
 /* ---------------------------------------------------------------- 9. 입력창 */
@@ -475,7 +616,15 @@ elRefresh.addEventListener('click', function () {
     elRefresh.classList.remove('spin');
   });
 });
-elTokenBtn.addEventListener('click', showLogin);
+elClear.addEventListener('click', clearAll);
+
+elList.addEventListener('click', function (e) {
+  if (!e.target.closest) return;
+  if (e.target.closest('[data-act="token"]')) { showLogin(); return; }
+  var b = e.target.closest('button[data-del]');
+  if (!b) return;
+  deleteMessage(b.getAttribute('data-del'));
+});
 
 elAuto.addEventListener('change', function () {
   state.auto = elAuto.checked;
@@ -544,7 +693,8 @@ function init() {
       elLoginMsg.textContent = '저장된 토큰으로 대화를 읽지 못했습니다. 토큰을 다시 연결해 주세요.';
     } else {
       elList.innerHTML = '<p class="empty">대화를 불러오지 못했습니다.<br>' + esc(err.message) +
-        '<br><br><b>↻</b>로 다시 시도해 주세요.</p>';
+        '<br><br><b>↻</b>로 다시 시도해 주세요.' +
+        '<br><button class="ghost emptyBtn" type="button" data-act="token">토큰 다시 연결</button></p>';
     }
   });
 }
