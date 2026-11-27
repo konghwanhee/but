@@ -125,14 +125,14 @@
         "images": [
           {
             "image": "assets/ptest-ai-fake-doctor.jpg",
-            "focus_x": 0.3,
-            "focus_y": 0.38,
+            "focus_x": 0.5,
+            "focus_y": 0.46,
             "credit": "AI 생성"
           },
           {
-            "image": "assets/ptest-ai-fake-doctor.jpg",
-            "focus_x": 0.82,
-            "focus_y": 0.3,
+            "image": "assets/ptest-verify-hand.jpg",
+            "focus_x": 0.5,
+            "focus_y": 0.5,
             "credit": "AI 생성"
           }
         ],
