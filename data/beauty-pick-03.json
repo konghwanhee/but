@@ -2,8 +2,8 @@
   "series": "BEAUTY PICK",
   "issue": "03",
   "date": "2026.11.27",
-  "key_color": "#D9197F",
-  "deep_color": "#3A0A22",
+  "key_color": "#1D4ED8",
+  "deep_color": "#0F1B2E",
   "paper": "#F4F1EB",
   "disclaimer": "이 카드뉴스는 각 브랜드의 공식 발표와 언론 보도를 바탕으로 제작했습니다. 판매 조건과 구성은 판매처와 시점에 따라 다를 수 있습니다.",
   "cover": {
@@ -210,7 +210,7 @@
           "text": "폰 들고 다니는 게 자랑",
           "x": 734,
           "y": 334,
-          "fill": "#FDEAF2",
+          "fill": "#DCE9FF",
           "tilt": 1.8,
           "size": 30
         },
@@ -252,48 +252,27 @@
         "FAN BALM"
       ],
       "sources_label": "SOURCES",
-      "photos": [
-        {
-          "image": "assets/p03-dior-still.jpg",
-          "x": 92,
-          "y": 196,
-          "w": 190,
-          "h": 220,
-          "credit": "DIOR BEAUTY",
-          "focus_x": 0.5,
-          "focus_y": 0.5
-        },
-        {
-          "image": "assets/p03-laneige-product.jpg",
-          "x": 322,
-          "y": 196,
-          "w": 190,
-          "h": 220,
-          "credit": "LANEIGE",
-          "focus_x": 0.5,
-          "focus_y": 0.4
-        },
-        {
-          "image": "assets/p03-fan-stack.jpg",
-          "x": 552,
-          "y": 196,
-          "w": 190,
-          "h": 220,
-          "credit": "AMORE MALL",
-          "focus_x": 0.5,
-          "focus_y": 0.4
-        },
-        {
-          "image": "assets/p03-amuse-ring.jpg",
-          "x": 782,
-          "y": 196,
-          "w": 190,
-          "h": 220,
-          "credit": "AMUSE",
-          "focus_x": 0.5,
-          "focus_y": 0.5
-        }
-      ]
+      "bg_image": "assets/p03-laneige-worn.jpg",
+      "bg_focus": 0.04,
+      "bg_scrim": [
+        [
+          0,
+          175
+        ],
+        [
+          180,
+          90
+        ],
+        [
+          360,
+          100
+        ],
+        [
+          470,
+          250
+        ]
+      ],
+      "bg_scrim_rgb": "#0F1B2E"
     }
   ],
   "family": "pick",

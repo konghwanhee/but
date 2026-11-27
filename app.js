@@ -4082,9 +4082,10 @@ function pickClosing(s, page, total) {
   _ctx.fillStyle = pDeep(); _ctx.fillRect(0, 0, W, H);
   if (bg) {
     pImgFilter('contrast(1.05) saturate(0.98) brightness(0.98)', function () {
-      drawCoverCrop(bg, 0, 0, W, bandH, 0.5, s.bg_focus === undefined ? 0.42 : s.bg_focus, 1);
+      drawCoverCrop(bg, 0, 0, W, bandH, s.bg_focus_x === undefined ? 0.5 : s.bg_focus_x, s.bg_focus === undefined ? 0.42 : s.bg_focus, 1);
     });
-    pStops(0, 0, W, bandH, [8, 10, 14], [[0, 130], [200, 60], [bandH, 20]]);
+    pStops(0, 0, W, bandH, s.bg_scrim_rgb ? pRGB(s.bg_scrim_rgb) : [8, 10, 14],
+      s.bg_scrim || [[0, 130], [200, 60], [bandH, 20]]);
   } else {
     var g = _ctx.createLinearGradient(0, 0, 0, H);
     for (var i = 0; i <= 24; i++) {
