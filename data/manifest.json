@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-27T17:37:26+09:00",
+  "generatedAt": "2026-11-27T18:18:07+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -242,9 +242,9 @@
       "date": "2026-11-27",
       "title": "화장품, 이제 얼굴 말고 몸에 걸친다고?",
       "subtitle": "파우치 탈출한 웨어러블 뷰티템",
-      "coverThumb": "covers/beauty-pick-03-cover.png",
+      "coverThumb": "covers/beauty-pick-03-cover-v2.png",
       "jsonPath": "data/beauty-pick-03.json",
-      "updatedAt": "2026-11-27T13:09:43+09:00",
+      "updatedAt": "2026-11-27T18:18:07+09:00",
       "approved": false,
       "publishedAt": null
     }
