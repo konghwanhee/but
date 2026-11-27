@@ -9,11 +9,11 @@
   "cover": {
     "page": "03",
     "label": "PICK 3",
-    "image": "assets/p03-laneige-model.jpg",
-    "focus_y": 0.42,
-    "focus_x": 0.5,
+    "image": "assets/p03-dior-still.jpg",
+    "focus_y": 0.5,
+    "focus_x": 0.52,
     "header_dark": true,
-    "photo_source": "사진 · 라네즈 × 마뗑킴 공식 모델컷",
+    "photo_source": "사진 · 디올 공식몰",
     "headline": [
       [
         "화장품, 이제 얼굴 말고"
