@@ -557,7 +557,6 @@ body.menuOpen{overflow:hidden}
 .gPerson .gWho{padding:0 9px}
 .gDesc{font-size:var(--gBody);line-height:1.55;color:#525252;word-break:keep-all;padding-top:2px}
 .gLink{display:block;text-align:center;font-size:var(--gLabel);line-height:1.4;color:var(--muted);padding:4px 0;background:var(--soft)}
-.gChainNote{margin:10px 0 0;font-size:var(--gBody);line-height:1.55;color:var(--muted);word-break:keep-all}
 
 /* 02 — 챕터 카드 */
 .gCh{margin:0 0 10px;padding:14px 14px 12px;background:var(--soft);border:1px solid var(--line);border-radius:12px}
@@ -586,8 +585,6 @@ body.menuOpen{overflow:hidden}
 .gRuleT{display:block;font-size:var(--gBody);font-weight:700;color:#111;letter-spacing:-.1px;line-height:1.55}
 .gRules p{margin:4px 0 0;font-size:var(--gBody);line-height:1.55;color:#525252;word-break:keep-all}
 .gRules p b{color:#111;font-weight:700}
-.gFoot{margin:18px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:var(--gBody);font-weight:400;
-  line-height:1.55;color:var(--muted);text-align:center;word-break:keep-all}
 
 /* 본문 속 코드 조각도 같은 산세리프·같은 크기 — 모노스페이스로 튀지 않게 회색 칩으로만 구분 */
 .modalCard.guide code{font-family:var(--font);font-size:var(--gBody);font-weight:600;letter-spacing:0;
