@@ -321,6 +321,13 @@
     "h": 706,
     "bytes": 33951
   },
+  "assets/cover-0510a8.jpg": {
+    "sha1": "0510a8c38c5d1d5aae3d9ce9de9c45b667112e7b",
+    "source": "downloads/pick-03-art/cover.png",
+    "w": 1080,
+    "h": 1350,
+    "bytes": 76512
+  },
   "assets/cover-8c9689.jpg": {
     "sha1": "8c968979b9621e18e68e955ad2b006d97bac05d7",
     "source": "downloads/pick-02-art/cover.png",
@@ -944,6 +951,13 @@
     "h": 1122,
     "bytes": 223408
   },
+  "assets/strip.jpg": {
+    "sha1": "bd5d3a72a79038a3babb150e19cc227275f481b9",
+    "source": "downloads/pick-03-art/strip.png",
+    "w": 1080,
+    "h": 314,
+    "bytes": 30349
+  },
   "assets/sun-activity-band.jpg": {
     "sha1": "0591ebe7cafb68935d95f12265af5d311f5af510",
     "source": "downloads/beauty-point-09-src/sun-activity-band.png",
@@ -1118,6 +1132,13 @@
     "w": 2160,
     "h": 880,
     "bytes": 59513
+  },
+  "assets/wear.jpg": {
+    "sha1": "5e85cf7e2331b55ca5b9304ec831f5167df9fc57",
+    "source": "downloads/pick-03-art/wear.png",
+    "w": 1080,
+    "h": 1000,
+    "bytes": 62618
   },
   "assets/zeroid_wordmark_ink.png": {
     "sha1": "e88eba94aad4e85db080d93c20314d6d4f55b07e",
