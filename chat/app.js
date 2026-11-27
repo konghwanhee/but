@@ -17,9 +17,9 @@ var API = 'https://api.github.com';
 var LS_PAT = 'agentchat:pat';
 var LS_SENDER = 'agentchat:sender';
 
-var SENDERS = { hwanhee: '환희', keyring: '끼릿', pickle: '삐꾸' };
-var AVATARS = { keyring: 'assets/kkirit-avatar.png', pickle: 'assets/ppikku-avatar.png' };
-var READ_ORDER = ['keyring', 'pickle', 'hwanhee'];
+var SENDERS = { hwanhee: '환희', keyring: '끼릿', pickle: '삐꾸', vve: '쁘이' };
+var AVATARS = { keyring: 'assets/kkirit-avatar.png', pickle: 'assets/ppikku-avatar.png', vve: 'assets/ppui-avatar.jpg' };
+var READ_ORDER = ['keyring', 'pickle', 'vve', 'hwanhee'];
 
 /* 챕터·호수 선택 — deck_id 는 지금처럼 문자열 그대로 저장하고, 화면에는 사람이 읽는 라벨로 보여준다. */
 var CHAPTERS = [
@@ -491,10 +491,10 @@ function renderList() {
       prevDay = dk;
     }
     var me = m.sender === 'hwanhee';
-    var cls = 'msg ' + (me ? 'me' : 'them') + (m.sender === 'pickle' ? ' pickle' : '');
-    var who = m.sender === 'keyring' ? 'keyring' : 'pickle';
+    var cls = 'msg ' + (me ? 'me' : 'them') + (m.sender === 'pickle' ? ' pickle' : m.sender === 'vve' ? ' vve' : '');
+    var who = m.sender === 'keyring' ? 'keyring' : m.sender === 'vve' ? 'vve' : 'pickle';
     var badge = me ? '' : '<span class="badge ' + who + '">' +
-      (m.sender === 'keyring' ? 'KKIRIT' : 'PPIKKU') + '</span>';
+      (m.sender === 'keyring' ? 'KKIRIT' : m.sender === 'vve' ? 'VVE' : 'PPIKKU') + '</span>';
     var avatar = me ? '' : '<span class="avatar ' + who + '"><img src="' + (AVATARS[m.sender] || AVATARS.pickle) +
       '" alt="" loading="lazy" decoding="async"></span>';
     var tags = '';
