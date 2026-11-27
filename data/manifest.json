@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-27T18:35:05+09:00",
+  "generatedAt": "2026-11-27T19:29:44+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -245,6 +245,21 @@
       "coverThumb": "covers/beauty-pick-03-cover-v3.png",
       "jsonPath": "data/beauty-pick-03.json",
       "updatedAt": "2026-11-27T18:35:05+09:00",
+      "approved": false,
+      "publishedAt": null
+    },
+    {
+      "id": "beauty-pick-test",
+      "series": "pick",
+      "seriesLabel": "뷰티 픽",
+      "issueNo": "TEST",
+      "isTest": true,
+      "date": "2026-11-27",
+      "title": "광고 속 '의사 추천', 진짜 의사일까요?",
+      "subtitle": "AI 가짜 전문가 추천 광고, 11월 27일부터 금지",
+      "coverThumb": "covers/beauty-pick-03-cover-v3.png",
+      "jsonPath": "data/beauty-pick-test.json",
+      "updatedAt": "2026-11-27T19:29:44+09:00",
       "approved": false,
       "publishedAt": null
     }
