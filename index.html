@@ -11,7 +11,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="stylesheet" href="style.css?v=20261127h">
+<link rel="stylesheet" href="style.css?v=20261127i">
 </head>
 <body>
 
@@ -157,13 +157,19 @@
       <button class="iconClose" id="menuClose" type="button" aria-label="메뉴 닫기" title="닫기 (Esc)">×</button>
     </div>
     <div class="menuBody">
-      <!-- 1) 매거진 안내 — 메뉴 최상단 -->
+      <!-- 1) 매거진 안내 — 메뉴 최상단 (2026-11-27 두 버튼: 매거진 소개 / 운영 규칙) -->
       <section class="menuSec menuSecLead">
         <h3>매거진 안내</h3>
-        <button class="menuItem noMk lead" id="btnGuide" type="button" aria-haspopup="dialog">
-          <span class="nm">매거진 소개 · 운영 일정/규칙</span>
-          <span class="ext" aria-hidden="true">›</span>
-        </button>
+        <div class="menuLeadBtns">
+          <button class="menuItem noMk lead" id="btnIntro" type="button" aria-haspopup="dialog">
+            <span class="nm">매거진 소개</span>
+            <span class="ext" aria-hidden="true">›</span>
+          </button>
+          <button class="menuItem noMk lead" id="btnGuide" type="button" aria-haspopup="dialog">
+            <span class="nm">운영 규칙</span>
+            <span class="ext" aria-hidden="true">›</span>
+          </button>
+        </div>
       </section>
       <section class="menuSec">
         <h3>결재 · 발행 상태</h3>
@@ -185,12 +191,12 @@
   </aside>
 </div>
 
-<!-- ============================================================ 운영 일정 · 규칙 -->
-<div class="modal" id="guideModal" hidden>
-  <div class="modalCard guide" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+<!-- ============================================================ 매거진 안내 · 매거진 소개 -->
+<div class="modal" id="introModal" hidden>
+  <div class="modalCard guide" role="dialog" aria-modal="true" aria-labelledby="introTitle">
     <div class="guideHead">
-      <h2 id="guideTitle">매거진 소개 · 운영 일정/규칙</h2>
-      <button class="iconClose" id="guideClose" type="button" aria-label="닫기" title="닫기 (Esc)">×</button>
+      <h2 id="introTitle">매거진 안내 · 매거진 소개</h2>
+      <button class="iconClose" id="introClose" type="button" aria-label="닫기" title="닫기 (Esc)">×</button>
     </div>
     <div class="guideBody">
 
@@ -207,31 +213,53 @@
           <div class="gIntroChapters">
             <span>BRIEF 브리핑</span><span>POINT 포인트</span><span>TECH 테크</span><span>PICK 픽</span>
           </div>
+          <ul class="gIntroRoles">
+            <li><b>BRIEF 브리핑</b><span>날짜별 뷰티 산업 속보를 중요도 순으로</span></li>
+            <li><b>POINT 포인트</b><span>유통·제조·자본·글로벌, 산업 구조와 판도</span></li>
+            <li><b>TECH 테크</b><span>성분·제형·전달체·기기의 원리와 기전</span></li>
+            <li><b>PICK 픽</b><span>소비자 눈높이의 신제품·이슈 체크리스트</span></li>
+          </ul>
         </div>
-
-        <div class="gSubTitle">협업 · 결재 구조</div>
-        <div class="gChain">
-          <div class="gStep">
-            <span class="gWho">끼릿</span>
-            <span class="gDesc">주간·수시 기획 제안<br>브리핑 2차 레이아웃·내용 검수</span>
-          </div>
-          <span class="gLink" aria-hidden="true">↔</span>
-          <div class="gStep">
-            <span class="gWho">삐꾸</span>
-            <span class="gDesc">제작 · 자체 2차 팩트검증<br>허브 반영 · 단독 인스타 업로드</span>
-          </div>
-          <span class="gLink" aria-hidden="true">↔</span>
-          <div class="gStep">
-            <span class="gWho">환희</span>
-            <span class="gDesc">기획 선정<br>최종 검수 및 결재</span>
-          </div>
-        </div>
-        <p class="gChainNote">기획 → 제작 → 결재가 한 사이클로 돌고, 결재 뒤에는 삐꾸 단독 업로드로 넘어갑니다.</p>
       </section>
 
-      <!-- ── 02 챕터별 운영 규칙 ────────────────────────────── -->
+      <!-- ── 02 함께 만드는 사람들 ──────────────────────────── -->
       <section class="gSec">
-        <h3 class="gSecT"><span class="gNo">02</span>챕터별 운영 규칙</h3>
+        <h3 class="gSecT"><span class="gNo">02</span>함께 만드는 사람들</h3>
+
+        <div class="gPeople">
+          <article class="gPerson">
+            <header><span class="gWho">환희</span><span class="gRole">총괄 · 에디터</span></header>
+            <p>매거진 방향성과 기획을 선정하고, 모든 카드뉴스의 최종 검수·결재를 맡는 담당자</p>
+          </article>
+          <article class="gPerson">
+            <header><span class="gWho">삐꾸</span><span class="gRole">피클 · AI 어시스턴트</span></header>
+            <p>뉴스·자료 수집과 2차 자체 팩트검증, 카드뉴스 제작·허브 관리·<b>@butfriends</b> 단독 업로드를 담당</p>
+          </article>
+          <article class="gPerson">
+            <header><span class="gWho">끼릿</span><span class="gRole">키링 · AI 파트너</span></header>
+            <p>포인트·테크·픽 주간/수시 기획 제안과 브리핑 2차 레이아웃·내용 검수를 담당</p>
+          </article>
+        </div>
+        <p class="gChainNote">기획 → 제작 → 검수 → 결재가 한 사이클로 돌고, 결재가 끝나면 삐꾸 단독 업로드로 넘어갑니다.</p>
+      </section>
+
+      <p class="gFoot">텍스트 수정 · PNG 다운로드 · 결재는 이 허브에서 그대로 처리합니다.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ 매거진 안내 · 운영 규칙 -->
+<div class="modal" id="guideModal" hidden>
+  <div class="modalCard guide" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+    <div class="guideHead">
+      <h2 id="guideTitle">매거진 안내 · 운영 규칙</h2>
+      <button class="iconClose" id="guideClose" type="button" aria-label="닫기" title="닫기 (Esc)">×</button>
+    </div>
+    <div class="guideBody">
+
+      <!-- ── 01 챕터별 상세 운영 규칙 ──────────────────────── -->
+      <section class="gSec">
+        <h3 class="gSecT"><span class="gNo">01</span>챕터별 상세 운영 규칙</h3>
 
         <!-- BRIEF -->
         <article class="gCh">
@@ -241,12 +269,14 @@
           </header>
           <p class="gChWhen"><span>재개</span><em>11/30(월) 10:00</em></p>
           <dl class="gKv">
-            <div class="gRow"><dt>제작</dt><dd>평일 17:00 제작 → 끼릿 교차 검수 → 삐꾸 재교차검증 보완 → <b>결재 즉시 5분 업로드</b></dd></div>
-            <div class="gRow"><dt>수집</dt><dd>전날 17:00 ~ 당일 17:00<br>월요일은 금 17:00 ~ 월 17:00</dd></div>
-            <div class="gRow"><dt>건수</dt><dd>10건 위아래로 유연하게 편성</dd></div>
-            <div class="gRow"><dt>8대 영역</dt><dd class="gChips"><span>마운자로·GLP-1</span><span>코스메틱</span><span>EBD·에스테틱</span><span>피부과 이슈</span><span>올리브영·유통</span><span>더마 코스메틱</span><span>국내 뷰티 이슈</span><span>해외 트렌드</span></dd></div>
-            <div class="gRow"><dt>표기</dt><dd>날짜로만 <code>YYYY-MM-DD</code> · 호수 없음</dd></div>
-            <div class="gRow"><dt>덧붙이는 말</dt><dd>반론 · 후속 · 보완 · 유의 · 용어</dd></div>
+            <div class="gRow"><dt>발행 일정</dt><dd>이번 주 휴재 후 <b>11/30(월) 10:00</b> 재개, 이후 평일 매일. 17:00 제작 → 17:30 전달 → 결재 즉시 5분 업로드</dd></div>
+            <div class="gRow"><dt>제작 흐름</dt><dd>보도자료·기사 수집 → 3개 이상 매체 교차 검증 → 표지·목차·본문 제작 → <b>끼릿 교차 검수</b> → 삐꾸 재교차검증 보완 → 환희 결재 → 자동 업로드</dd></div>
+            <div class="gRow"><dt>수집 구간</dt><dd>전날 17:00 ~ 당일 17:00<br>월요일은 금 17:00 ~ 월 17:00(주말분 포함)</dd></div>
+            <div class="gRow"><dt>주제 영역</dt><dd class="gChips"><span>마운자로·GLP-1</span><span>코스메틱</span><span>EBD·에스테틱</span><span>피부과 이슈</span><span>올리브영·유통</span><span>더마 코스메틱</span><span>국내 뷰티 이슈</span><span>해외 트렌드</span></dd></div>
+            <div class="gRow"><dt>건수·장수</dt><dd>10건 위아래로 유연 편성(6~18건). 인스타 최대 20장 한도 안에서 표지·목차 제외 <b>본문 최대 18건</b></dd></div>
+            <div class="gRow"><dt>규격</dt><dd>1080×1350(4:5) · 1p 표지 → C3 인덱스 목차(<code>DAILY BRIEFING</code>) → B3 본문</dd></div>
+            <div class="gRow"><dt>디자인·문체</dt><dd>날짜로만 <code>YYYY-MM-DD</code>, 호수 없음. 표지는 공식 보도사진 풀블리드 흑백에 진행 바·점 없음 / 본문은 가로 진행 바 + 실선 선형 그래프. 본문 3~4줄·줄당 약 40자·29px 통일, 반론·후속은 <b>덧붙이는 말 · {반론/후속/보완/유의/용어}</b></dd></div>
+            <div class="gRow"><dt>금지·유의</dt><dd>가격·할인율 표기 금지, 같은 뉴스는 새 사실·반론이 있을 때만 재수록, 지난 호 사진 재사용 금지</dd></div>
           </dl>
         </article>
 
@@ -258,9 +288,12 @@
           </header>
           <p class="gChWhen"><span>발행</span><em>월·수·금 08:00</em></p>
           <dl class="gKv">
-            <div class="gRow"><dt>예외</dt><dd>4부작 주에는 <b>토 08:00</b> 발행분 포함, 그 주 테크는 휴재</dd></div>
-            <div class="gRow"><dt>제작</dt><dd>토 10:00 끼릿이 다다음 주 발행분(3~4편) 제안 → 환희 선정 → 토·일 주말 일괄 제작·검수·보완 → 결재 대기</dd></div>
-            <div class="gRow"><dt>5대 바운더리</dt><dd class="gChips"><span>유통·제조·법규/라벨</span><span>에스테틱·병의원 비즈니스 판도</span><span>자본·M&amp;A·기업 전략</span><span>글로벌·수출</span><span>메가 트렌드·마케팅 구조</span></dd></div>
+            <div class="gRow"><dt>발행 일정</dt><dd>월·수·금 <b>08:00</b>. 4부작 주에는 토 08:00 발행분 포함, 그 주 테크는 휴재</dd></div>
+            <div class="gRow"><dt>제작 흐름</dt><dd>토 10:00 끼릿이 다다음 주 발행분 <b>3~4편</b> 제안 → 환희 선정 → 토·일 일괄 제작·2차 검증 → 끼릿 검수·보완 → 결재 대기</dd></div>
+            <div class="gRow"><dt>주제 바운더리</dt><dd class="gChips"><span>유통·제조·법규/라벨</span><span>에스테틱·병의원 비즈니스 판도</span><span>자본·M&amp;A·기업 전략</span><span>글로벌·수출</span><span>메가 트렌드·마케팅 구조</span></dd></div>
+            <div class="gRow"><dt>장수·규격</dt><dd>1080×1350(4:5) · 1p 표지 + 2p~ 본문 · 1부작~4부작, 날짜·목차 없음</dd></div>
+            <div class="gRow"><dt>디자인·문체</dt><dd>블랙·화이트·키컬러(그레이 금지), 상단 컬러 블록 2분할 표지 + 연출컷 풀블리드. 3~4열 비교표는 여백 28~56px 준수, 제형·성분·작용기전 이미지 생성 가능</dd></div>
+            <div class="gRow"><dt>금지·유의</dt><dd>가격·할인율 표기 금지, 특정 브랜드 과도한 부정 반응 금지, 표지 제목은 환희 님이 준 문장 그대로</dd></div>
           </dl>
         </article>
 
@@ -272,9 +305,12 @@
           </header>
           <p class="gChWhen"><span>발행</span><em>토 08:00</em></p>
           <dl class="gKv">
-            <div class="gRow"><dt>예외</dt><dd>포인트 4부작 주는 휴재</dd></div>
-            <div class="gRow"><dt>제작</dt><dd>토 10:00 끼릿 제안 → 주말 일괄 제작 → 결재 대기</dd></div>
-            <div class="gRow"><dt>다루는 것</dt><dd>핵심 성분·제형·전달체·EBD 기기·바이오 소재·제약 기반 더마의 <b>원리·기전·물성</b> 심층 해설<br>시장·유통 구조를 다루는 포인트와 달리 ‘소재’ 자체를 파고듭니다.</dd></div>
+            <div class="gRow"><dt>발행 일정</dt><dd>토 <b>08:00</b> — 포인트 4부작 주는 휴재</dd></div>
+            <div class="gRow"><dt>제작 흐름</dt><dd>토 10:00 끼릿 제안 → 환희 선정 → 주말 일괄 제작·2차 검증 → 검수·보완 → 결재 대기</dd></div>
+            <div class="gRow"><dt>주제 바운더리</dt><dd>핵심 성분·제형·전달체·EBD 기기·바이오 소재·제약 기반 더마의 <b>원리·기전·물성</b> 심층 해설. 시장·유통 구조를 다루는 포인트와 명확히 구분</dd></div>
+            <div class="gRow"><dt>장수·규격</dt><dd>1080×1350(4:5) · 1p 표지 + 2p~ 본문</dd></div>
+            <div class="gRow"><dt>디자인·문체</dt><dd>블랙·화이트·키컬러, 솔리드 키컬러 표지 + 네모박스 없는 중앙 비주얼. 본문은 <b>미니멀 2D 도해</b>와 공식 누끼컷</dd></div>
+            <div class="gRow"><dt>금지·유의</dt><dd>AI 티 나는 복잡한 렌더 금지, 제형·점성 이미지는 식약처 성상·공식 설명으로 먼저 검증 후 사용</dd></div>
           </dl>
         </article>
 
@@ -286,28 +322,36 @@
           </header>
           <p class="gChWhen"><span>발행</span><em>수시</em></p>
           <dl class="gKv">
-            <div class="gRow"><dt>다루는 것</dt><dd>B2C 신제품·팝업·소비자 안전·협찬/광고</dd></div>
-            <div class="gRow"><dt>전환</dt><dd>브리핑에서 다뤘지만 포인트로 풀기엔 가볍고 넘기기 아쉬운 이슈를 <b>소비자 눈높이·체크리스트</b>로 바꿔 싣습니다.</dd></div>
-            <div class="gRow"><dt>제작</dt><dd>끼릿 수시 모니터링 제안 → 결재 즉시 5분 업로드</dd></div>
+            <div class="gRow"><dt>발행 일정</dt><dd>수시(비정기) — 결재 즉시 5분 업로드</dd></div>
+            <div class="gRow"><dt>제작 흐름</dt><dd>끼릿 수시 모니터링 제안 → 환희 선정 → 제작·2차 검증 → 검수 → 결재 → 자동 업로드</dd></div>
+            <div class="gRow"><dt>주제 바운더리</dt><dd>B2C 신제품·팝업·소비자 안전·협찬/광고. <b>브리핑에서 다뤘지만 포인트로 풀기엔 가볍고 넘기기 아쉬운 이슈</b>를 소비자 눈높이·체크리스트로 전환</dd></div>
+            <div class="gRow"><dt>장수·규격</dt><dd>1080×1350(4:5) · 표지 + 본문 6~8장</dd></div>
+            <div class="gRow"><dt>디자인·문체</dt><dd>영한 네모 스티커·체크카드 톤. 출처는 수치·표·공식 사진 장표에만 짧게, 마지막 장은 <b>진행 바 없이</b> <code>SOURCES</code></dd></div>
+            <div class="gRow"><dt>금지·유의</dt><dd>저장·댓글 유도 CTA 금지, 가격·할인율 금지, 부정적으로 언급된 브랜드는 해시태그·노출 최소화</dd></div>
           </dl>
         </article>
       </section>
 
-      <!-- ── 03 공통 검증 · 업로드 규칙 ─────────────────────── -->
+      <!-- ── 02 공통 검증 · 캡션 · 자동 업로드 규칙 ────────── -->
       <section class="gSec">
-        <h3 class="gSecT"><span class="gNo">03</span>공통 검증 · 업로드 규칙</h3>
+        <h3 class="gSecT"><span class="gNo">02</span>공통 검증 · 캡션 · 자동 업로드 규칙</h3>
+
         <ul class="gRules">
           <li>
-            <span class="gRuleT">2차 자체 검증</span>
-            <p>3개 이상 매체 · 공식 자료 · 식약처/DART 공시로 교차 확인하고, 가격 · 미확인 수치 · 과장 표현은 싣지 않습니다.</p>
+            <span class="gRuleT">2차 자체 팩트검증</span>
+            <p>3개 이상 매체 · 공식 자료 · 식약처/DART 공시를 교차 확인합니다. 가격·미확인 수치·과장 표현은 싣지 않고, 모호하거나 근거가 엇갈리는 자료는 <b>완료 후 보고</b>에 함께 알립니다.</p>
           </li>
           <li>
-            <span class="gRuleT">결재 → 업로드</span>
-            <p>결재(<code>approved: true</code>)가 끝나면 <b>삐꾸 단독 5분 자동 감지</b>로 @butfriends에 올립니다.</p>
+            <span class="gRuleT">금지 사항</span>
+            <p>가격·할인율·의료기관 가격 광고 금지, 저장/댓글 질문 유도 CTA 금지, AI 보고체(<code>확인되지 않습니다</code> 등) 배제.</p>
           </li>
           <li>
-            <span class="gRuleT">게시 전후 검수</span>
-            <p>4:5 원본 비율을 지키고, 게시 전후 CDN 100% 픽셀 대조로 확인합니다.</p>
+            <span class="gRuleT">캡션 규격</span>
+            <p>친근한 혼용체로 <b>제목 1줄 + 빈 줄 + 요약 2~3줄 + 빈 줄 + 구체적 해시태그 2~3개</b>. 일반어 해시태그는 빼고 브랜드·성분·고유 주제만 씁니다.</p>
+          </li>
+          <li>
+            <span class="gRuleT">자동 감지 · 업로드</span>
+            <p>결재(<code>approved: true</code>) 후 <b>삐꾸 단독 5분 자동 감지</b>로 @butfriends에 올립니다. 당일 08:00 이후 결재하면 즉시 업로드하고, <code>mintchocosalmon</code>과는 계정을 분리합니다. 4:5 원본 비율 유지, 게시 전후 CDN 100% 픽셀 대조로 확인.</p>
           </li>
         </ul>
       </section>
@@ -317,7 +361,7 @@
   </div>
 </div>
 
-<script src="app.js?v=20261127h"></script>
+<script src="app.js?v=20261127i"></script>
 
 <!-- ============================================================ 공용 채팅 팝업 (페이지 안에서 열림) -->
 <div class="chatModal" id="chatModal" hidden>
@@ -338,7 +382,7 @@
   var modal = document.getElementById('chatModal');
   var frame = document.getElementById('chatFrame');
   var closeBtn = document.getElementById('chatClose');
-  var BUILD = '20261127h';
+  var BUILD = '20261127i';
   var SRC = './chat/?embed=1&v=' + BUILD;
   if (!modal || !frame) return;
 

@@ -6201,21 +6201,26 @@ function closeMenu() {
   clearTimeout(menuUI.timer);
   menuUI.timer = setTimeout(function () { if (!menuUI.open) layer.hidden = true; }, 220);
 }
-function openGuide() {
+/* 모달 열기/닫기 — 매거진 소개(introModal) · 운영 규칙(guideModal) */
+function openSheet(mid, cid) {
   closeMenu();
-  var m = document.getElementById('guideModal');
+  var m = document.getElementById(mid);
   if (!m) return;
   m.hidden = false;
-  var b = document.getElementById('guideClose');
+  var b = document.getElementById(cid);
   if (b) { try { b.focus({ preventScroll: true }); } catch (e) { b.focus(); } }
 }
-function closeGuide() {
-  var m = document.getElementById('guideModal');
+function closeSheet(mid) {
+  var m = document.getElementById(mid);
   if (!m || m.hidden) return;
   m.hidden = true;
   var b = document.getElementById('btnMenu');
   if (b) { try { b.focus({ preventScroll: true }); } catch (e) { } }
 }
+function openGuide() { openSheet('guideModal', 'guideClose'); }
+function closeGuide() { closeSheet('guideModal'); }
+function openIntro() { openSheet('introModal', 'introClose'); }
+function closeIntro() { closeSheet('introModal'); }
 function trapTab(e, root) {
   if (e.key !== 'Tab') return;
   var f = root.querySelectorAll('button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
@@ -6229,8 +6234,6 @@ function wireMenu() {
   var layer = document.getElementById('menuLayer');
   var panel = document.getElementById('menuDrawer');
   var closeBtn = document.getElementById('menuClose');
-  var guideBtn = document.getElementById('btnGuide');
-  var guide = document.getElementById('guideModal');
   if (btn) btn.addEventListener('click', function () { menuUI.open ? closeMenu() : openMenu(); });
   if (closeBtn) closeBtn.addEventListener('click', closeMenu);
   if (layer) layer.addEventListener('click', function (e) {
@@ -6240,17 +6243,20 @@ function wireMenu() {
     if (e.key === 'Escape') { e.preventDefault(); closeMenu(); return; }
     trapTab(e, panel);
   });
-  if (guideBtn) guideBtn.addEventListener('click', openGuide);
-  var gClose = document.getElementById('guideClose');
-  if (gClose) gClose.addEventListener('click', closeGuide);
-  if (guide) {
-    guide.addEventListener('click', function (e) { if (e.target === guide) closeGuide(); });
-    guide.addEventListener('keydown', function (e) {
-      var card = guide.querySelector('.modalCard');
-      if (e.key === 'Escape') { e.preventDefault(); closeGuide(); return; }
+  [['btnIntro', 'introModal', 'introClose'], ['btnGuide', 'guideModal', 'guideClose']].forEach(function (t) {
+    var opener = document.getElementById(t[0]);
+    if (opener) opener.addEventListener('click', function () { openSheet(t[1], t[2]); });
+    var closer = document.getElementById(t[2]);
+    if (closer) closer.addEventListener('click', function () { closeSheet(t[1]); });
+    var modal = document.getElementById(t[1]);
+    if (!modal) return;
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeSheet(t[1]); });
+    modal.addEventListener('keydown', function (e) {
+      var card = modal.querySelector('.modalCard');
+      if (e.key === 'Escape') { e.preventDefault(); closeSheet(t[1]); return; }
       if (card) trapTab(e, card);
     });
-  }
+  });
 }
 
 function showGallery() {
@@ -6284,6 +6290,7 @@ function showEditor(id) {
 function route() {
   closeMenu();
   closeGuide();
+  closeIntro();
   var m = String(location.hash || '').match(/^#\/edit\/(.+)$/);
   if (m) showEditor(decodeURIComponent(m[1]));
   else { showGallery(); renderGallery(); }
