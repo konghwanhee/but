@@ -9,7 +9,11 @@
   "cover": {
     "page": "03",
     "label": "PICK 3",
+    "image": "assets/p03-laneige-model.jpg",
+    "focus_y": 0.42,
+    "focus_x": 0.5,
     "header_dark": true,
+    "photo_source": "사진 · 라네즈 × 마뗑킴 공식 모델컷",
     "headline": [
       [
         "화장품, 이제 얼굴 말고"
@@ -24,49 +28,6 @@
       "WEARABLE BEAUTY",
       "PHONE CHARM",
       "FAN BALM"
-    ],
-    "layout": "collage",
-    "photos": [
-      {
-        "image": "assets/p03-dior-still.jpg",
-        "x": 212,
-        "y": 150,
-        "w": 640,
-        "h": 270,
-        "credit": "DIOR BEAUTY",
-        "focus_x": 0.5,
-        "focus_y": 0.5
-      },
-      {
-        "image": "assets/p03-laneige-sq.jpg",
-        "x": 212,
-        "y": 486,
-        "w": 180,
-        "h": 170,
-        "credit": "LANEIGE × MATIN KIM",
-        "focus_x": 0.5,
-        "focus_y": 0.5
-      },
-      {
-        "image": "assets/p03-fan-stack-sq.jpg",
-        "x": 442,
-        "y": 486,
-        "w": 180,
-        "h": 170,
-        "credit": "AMORE MALL",
-        "focus_x": 0.5,
-        "focus_y": 0.5
-      },
-      {
-        "image": "assets/p03-amuse-ring.jpg",
-        "x": 672,
-        "y": 486,
-        "w": 180,
-        "h": 170,
-        "credit": "AMUSE",
-        "focus_x": 0.5,
-        "focus_y": 0.5
-      }
     ]
   },
   "slides": [
