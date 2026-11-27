@@ -472,5 +472,11 @@
   "approved": true,
   "approvedAt": "2026-11-26T23:51:50.798Z",
   "scheduledUploadAt": "2026-11-28T08:00:00+09:00",
-  "publishedAt": null
+  "publishedAt": null,
+  "agent": {
+    "uploadClaim": {
+      "by": "pickle",
+      "at": "2026-11-28T08:05:00+09:00"
+    }
+  }
 }
