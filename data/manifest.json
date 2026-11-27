@@ -232,7 +232,11 @@
       "subtitle": "파우치 탈출한 웨어러블 뷰티템",
       "coverThumb": "covers/beauty-pick-03-cover.png",
       "jsonPath": "data/beauty-pick-03.json",
-      "updatedAt": "2026-11-27T11:02:09+09:00"
+      "updatedAt": "2026-11-27T11:02:09+09:00",
+      "approved": false,
+      "approvedAt": null,
+      "scheduledUploadAt": null,
+      "publishedAt": null
     }
   ]
 }
