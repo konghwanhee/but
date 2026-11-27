@@ -3262,7 +3262,9 @@ function pickCover() {
     });
   }
   pStops(0, 0, W, H, [8, 10, 14], [[380, 0], [660, 150], [860, 220], [1040, 245], [H, 252]]);
-  pHead(c.page || '01', c.label || 'PICK', false);
+  /* 머리글을 흰색으로 쓰는 표지(header_dark)는 위쪽에도 어두운 띠를 깔아 밝은 사진 위에서 읽히게 한다 (2026-11-27) */
+  if (c.header_dark === true) pStops(0, 0, W, 360, [8, 10, 14], [[0, 175], [150, 110], [360, 0]]);
+  pHead(c.page || '01', c.label || 'PICK', c.header_dark === true);
   pickCoverText(c);
 }
 
