@@ -1,7 +1,7 @@
 {
   "site": "뷰티 카드뉴스 허브",
   "repo": "konghwanhee/but",
-  "generatedAt": "2026-11-27T11:04:28+09:00",
+  "generatedAt": "2026-11-27T13:04:57+09:00",
   "decks": [
     {
       "id": "beauty-point-01",
@@ -232,7 +232,7 @@
       "subtitle": "파우치 탈출한 웨어러블 뷰티템",
       "coverThumb": "covers/beauty-pick-03-cover.png",
       "jsonPath": "data/beauty-pick-03.json",
-      "updatedAt": "2026-11-27T11:04:27+09:00",
+      "updatedAt": "2026-11-27T13:04:55+09:00",
       "approved": false,
       "publishedAt": null
     }
