@@ -11,7 +11,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<link rel="stylesheet" href="style.css?v=20261127zf">
+<link rel="stylesheet" href="style.css?v=20261127zg">
 </head>
 <body>
 
@@ -319,7 +319,7 @@
             <div class="gRow"><dt>제작 흐름</dt><dd>쁘이 수시 모니터링 제안 → 환희 선정 → 제작·2차 검증 → 검수 → 결재 → 자동 업로드</dd></div>
             <div class="gRow"><dt>주제 바운더리</dt><dd>B2C 신제품·팝업·소비자 안전·협찬/광고. <b>브리핑에서 다뤘지만 포인트로 풀기엔 가볍고 넘기기 아쉬운 이슈</b>를 소비자 눈높이·체크리스트로 전환</dd></div>
             <div class="gRow"><dt>장수·규격</dt><dd>1080×1350(4:5) · 표지 + 본문 6~8장</dd></div>
-            <div class="gRow"><dt>디자인·문체</dt><dd>영한 네모 스티커·체크카드 톤. 출처는 수치·표·공식 사진 장표에만 짧게, 마지막 장은 <b>진행 바 없이</b> <code>SOURCES</code></dd></div>
+            <div class="gRow"><dt>디자인·문체</dt><dd>영한 네모 스티커·체크카드 톤. 표지는 <b>사진 풀블리드</b>(머리글 흰색, 하단 어두운 띠 위에 제목·본문·태그, 맨 아래 <code>사진 · 출처</code> 한 줄). 출처는 수치·표·공식 사진 장표에 짧게, 반응 스티커는 출처 없이 넣는 연출이며, 마지막 장은 <b>진행 바 없이</b> <code>SOURCES</code></dd></div>
             <div class="gRow"><dt>금지·유의</dt><dd>저장·댓글 유도 CTA 금지, 가격·할인율 금지, 부정적으로 언급된 브랜드는 해시태그·노출 최소화</dd></div>
           </dl>
         </article>
@@ -344,7 +344,27 @@
           </li>
           <li>
             <span class="gRuleT">자동 감지 · 업로드</span>
-            <p>결재(<code>approved: true</code>) 후 <b>삐꾸 단독 5분 자동 감지</b>로 @butfriends에 올립니다. 당일 08:00 이후 결재하면 즉시 업로드합니다. 삐꾸가 멈추면 쁘이가 대행합니다.</p>
+            <p>결재(<code>approved: true</code>) 후 <b>삐꾸 단독 5분 자동 감지</b>로 @butfriends에 올립니다. 당일 08:00 이후 결재하면 즉시 업로드합니다. 업로드는 삐꾸 몫이고, 삐꾸가 멈춰 있을 때만 쁘이가 대행합니다(아래 03).</p>
+          </li>
+        </ul>
+      </section>
+
+      <!-- ── 03 역할 분담 · 대행 모드 ───────────────────────── -->
+      <section class="gSec">
+        <h3 class="gSecT"><span class="gNo">03</span>역할 분담 · 대행 모드</h3>
+
+        <ul class="gRules">
+          <li>
+            <span class="gRuleT">누가 무엇을 하나</span>
+            <p><b>쁘이</b>는 허브 총괄(15분 점검·채팅 요약과 반영·게시 후 검수)과 포인트·테크·픽 주제 제안을, <b>삐꾸</b>는 제작·게시 전 업무·결재 후 인스타 업로드를, <b>끼릿</b>은 내용·레이아웃 검수와 수정 요청을 맡습니다. 주제 선정·최종 검수·결재·게시·삭제·규칙 변경·사진 크레딧 정책은 <b>환희 님</b>이 결정합니다.</p>
+          </li>
+          <li>
+            <span class="gRuleT">매거진 대행</span>
+            <p>삐꾸나 끼릿이 <b>채팅을 1시간 넘게 확인하지 않으면</b> 멈춘 것으로 보고 쁘이가 그 역할을 대신합니다. 정기 복구는 끼릿 <b>00:00</b>, 삐꾸 <b>04:00</b>이고, 복구되면 대행은 끝납니다. 쁘이가 대신한 검수는 삐꾸가 한 번 더 확인합니다.</p>
+          </li>
+          <li>
+            <span class="gRuleT">업로드 겹침 방지</span>
+            <p>업로드는 시작 전에 선점을 먼저 기록하고 채팅에 남겨, 같은 덱이 두 번 올라가지 않게 합니다. 삐꾸가 올리는 중이면 쁘이는 기다리고, 선점 후 <b>60분</b>이 지나도 게시 기록이 없을 때만 이어받습니다.</p>
           </li>
         </ul>
       </section>
@@ -352,7 +372,7 @@
   </div>
 </div>
 
-<script src="app.js?v=20261127zf"></script>
+<script src="app.js?v=20261127zg"></script>
 
 <!-- ============================================================ 공용 채팅 팝업 (페이지 안에서 열림) -->
 <div class="chatModal" id="chatModal" hidden>
@@ -373,7 +393,7 @@
   var modal = document.getElementById('chatModal');
   var frame = document.getElementById('chatFrame');
   var closeBtn = document.getElementById('chatClose');
-  var BUILD = '20261127zf';
+  var BUILD = '20261127zg';
   var SRC = './chat/?embed=1&v=' + BUILD;
   if (!modal || !frame) return;
 
