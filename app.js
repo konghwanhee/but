@@ -3638,20 +3638,36 @@ function pickChecks(s, page, total) {
   } else {
     cy = Math.max(y + 26, 452);
   }
-  var dense = !!(tight && pair.dense);
-  var rowIn = tight ? (dense ? 74 : 88) : 98, rowTail = tight ? (dense ? 16 : 22) : 30;
-  var titleOff = dense ? 46 : 52, bodyOff = dense ? 88 : 98, bodyLead = dense ? 30 : 34;
   var ruleR = s.rule_right ? Number(s.rule_right) : P_RIGHT;   // 사진이 붙는 오른쪽 열을 비울 때
+  var ruleTextW = (ruleR - P_MX) - 56;
+  /* 목록이 길면(폰트 계량에 따라 줄이 늘어남) 줄 간격을 조여 문장·자료 줄과 겹치지 않게 한다. */
+  function listH(rowIn, rowTail, bodyLead) {
+    var h = 0;
+    (s.items || []).forEach(function (item) {
+      h += rowIn + wrapText(item.body, 23, 'regular', ruleTextW).length * bodyLead + rowTail;
+    });
+    return h;
+  }
+  var bodyH = wrapText(s.body || '', 21, 'regular', 906).length * 32;
+  var LIMIT = 1180;
+  var denseMode = !!(tight && pair.dense);
+  if (!denseMode && cy + listH(98, 30, 34) + 18 + bodyH > LIMIT) denseMode = true;
+  if (denseMode && cy + listH(74, 16, 30) + 18 + bodyH > LIMIT && tight) denseMode = true;
+  var rowIn = denseMode ? 74 : (tight ? 88 : 98);
+  var rowTail = denseMode ? 16 : (tight ? 22 : 30);
+  var titleOff = denseMode ? 46 : 52, bodyOff = denseMode ? 88 : 98, bodyLead = denseMode ? 30 : 34;
+  var dense = denseMode;
   (s.items || []).forEach(function (item, idx) {
     pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
     drawText(pad2(idx + 1), P_MX, cy + 50, 20, 'extrabold', pMix(P_INK, pKey(), 0.6), 'ls');
     drawText(item.title, P_MX + 56, cy + titleOff, 29, 'extrabold', P_INK, 'ls');
-    var lines = wrapText(item.body, 23, 'regular', (ruleR - P_MX) - 56);
+    var lines = wrapText(item.body, 23, 'regular', ruleTextW);
     for (var j = 0; j < lines.length; j++) drawText(lines[j], P_MX + 56, cy + bodyOff + j * bodyLead, 23, 'regular', pA(P_INK, 0.74), 'ls');
     cy += rowIn + lines.length * bodyLead + rowTail;
   });
   pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
-  var y2 = pPara(s.body, P_MX, cy + (dense ? 18 : 26), 21, 32, 906, pA(P_INK, 0.62));
+  var bodyW = ruleR < P_RIGHT ? (ruleR - P_MX) : 906;
+  var y2 = pPara(s.body, P_MX, cy + (dense ? 18 : 26), 21, 32, bodyW, pA(P_INK, 0.62));
   if (tight) pPickPhotoPair(s, y2 + (pair.gap_above === undefined ? 20 : Number(pair.gap_above)));
   pFooter(page, total, s.source, false);
   pProgress(total, Number(page) || 6, false);
