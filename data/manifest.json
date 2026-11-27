@@ -154,11 +154,14 @@
       "subtitle": "레티놀을 처음 쓰는 사람에게",
       "coverThumb": "covers/beauty-tech-01-cover.png",
       "jsonPath": "data/beauty-tech-01.json",
-      "updatedAt": "2026-11-26T23:51:54.479Z",
+      "updatedAt": "2026-11-28T08:09:00+09:00",
       "approved": true,
       "approvedAt": "2026-11-26T23:51:50.798Z",
       "scheduledUploadAt": "2026-11-28T08:00:00+09:00",
-      "publishedAt": null
+      "publishedAt": "2026-11-28T08:09:00+09:00",
+      "uploaded": true,
+      "uploadedAt": "2026-11-28T08:09:00+09:00",
+      "instagramUrl": "https://www.instagram.com/p/DgQ0vyME3ZQ/"
     },
     {
       "id": "beauty-tech-02",

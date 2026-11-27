@@ -472,11 +472,8 @@
   "approved": true,
   "approvedAt": "2026-11-26T23:51:50.798Z",
   "scheduledUploadAt": "2026-11-28T08:00:00+09:00",
-  "publishedAt": null,
-  "agent": {
-    "uploadClaim": {
-      "by": "pickle",
-      "at": "2026-11-28T08:05:00+09:00"
-    }
-  }
+  "publishedAt": "2026-11-28T08:09:00+09:00",
+  "uploaded": true,
+  "uploadedAt": "2026-11-28T08:09:00+09:00",
+  "instagramUrl": "https://www.instagram.com/p/DgQ0vyME3ZQ/"
 }
