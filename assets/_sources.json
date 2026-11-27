@@ -762,6 +762,69 @@
     "h": 1218,
     "bytes": 340260
   },
+  "assets/p03-amuse-ring.jpg": {
+    "sha1": "4017fb990a4e77f3ae5269e473f65053c3411ef7",
+    "source": "downloads/beauty-pick-03-photos/p03-amuse-ring.jpg",
+    "w": 600,
+    "h": 600,
+    "bytes": 30730
+  },
+  "assets/p03-dior-still.jpg": {
+    "sha1": "94c452db7f81160b42c46e4b387e0f6da6cab74c",
+    "source": "downloads/beauty-pick-03-photos/p03-dior-still.jpg",
+    "w": 1400,
+    "h": 788,
+    "bytes": 488291
+  },
+  "assets/p03-fan-band.jpg": {
+    "sha1": "5b6517db5734ee807817ebef6553534b76ef3bf6",
+    "source": "downloads/beauty-pick-03-photos/p03-fan-band.jpg",
+    "w": 1080,
+    "h": 320,
+    "bytes": 46120
+  },
+  "assets/p03-fan-stack-sq.jpg": {
+    "sha1": "e6869cc664e455a016bbb23565af11d9567e2cf1",
+    "source": "downloads/beauty-pick-03-photos/p03-fan-stack-sq.jpg",
+    "w": 1000,
+    "h": 1000,
+    "bytes": 128131
+  },
+  "assets/p03-fan-stack.jpg": {
+    "sha1": "be40e6b626cf857e7ad1c17b83103c76176bf0a6",
+    "source": "downloads/beauty-pick-03-photos/p03-fan-stack.jpg",
+    "w": 1070,
+    "h": 1100,
+    "bytes": 147334
+  },
+  "assets/p03-fan-tall.jpg": {
+    "sha1": "68d455c1e4d43e7c0de75a979ec1a8404c26edc5",
+    "source": "downloads/beauty-pick-03-photos/p03-fan-tall.jpg",
+    "w": 530,
+    "h": 930,
+    "bytes": 78653
+  },
+  "assets/p03-laneige-model.jpg": {
+    "sha1": "2e83382341de100c93bb4714f650f1aa6bbf430c",
+    "source": "downloads/beauty-pick-03-photos/p03-laneige-model.jpg",
+    "w": 910,
+    "h": 1330,
+    "bytes": 313845
+  },
+  "assets/p03-laneige-product.jpg": {
+    "sha1": "2182c119b421f7a46df69f5e147b5fdb2421c06d",
+    "source": "downloads/beauty-pick-03-photos/p03-laneige-product.jpg",
+    "w": 1001,
+    "h": 1200,
+    "bytes": 37675
+  },
+  "assets/p03-laneige-sq.jpg": {
+    "sha1": "bcb36655a624a24d3fe79b37bcf38fea5e61eafd",
+    "source": "downloads/beauty-pick-03-photos/p03-laneige-sq.jpg",
+    "w": 980,
+    "h": 980,
+    "bytes": 47996
+  },
   "assets/panel-1f.jpg": {
     "sha1": "cd721102dfbeb0aaedba36d207ce31ab5d73c362",
     "source": "downloads/beauty-pick-test-src/panel-1f.jpg",
