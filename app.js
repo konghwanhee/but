@@ -3239,6 +3239,22 @@ function pTakeaway(text, top, dark, width, size) {
 
 function pickCover() {
   var c = (D && D.cover) || {};
+  if (c.photos && c.photos.length) {   // 실사 제품 사진 콜라주 표지 (2026-11-27)
+    _ctx.fillStyle = pDeep(); _ctx.fillRect(0, 0, W, H);
+    var gd = _ctx.createLinearGradient(0, 0, 0, H);
+    for (var gi = 0; gi <= 24; gi++) {
+      var gt = gi / 24;
+      gd.addColorStop(gt, 'rgba(255,255,255,' + (0.18 * Math.pow(1 - gt, 1.4)).toFixed(3) + ')');
+    }
+    _ctx.fillStyle = gd; _ctx.fillRect(0, 0, W, H);
+    c.photos.forEach(function (ph) {
+      pPickPhotoCard(ph.image, Number(ph.x), Number(ph.y), Number(ph.w), Number(ph.h),
+        ph.credit, ph.matte, ph.focus_x, ph.focus_y);
+    });
+    pHead(c.page || '01', c.label || 'PICK', true);
+    pickCoverText(c);
+    return;
+  }
   _ctx.fillStyle = '#EFEDE8'; _ctx.fillRect(0, 0, W, H);
   if (c.image) {
     pImgFilter('contrast(1.05) saturate(0.93)', function () {
@@ -3247,8 +3263,10 @@ function pickCover() {
   }
   pStops(0, 0, W, H, [8, 10, 14], [[380, 0], [660, 150], [860, 220], [1040, 245], [H, 252]]);
   pHead(c.page || '01', c.label || 'PICK', false);
+  pickCoverText(c);
+}
 
-  var total = 1 + ((D.slides || []).length);
+function pickCoverText(c) {
   var tagsY = 1168;
   var bodyLines = wrapText(c.body || '', 25, 'regular', 800);
   var bodyLh = 41, bodyH = bodyLines.length * bodyLh;
@@ -3330,6 +3348,33 @@ function pPickStickers(s) {
     if (credit) tracked(credit, -lw / 2 + matte, -lh / 2 + matte + h + 18, 11, 'medium', pA(P_INK, 0.45), 1.6);
     _ctx.restore();
   });
+}
+
+/* 사진 카드 — scripts/beauty_pick_carousel.photo_sticker(tilt=0) 와 같은 규격 (2026-11-27)
+   표지 콜라주·마무리 사진 줄처럼 기울기 없이 앉히는 사진에 쓴다. */
+function pPickPhotoCard(path, x, y, w, h, credit, matte, fx, fy) {
+  var m = matte === undefined ? 8 : matte;
+  var lw = w + m * 2, lh = h + m * 2 + 26;
+  _ctx.save();
+  _ctx.shadowColor = 'rgba(12,8,14,0.30)'; _ctx.shadowBlur = 7;
+  _ctx.shadowOffsetX = 3; _ctx.shadowOffsetY = 9;
+  _ctx.fillStyle = '#FFFFFF'; _ctx.fillRect(x, y, lw, lh);
+  _ctx.restore();
+  drawCoverCrop(path, x + m, y + m, w, h,
+    fx === undefined ? 0.5 : Number(fx), fy === undefined ? 0.5 : Number(fy), 1);
+  _ctx.strokeStyle = pA(P_INK, 0.55); _ctx.lineWidth = 1;
+  _ctx.strokeRect(x + 0.5, y + 0.5, lw - 1, lh - 1);
+  if (credit) tracked(String(credit).toUpperCase(), x + m, y + m + h + 18, 11, 'medium', pA(P_INK, 0.45), 1.6);
+}
+
+/* 표 안의 작은 제품 사진 — 모서리 라운드 네모 (파이썬 photo_thumb 과 같은 규격) */
+function pPhotoThumb(path, x, y, size, fx, fy, r) {
+  var rad = r === undefined ? 10 : r;
+  _ctx.save(); pRound(x, y, size, size, rad); _ctx.clip();
+  drawCoverCrop(path, x, y, size, size, fx === undefined ? 0.5 : fx, fy === undefined ? 0.5 : fy, 1);
+  _ctx.restore();
+  _ctx.save(); pRound(x + 0.5, y + 0.5, size - 1, size - 1, rad);
+  _ctx.strokeStyle = pA(P_INK, 0.25); _ctx.lineWidth = 1; _ctx.stroke(); _ctx.restore();
 }
 
 function pickNotes(s, page, total) {
@@ -3440,6 +3485,27 @@ function pickDiagram(s, page, total) {
     _ctx.fillStyle = pMix(P_INK, pKey(), 0.85); _ctx.fill();
     tracked(s.banner, P_RIGHT - bw - 28, top - 33, 18, 'medium', WHITE, 3);
   }
+  if (s.layout === 'cards') {   // 같은 폭·같은 높이의 2열 비교 카드 (2026-11-27)
+    var cgap = 44, ccw = (P_CW - cgap) / 2, cch = Number(s.card_h || 268), cpad = 40;
+    (s.rows || []).forEach(function (row, ci) {
+      var cx = P_MX + ci * (ccw + cgap);
+      _ctx.fillStyle = row.tone === 'key' ? pMix(P_INK, pKey(), 0.85) : P_INK;
+      pRound(cx, top, ccw, cch, 8); _ctx.fill();
+      var lines = wrapText(row.text || '', 21, 'regular', ccw - cpad * 2);
+      var blockH = 72 + Math.max(0, lines.length - 1) * 31 + 22;
+      var y0 = top + (cch - blockH) / 2;
+      drawText(row.title, cx + cpad, y0 + 27, 34, 'extrabold', WHITE, 'ls');
+      tracked(row.sub || '', cx + cpad, y0 + 66, 16, 'medium', 'rgba(255,255,255,0.75)', 3);
+      for (var k = 0; k < lines.length; k++) {
+        drawText(lines[k], cx + cpad, y0 + 100 + k * 31, 21, 'regular', 'rgba(255,255,255,0.88)', 'ls');
+      }
+    });
+    var yb = pPara(s.body, P_MX, top + cch + 46, 26, 44, 900, pA(P_INK, 0.84));
+    pTakeaway(s.takeaway, yb + 30, false);
+    pFooter(page, total, s.source, false);
+    pProgress(total, Number(page) || 6, false);
+    return;
+  }
   var barTop = top;
   (s.rows || []).forEach(function (row) {
     var w = Math.round((P_CW - 60) * (row.ratio === undefined ? 1 : Number(row.ratio))) + 60;
@@ -3472,19 +3538,25 @@ function pickTable(s, page, total) {
   var xs = [P_MX];
   for (var i = 0; i < widths.length - 1; i++) xs.push(xs[xs.length - 1] + P_CW * widths[i] / 100);
   var colW = widths.map(function (w2) { return P_CW * w2 / 100; });
-  var HEAD_H = 66, ROW_CAP = 132;
+  var HEAD_H = 66, ROW_CAP = Number(s.row_cap || 132);
+
+  /* 행마다 제품 사진이 붙으면(2026-11-27) 마지막 열 글자를 한 단계 줄이고 사진 폭만큼 비운다. */
+  var rowPhotos = s.row_photos || [];
+  var thumb = rowPhotos.length ? Number(s.photo_size || 88) : 0;
 
   /* 열별 글꼴 — 첫 열은 확인할 것(굵게), 마지막 열은 막아야 할 것(키 컬러), 가운데는 설명 */
   var styles = [];
   for (var si = 0; si < n; si++) {
     if (si === 0) styles.push({ size: 23, weight: 'bold', ink: P_INK, lead: 32 });
-    else if (si === n - 1 && n > 2) styles.push({ size: 27, weight: 'extrabold', ink: pMix(P_INK, pKey(), 0.5), lead: 34 });
+    else if (si === n - 1 && n > 2) styles.push(thumb ? { size: 23, weight: 'extrabold', ink: pMix(P_INK, pKey(), 0.5), lead: 30 }
+      : { size: 27, weight: 'extrabold', ink: pMix(P_INK, pKey(), 0.5), lead: 34 });
     else styles.push({ size: 24, weight: 'regular', ink: pA(P_INK, 0.7), lead: 32 });
   }
   var rows = s.rows || [];
   var cellLines = rows.map(function (row) {
     return styles.map(function (st, i) {
-      return wrapText(String(row[i] === undefined ? '' : row[i]), st.size, st.weight, colW[i] - 14);
+      var wCell = (thumb && i === n - 1) ? (colW[i] - thumb - 18) : colW[i];
+      return wrapText(String(row[i] === undefined ? '' : row[i]), st.size, st.weight, wCell - 14);
     });
   });
 
@@ -3538,6 +3610,11 @@ function pickTable(s, page, total) {
         drawText(ls[k], xs[i], base + k * st.lead, st.size, st.weight, st.ink, 'ls');
       }
     }
+    if (thumb && rowPhotos[r]) {
+      var pf = (s.photo_focus || [])[r] || [0.5, 0.5];
+      pPhotoThumb(rowPhotos[r], P_RIGHT - thumb, rowTop + (rowH - thumb) / 2, thumb,
+        Number(pf[0]), Number(pf[1]));
+    }
     rowTop += rowH;
   });
   pHLine(P_MX, rowTop, P_RIGHT, rowTop, pA(P_INK, 0.18), 1);
@@ -3561,18 +3638,20 @@ function pickChecks(s, page, total) {
   } else {
     cy = Math.max(y + 26, 452);
   }
-  var rowIn = tight ? 88 : 98, rowTail = tight ? 22 : 30;
+  var dense = !!(tight && pair.dense);
+  var rowIn = tight ? (dense ? 74 : 88) : 98, rowTail = tight ? (dense ? 16 : 22) : 30;
+  var titleOff = dense ? 46 : 52, bodyOff = dense ? 88 : 98, bodyLead = dense ? 30 : 34;
   var ruleR = s.rule_right ? Number(s.rule_right) : P_RIGHT;   // 사진이 붙는 오른쪽 열을 비울 때
   (s.items || []).forEach(function (item, idx) {
     pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
     drawText(pad2(idx + 1), P_MX, cy + 50, 20, 'extrabold', pMix(P_INK, pKey(), 0.6), 'ls');
-    drawText(item.title, P_MX + 56, cy + 52, 29, 'extrabold', P_INK, 'ls');
-    var lines = wrapText(item.body, 23, 'regular', P_CW - 56);
-    for (var j = 0; j < lines.length; j++) drawText(lines[j], P_MX + 56, cy + 98 + j * 34, 23, 'regular', pA(P_INK, 0.74), 'ls');
-    cy += rowIn + lines.length * 34 + rowTail;
+    drawText(item.title, P_MX + 56, cy + titleOff, 29, 'extrabold', P_INK, 'ls');
+    var lines = wrapText(item.body, 23, 'regular', (ruleR - P_MX) - 56);
+    for (var j = 0; j < lines.length; j++) drawText(lines[j], P_MX + 56, cy + bodyOff + j * bodyLead, 23, 'regular', pA(P_INK, 0.74), 'ls');
+    cy += rowIn + lines.length * bodyLead + rowTail;
   });
   pHLine(P_MX, cy, ruleR, cy, pA(P_INK, 0.18), 1);
-  var y2 = pPara(s.body, P_MX, cy + 26, 21, 32, 906, pA(P_INK, 0.62));
+  var y2 = pPara(s.body, P_MX, cy + (dense ? 18 : 26), 21, 32, 906, pA(P_INK, 0.62));
   if (tight) pPickPhotoPair(s, y2 + (pair.gap_above === undefined ? 20 : Number(pair.gap_above)));
   pFooter(page, total, s.source, false);
   pProgress(total, Number(page) || 6, false);
@@ -3606,7 +3685,8 @@ function pPickPhotoPair(s, top) {
   }
   if (!pick) {
     var ideal = (lwMax - matte * 2) / Math.max(1, availH - creditH - matte * 2);
-    var aspect = Math.min(Math.max(ideal, 1.45), 2.30);
+    var aspect = pp.aspect ? Math.max(Number(pp.aspect), 0.6)
+      : Math.min(Math.max(ideal, 1.45), 2.30);
     for (var hh = Math.floor(availH); hh > 79; hh--) {
       var f1 = foot(hh * aspect, hh);
       if (f1[0] <= lwMax && f1[1] <= availH) { pick = [hh, hh * aspect, f1[0], f1[1]]; break; }
@@ -3996,6 +4076,10 @@ function pickClosing(s, page, total) {
     _ctx.fillStyle = g; _ctx.fillRect(0, 0, W, H);
   }
   pHead(page, s.label, true);
+  (s.photos || []).forEach(function (ph) {   // 상단 실사 제품 사진 카드 한 줄 (2026-11-27)
+    pPickPhotoCard(ph.image, Number(ph.x), Number(ph.y), Number(ph.w), Number(ph.h),
+      ph.credit, ph.matte === undefined ? 7 : ph.matte, ph.focus_x, ph.focus_y);
+  });
   var y = pHeadText(s.headline, 572, 76, WHITE);
   y = Math.max(y + 30, 772);
   y = pPara(s.body, P_MX, y, 24, 39, 906, 'rgba(255,255,255,0.82)');
